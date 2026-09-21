@@ -10,7 +10,11 @@
 # ═══════════════════════════════════════════════════════════
 set -euo pipefail
 
-RAW="$(cd "$(dirname "$0")/../../video" && pwd)"
+# Pasta dos vídeos originais. Não vive no repositório (são ~90 MB de
+# brutos), então aponte para onde eles estiverem:
+#   RAW=/c/Users/voce/Videos/plinio ./hero-video.sh contatos
+# Só 'contatos' precisa dela; 'corta' recebe o arquivo direto.
+RAW="${RAW:-$(cd "$(dirname "$0")/.." && pwd)/video-originais}"
 OUT="$(cd "$(dirname "$0")/../assets/video" && pwd)"
 IMG="$(cd "$(dirname "$0")/../assets/img" && pwd)"
 TMP="${TMPDIR:-/tmp}/plinio-hero"
@@ -18,6 +22,7 @@ TMP="${TMPDIR:-/tmp}/plinio-hero"
 command -v ffmpeg >/dev/null || { echo "ffmpeg não encontrado no PATH."; exit 1; }
 
 contatos() {
+  [ -d "$RAW" ] || { echo "Pasta de originais não encontrada: $RAW"; echo "Defina com:  RAW=/caminho/dos/videos $0 contatos"; exit 1; }
   mkdir -p "$TMP"
   echo "Gerando mosaicos em $TMP"
   for f in "$RAW"/*.mp4; do

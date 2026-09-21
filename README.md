@@ -22,7 +22,6 @@ console avisa e todo link `.js-wa` ganha `data-wa-placeholder="true"`.
 ## Rodar localmente
 
 ```bash
-cd site
 python -m http.server 8777
 # http://127.0.0.1:8777
 ```
@@ -32,14 +31,20 @@ Precisa de servidor HTTP: o vídeo e o WebGL não funcionam bem via `file://`.
 ## Publicar
 
 É um site estático — sobe em qualquer host (Netlify, Vercel, Hostinger, GitHub Pages).
-Suba o conteúdo da pasta `site/`. Nada precisa ser compilado.
+Nada precisa ser compilado.
+
+O `index.html` fica na **raiz do repositório**, que é onde todo host estático
+procura por padrão. Na Vercel: importe o repositório, preset *Other*, e deixe
+Root Directory, Build Command e Output Directory **vazios**. Se em alguma
+tentativa anterior o Root Directory tiver sido apontado para `site`, limpe o
+campo — essa pasta não existe mais.
 
 ---
 
 ## Estrutura
 
 ```
-site/
+./
 ├─ index.html          seções 1–6, na ordem do briefing
 ├─ css/style.css       paleta, layout, responsivo, prefers-reduced-motion
 ├─ js/
@@ -51,7 +56,9 @@ site/
 └─ tools/hero-video.sh pipeline de corte do vídeo (precisa de ffmpeg)
 ```
 
-Os originais ficam intactos em `../img` e `../video`.
+Os vídeos brutos (~90 MB) não estão versionados. O `hero-video.sh` procura
+por eles em `video-originais/` na raiz; para usar outro caminho, passe
+`RAW=/caminho/dos/videos`.
 
 ---
 
@@ -135,7 +142,7 @@ winget install --id Gyan.FFmpeg -e
 Depois, no Git Bash:
 
 ```bash
-cd site/tools
+cd tools
 ./hero-video.sh contatos                            # mosaicos de frames
 ./hero-video.sh corta videoheader3.mp4 0.4 6.5      # gera o corte já comprimido
 ```
