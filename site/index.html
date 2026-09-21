@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dr. Plínio Mota — Odontologia Estética | Clareamento de Resinas · Osasco</title>
+<meta name="description" content="Especialistas em clareamento de resinas em Osasco. Técnica que devolve luminosidade e uniformidade aos dentes, com resultado natural e duradouro. Dr. Plínio Mota, CRO-SP 177.444.">
+<meta name="theme-color" content="#14141A">
+<meta property="og:title" content="Dr. Plínio Mota — Odontologia Estética">
+<meta property="og:description" content="Clareamento de resinas com resultado natural e duradouro. Osasco, SP.">
+<meta property="og:image" content="assets/img/sorriso-34.jpg">
+<meta property="og:type" content="website">
+
+<link rel="icon" href="assets/img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ══ ABERTURA ══ -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader__mark">
+    <svg viewBox="0 0 120 120" class="mono" aria-hidden="true">
+      <circle class="mono__ring" cx="60" cy="60" r="44" fill="none" stroke="currentColor" stroke-width="1"/>
+      <path class="mono__p" d="M42 86V36h12c8 0 13 5 13 12.5S62 61 54 61H42" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <path class="mono__m" d="M58 86V46l11 20 11-20v40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="loader__bar"><i></i></div>
+  <div class="loader__curtain loader__curtain--l"></div>
+  <div class="loader__curtain loader__curtain--r"></div>
+</div>
+
+<!-- ══ CURSOR ══ -->
+<div class="cursor" id="cursor" aria-hidden="true"><span class="cursor__dot"></span><span class="cursor__ring"></span></div>
+
+<!-- ══ NAV ══ -->
+<header class="nav" id="nav">
+  <a href="#hero" class="nav__brand" aria-label="Dr. Plínio Mota, Cirurgião-Dentista, CRO-SP 177.444 — início">
+    <span class="nav__mark">
+      <img class="nav__logo nav__logo--light" src="assets/img/logo-mark-light.png" alt="" aria-hidden="true">
+      <img class="nav__logo nav__logo--dark" src="assets/img/logo-mark.png" alt="" aria-hidden="true">
+    </span>
+    <span class="nav__word"><b>Dr. Plínio Mota</b><i>Odontologia Estética</i></span>
+  </a>
+  <nav class="nav__links" aria-label="Navegação principal">
+    <a href="#sobre">Sobre</a>
+    <a href="#tecnica">A técnica</a>
+    <a href="#resultados">Resultados</a>
+    <a href="#diferenciais">Diferenciais</a>
+    <a href="#local">Onde estamos</a>
+  </nav>
+  <a class="btn btn--sm js-wa js-magnetic" data-wa-msg="Olá! Vim pelo site e gostaria de agendar uma avaliação."><span>Agendar</span></a>
+  <button class="nav__burger" id="burger" aria-label="Abrir menu" aria-expanded="false"><i></i><i></i></button>
+</header>
+
+<div class="menu" id="menu" aria-hidden="true">
+  <nav class="menu__links">
+    <a href="#sobre"><em>01</em> Sobre</a>
+    <a href="#tecnica"><em>02</em> A técnica</a>
+    <a href="#resultados"><em>03</em> Resultados</a>
+    <a href="#diferenciais"><em>04</em> Diferenciais</a>
+    <a href="#local"><em>05</em> Onde estamos</a>
+  </nav>
+  <div class="menu__foot">
+    <p>Av. Hilário Pereira de Souza, 406<br>Jardim Água · Osasco — SP</p>
+    <a class="btn js-wa" data-wa-msg="Olá! Vim pelo site e gostaria de agendar uma avaliação."><span>Falar no WhatsApp</span></a>
+  </div>
+</div>
+
+<main>
+
+<!-- ══ 1. HERO ══ -->
+<section class="hero" id="hero">
+  <canvas class="hero__canvas" id="gl" aria-hidden="true"></canvas>
+
+  <div class="hero__inner">
+    <div class="hero__copy">
+      <p class="eyebrow r"><span>Odontologia Estética · Osasco — SP</span></p>
+      <h1 class="hero__title">
+        <span class="l"><span>Luminosidade</span></span>
+        <span class="l"><span>que parece</span></span>
+        <span class="l"><span><em>natural.</em></span></span>
+      </h1>
+      <p class="hero__lead r"><span>Especialistas em clareamento de resinas — a técnica que devolve brilho e uniformidade ao sorriso sem denunciar que houve intervenção.</span></p>
+      <div class="hero__cta r">
+        <span>
+          <a class="btn btn--gold js-wa js-magnetic" data-wa-msg="Olá! Vim pelo site e gostaria de agendar uma avaliação de clareamento de resinas."><span>Agendar avaliação</span></a>
+          <a class="link-arrow" href="#resultados"><span>Ver resultados</span><i></i></a>
+        </span>
+      </div>
+    </div>
+
+    <div class="hero__stage">
+     <div class="hero__frameWrap" id="heroFrameWrap">
+      <figure class="frame" id="heroFrame">
+        <img class="frame__poster" id="heroPoster" src="assets/img/sorriso-34.jpg" alt="" aria-hidden="true">
+        <video class="frame__video" data-slot="a" playsinline muted preload="auto"></video>
+        <video class="frame__video" data-slot="b" playsinline muted preload="none"></video>
+        <span class="frame__grain" aria-hidden="true"></span>
+        <div class="frame__steps" id="heroSteps" aria-hidden="true"></div>
+        <figcaption class="frame__cap"><em>CRO-SP</em> 177.444</figcaption>
+      </figure>
+      <div class="frame__badge" id="heroBadge" aria-hidden="true">
+        <svg viewBox="0 0 100 100"><defs><path id="circ" d="M50,50 m-37,0 a37,37 0 1,1 74,0 a37,37 0 1,1 -74,0"/></defs>
+          <text><textPath href="#circ">DR. PLINIO MOTA · ODONTOLOGIA ESTETICA · </textPath></text>
+        </svg>
+        <span class="frame__badge-core">PM</span>
+      </div>
+     </div>
+    </div>
+  </div>
+
+  <div class="hero__scroll r"><span>role a página</span></div>
+</section>
+
+<!-- ══ MARQUEE ══ -->
+<section class="marquee" aria-hidden="true">
+  <div class="marquee__track" id="marqueeTrack">
+    <span>Clareamento de resinas</span><i>✦</i><span>Resultado natural</span><i>✦</i><span>Técnica apurada</span><i>✦</i><span>Atendimento acolhedor</span><i>✦</i><span>Clareamento de resinas</span><i>✦</i><span>Resultado natural</span><i>✦</i><span>Técnica apurada</span><i>✦</i><span>Atendimento acolhedor</span><i>✦</i>
+  </div>
+</section>
+
+<!-- ══ 2. SOBRE ══ -->
+<section class="sobre" id="sobre">
+  <div class="sobre__media">
+    <div class="par"><img src="assets/img/dr-plinio.jpg" alt="Dr. Plínio Mota realizando um procedimento" data-speed="0.86"></div>
+    <div class="sobre__float"><img src="assets/img/sorriso-perfil.jpg" alt="Sorriso em perfil após clareamento de resinas" data-speed="1.12"></div>
+  </div>
+
+  <div class="sobre__copy">
+    <p class="eyebrow rv"><span>01 — Sobre</span></p>
+    <h2 class="h2 rv">
+      <span class="l"><span>Cuidamos do seu sorriso</span></span>
+      <span class="l"><span>com precisão e <em>delicadeza</em>.</span></span>
+    </h2>
+    <div class="prose rv">
+      <p>Somos especialistas em <strong>clareamento de resinas</strong> — uma técnica que devolve luminosidade e uniformidade aos dentes, com resultado natural e duradouro.</p>
+      <p>Da primeira consulta ao resultado final, unimos técnica apurada a um atendimento acolhedor. Cada caso começa por um diagnóstico de cor e textura, porque um sorriso bonito é aquele que ninguém percebe que foi feito.</p>
+    </div>
+
+    <dl class="stats rv">
+      <div><dt data-count="8">0</dt><dd>anos dedicados<br>à estética dental</dd></div>
+      <div><dt data-count="1200" data-suffix="+">0</dt><dd>sorrisos<br>atendidos</dd></div>
+      <div><dt data-count="1" data-suffix=" sessão">0</dt><dd>é o que a maioria<br>dos casos exige</dd></div>
+    </dl>
+
+    <a class="btn btn--gold js-wa js-magnetic rv" data-wa-msg="Olá! Gostaria de entender se meu caso é indicado para clareamento de resinas."><span>Meu caso tem indicação?</span></a>
+  </div>
+</section>
+
+<!-- ══ 3. A TÉCNICA ══ -->
+<section class="tecnica" id="tecnica">
+  <div class="tecnica__head">
+    <p class="eyebrow rv"><span>02 — A técnica</span></p>
+    <h2 class="h2 rv">
+      <span class="l"><span>Três etapas. Nenhuma</span></span>
+      <span class="l"><span><em>pressa.</em></span></span>
+    </h2>
+  </div>
+
+  <div class="steps">
+    <article class="step"><span class="step__n">01</span><h3>Diagnóstico de cor</h3><p>Mapeamos a cor base, a translucidez e a textura de cada dente. Sem esse mapa, clarear vira loteria.</p></article>
+    <article class="step"><span class="step__n">02</span><h3>Clareamento das resinas</h3><p>As resinas antigas são polidas e reconstruídas na cor exata do esmalte clareado — é aqui que o resultado deixa de parecer artificial.</p></article>
+    <article class="step"><span class="step__n">03</span><h3>Acabamento e brilho</h3><p>Polimento em camadas para devolver o reflexo do esmalte natural. O sorriso ganha luz, não uma cor chapada.</p></article>
+  </div>
+
+  <figure class="tecnica__shot rv">
+    <img src="assets/img/etapas.jpg" alt="Comparativo em três estágios — inicial, imediato e final — de um clareamento de resinas">
+    <figcaption>Inicial · Imediato · Final — caso real atendido na clínica</figcaption>
+  </figure>
+</section>
+
+<!-- ══ 4. RESULTADOS ══ -->
+<section class="resultados" id="resultados">
+  <div class="resultados__head">
+    <p class="eyebrow rv"><span>03 — Resultados</span></p>
+    <h2 class="h2 rv">
+      <span class="l"><span>Arraste e veja a</span></span>
+      <span class="l"><span><em>diferença.</em></span></span>
+    </h2>
+  </div>
+
+  <div class="ba" id="ba" role="group" aria-label="Comparação antes e depois — arraste para revelar">
+    <img class="ba__img" src="assets/img/slider-depois.jpg" alt="Sorriso depois do clareamento de resinas">
+    <div class="ba__clip" id="baClip"><img class="ba__img" src="assets/img/slider-antes.jpg" alt="Sorriso antes do clareamento de resinas"></div>
+    <div class="ba__handle" id="baHandle" tabindex="0" role="slider" aria-label="Revelar antes e depois" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i></div>
+    <span class="ba__tag ba__tag--l">Antes</span>
+    <span class="ba__tag ba__tag--r">Depois</span>
+  </div>
+
+  <div class="gal">
+    <figure class="gal__it tilt"><img src="assets/img/antes-depois-01.jpg" alt="Antes e depois de clareamento de resinas"></figure>
+    <figure class="gal__it tilt"><img src="assets/img/antes-depois-02.jpg" alt="Antes e depois de clareamento de resinas"></figure>
+    <figure class="gal__it tilt"><img src="assets/img/sorriso-macro-01.jpg" alt="Detalhe de sorriso finalizado"></figure>
+    <figure class="gal__it tilt"><img src="assets/img/tecnica-01.jpg" alt="Registro clínico do resultado final"></figure>
+  </div>
+</section>
+
+<!-- ══ 5. DIFERENCIAIS ══ -->
+<section class="cards" id="diferenciais">
+  <div class="cards__head">
+    <p class="eyebrow rv"><span>04 — Diferenciais</span></p>
+    <h2 class="h2 rv">
+      <span class="l"><span>Por que o resultado</span></span>
+      <span class="l"><span>se sustenta <em>no tempo.</em></span></span>
+    </h2>
+  </div>
+
+  <div class="cards__viewport" id="cardsViewport">
+    <div class="cards__track" id="cardsTrack">
+      <article class="card"><img src="assets/img/sorriso-34.jpg" alt=""><div class="card__body"><span class="card__kpi">01</span><h3>Cor medida, não estimada</h3><p>Escala de cor e fotografia padronizada em cada etapa — você vê a evolução, não uma promessa.</p></div></article>
+      <article class="card"><img src="assets/img/retrato-01.jpg" alt=""><div class="card__body"><span class="card__kpi">02</span><h3>Resina que acompanha o esmalte</h3><p>Clarear só o dente e esquecer a resina deixa manchas. Aqui as duas coisas andam juntas.</p></div></article>
+      <article class="card"><img src="assets/img/sorriso-macro-02.jpg" alt=""><div class="card__body"><span class="card__kpi">03</span><h3>Sensibilidade controlada</h3><p>Protocolo dessensibilizante antes e depois. Clarear não precisa doer.</p></div></article>
+      <article class="card"><img src="assets/img/retrato-02.jpg" alt=""><div class="card__body"><span class="card__kpi">04</span><h3>Acompanhamento pós</h3><p>Retorno de controle e orientação de manutenção — o brilho dura porque alguém cuida dele.</p></div></article>
+      <article class="card"><img src="assets/img/sorriso-perfil.jpg" alt=""><div class="card__body"><span class="card__kpi">05</span><h3>Um só profissional</h3><p>Do diagnóstico ao acabamento, quem avalia é quem executa. Sem repassar o caso.</p></div></article>
+    </div>
+  </div>
+  <p class="cards__hint r"><span>arraste para o lado →</span></p>
+</section>
+
+<!-- ══ 6. ONDE NOS ENCONTRAR ══ -->
+<section class="local" id="local">
+  <div class="local__copy">
+    <p class="eyebrow rv"><span>05 — Onde nos encontrar</span></p>
+    <h2 class="h2 rv">
+      <span class="l"><span>Estamos em</span></span>
+      <span class="l"><span><em>Osasco.</em></span></span>
+    </h2>
+    <address class="rv">Avenida Hilário Pereira de Souza, 406<br>Jardim Água · Osasco — SP<br>CEP 06010-170</address>
+    <div class="local__acts rv">
+      <a class="btn btn--gold js-magnetic" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=Avenida+Hil%C3%A1rio+Pereira+de+Souza%2C+406%2C+Osasco+-+SP%2C+06010-170"><span>Como chegar · Maps</span></a>
+      <a class="btn btn--ghost js-magnetic" target="_blank" rel="noopener" href="https://waze.com/ul?q=Avenida%20Hil%C3%A1rio%20Pereira%20de%20Souza%2C%20406%2C%20Osasco%20SP"><span>Waze</span></a>
+    </div>
+    <a class="btn btn--wa js-wa js-magnetic rv" data-wa-msg="Olá! Vim pelo site e gostaria de agendar minha consulta."><span>Agendar pelo WhatsApp</span></a>
+  </div>
+
+  <div class="local__map rv">
+    <iframe title="Mapa — Avenida Hilário Pereira de Souza, 406, Osasco SP"
+      src="https://www.google.com/maps?q=Avenida%20Hil%C3%A1rio%20Pereira%20de%20Souza%2C%20406%2C%20Jardim%20Agua%2C%20Osasco%20-%20SP%2C%2006010-170&output=embed"
+      loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+  </div>
+</section>
+
+</main>
+
+<!-- ══ FOOTER ══ -->
+<footer class="foot">
+  <div class="foot__top">
+    <img class="foot__logo" src="assets/img/logo-light.png" alt="Dr. Plínio Mota">
+    <p class="foot__claim">Cuidamos do seu sorriso com<br><em>precisão e delicadeza.</em></p>
+  </div>
+  <div class="foot__grid">
+    <div><h4>Endereço</h4><p>Av. Hilário Pereira de Souza, 406<br>Jardim Água · Osasco — SP<br>06010-170</p></div>
+    <div><h4>Contato</h4><p><a class="js-wa" data-wa-msg="Olá! Vim pelo site.">WhatsApp</a><br><span id="footPhone">—</span></p></div>
+    <div><h4>Responsável técnico</h4><p>Dr. Plínio Mota<br>Cirurgião-Dentista<br>CRO-SP 177.444</p></div>
+  </div>
+  <div class="foot__bar"><span>© <span id="yr"></span> Dr. Plínio Mota · Odontologia Estética</span><span>Osasco — SP</span></div>
+</footer>
+
+<!-- ══ WHATSAPP FLUTUANTE ══ -->
+<a class="wa-float js-wa" id="waFloat" data-wa-msg="Olá! Vim pelo site e gostaria de agendar uma avaliação." aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24m-2.5 4.1c-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.03s.87 2.35.99 2.51c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.19 1.11.16 1.53.1.47-.07 1.44-.59 1.64-1.16.2-.57.2-1.05.14-1.16-.06-.1-.22-.16-.46-.28s-1.44-.71-1.66-.79c-.22-.08-.39-.12-.55.12-.16.24-.63.79-.77.95-.14.16-.28.18-.52.06s-1.03-.38-1.96-1.21c-.72-.65-1.21-1.44-1.35-1.68-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42s-.55-1.32-.75-1.81c-.2-.48-.4-.41-.55-.42h-.47z"/></svg>
+  <span class="wa-float__lbl">Agendar consulta</span>
+</a>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
