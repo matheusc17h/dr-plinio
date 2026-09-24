@@ -412,6 +412,14 @@
       }
     });
 
+    // dúvidas em cascata
+    ScrollTrigger.create({
+      trigger: '.faq__list', start: 'top 84%', once: true,
+      onEnter: function () {
+        gsap.fromTo('.faq__it', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: .95, ease: 'power3.out', stagger: 0.07 });
+      }
+    });
+
     // cards entrando
     ScrollTrigger.create({
       trigger: '.cards__viewport', start: 'top 82%', once: true,
@@ -616,7 +624,47 @@
   }
 
   /* ───────────────────────────────────────────────
-     13. ÂNCORAS SUAVES
+     13. DÚVIDAS (acordeão)
+     ─────────────────────────────────────────────── */
+  function initFaq() {
+    var list = $('#faqList');
+    if (!list) return;
+    var items = $$('.faq__it', list);
+
+    function setOpen(it, open) {
+      var btn = $('.faq__q', it);
+      it.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      // o painel fechado sai da árvore de acessibilidade junto com a animação
+      $('.faq__a', it).setAttribute('aria-hidden', open ? 'false' : 'true');
+    }
+
+    items.forEach(function (it) {
+      setOpen(it, false);
+      $('.faq__q', it).addEventListener('click', function () {
+        var willOpen = !it.classList.contains('is-open');
+        // um por vez: duas respostas abertas viram parede de texto
+        items.forEach(function (o) { if (o !== it) setOpen(o, false); });
+        setOpen(it, willOpen);
+        if (window.ScrollTrigger) ScrollTrigger.refresh();
+      });
+    });
+
+    // teclado: setas percorrem as perguntas
+    list.addEventListener('keydown', function (e) {
+      var k = e.key;
+      if (k !== 'ArrowDown' && k !== 'ArrowUp' && k !== 'Home' && k !== 'End') return;
+      var btns = $$('.faq__q', list);
+      var i = btns.indexOf(document.activeElement);
+      if (i < 0) return;
+      e.preventDefault();
+      var n = k === 'ArrowDown' ? i + 1 : k === 'ArrowUp' ? i - 1 : k === 'Home' ? 0 : btns.length - 1;
+      btns[(n + btns.length) % btns.length].focus();
+    });
+  }
+
+  /* ───────────────────────────────────────────────
+     14. ÂNCORAS SUAVES
      ─────────────────────────────────────────────── */
   function initAnchors() {
     $$('a[href^="#"]').forEach(function (a) {
@@ -656,6 +704,7 @@
     initBeforeAfter();
     initCards();
     initTilt();
+    initFaq();
     initAnchors();
 
     window.addEventListener('load', function () { ScrollTrigger.refresh(); });
