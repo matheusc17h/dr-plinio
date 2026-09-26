@@ -40,7 +40,10 @@
     var fp = $('#footPhone');
     if (fp) {
       if (CFG.telefoneExibido) {
+        // o HTML ja traz o numero (funciona sem JS); aqui so garantimos
+        // que ele continue igual ao config, que e a fonte da verdade
         fp.textContent = CFG.telefoneExibido;
+        if (num) fp.setAttribute('href', 'tel:+' + num);
       } else {
         var br = fp.previousElementSibling;
         if (br && br.tagName === 'BR') br.remove();
@@ -367,6 +370,53 @@
   /* ───────────────────────────────────────────────
      7. REVELAÇÕES NO SCROLL
      ─────────────────────────────────────────────── */
+  /* ───────────────────────────────────────────────
+     DEPOIMENTOS — seção presa na tela; cada card entra por
+     um lado, fica tempo suficiente para ser lido e sai
+     subindo enquanto o próximo chega pelo lado oposto.
+     Criado antes dos outros triggers: o pin empurra a página
+     e quem vem depois precisa medir já com esse espaço.
+     ─────────────────────────────────────────────── */
+  function initDepoimentos() {
+    var sec = $('#depoimentos');
+    if (!sec || REDUCED) return;
+    var cards = $$('.depo__card', sec);
+    var num = $('#depoNum'), bar = $('#depoBar');
+    sec.classList.add('is-live');
+
+    gsap.set(cards, { xPercent: -50, yPercent: -50, autoAlpha: 0 });
+
+    var tl = gsap.timeline({
+      defaults: { ease: 'power2.out' },
+      scrollTrigger: {
+        trigger: sec, start: 'top top',
+        end: function () { return '+=' + window.innerHeight * cards.length * 0.95; },
+        pin: true, scrub: 0.9, anticipatePin: 1, invalidateOnRefresh: true,
+        onUpdate: function (self) {
+          var i = Math.min(cards.length, Math.floor(self.progress * cards.length) + 1);
+          num.textContent = (i < 10 ? '0' : '') + i;
+          gsap.set(bar, { scaleX: self.progress });
+        }
+      }
+    });
+
+    cards.forEach(function (card, i) {
+      var lado = i % 2 === 0 ? -1 : 1;           // esquerda, direita, esquerda...
+      var rot = parseFloat(getComputedStyle(card).getPropertyValue('--r')) || 0;
+      var at = i * 2.6;                            // o próximo chega enquanto o anterior sai
+
+      tl.fromTo(card,
+        { x: lado * 140, y: 50, rotation: rot + lado * 6, autoAlpha: 0 },
+        { x: 0, y: 0, rotation: rot, autoAlpha: 1, duration: 1 }, at);
+
+      // o último card fica na tela até a seção soltar
+      if (i < cards.length - 1) {
+        tl.to(card, { y: -70, x: lado * -30, autoAlpha: 0, duration: 0.9, ease: 'power1.in' }, at + 2.2);
+      }
+    });
+    tl.to({}, { duration: 0.6 });                  // respiro final antes de liberar o scroll
+  }
+
   function initReveals() {
     if (REDUCED) return;
 
@@ -412,11 +462,23 @@
       }
     });
 
-    // dúvidas em cascata
+    // dúvidas: uma pergunta de cada vez, com pausa entre elas —
+    // o "+" gira para o lugar logo depois da pergunta chegar,
+    // e o convite do WhatsApp só entra quando a lista terminou
+    var faqIts = $$('.faq__it'), faqIcos = $$('.faq__ico'), faqCta = $('.faq__cta');
+    gsap.set(faqIts, { x: 60, opacity: 0 });
+    gsap.set(faqIcos, { scale: 0, rotation: -90 });
+    gsap.set(faqCta, { y: 30, opacity: 0 });
     ScrollTrigger.create({
-      trigger: '.faq__list', start: 'top 84%', once: true,
+      trigger: '.faq__list', start: 'top 78%', once: true,
       onEnter: function () {
-        gsap.fromTo('.faq__it', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: .95, ease: 'power3.out', stagger: 0.07 });
+        var tl = gsap.timeline();
+        faqIts.forEach(function (it, i) {
+          var t = i * 0.32;
+          tl.to(it, { x: 0, opacity: 1, duration: 0.9, ease: 'power3.out' }, t)
+            .to(faqIcos[i], { scale: 1, rotation: 0, duration: 0.7, ease: 'back.out(2)', clearProps: 'transform' }, t + 0.3);
+        });
+        tl.to(faqCta, { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out' }, '-=0.3');
       }
     });
 
@@ -477,17 +539,24 @@
      9. CONTADORES
      ─────────────────────────────────────────────── */
   function initCounters() {
+    // o valor final vem escrito no HTML: sem JS, com GSAP fora do ar ou
+    // com movimento reduzido, o numero aparece do mesmo jeito. A animacao
+    // e enfeite, nunca o unico caminho ate o conteudo.
+    if (REDUCED || !window.gsap || !window.ScrollTrigger) return;
+
     $$('.stats dt').forEach(function (dt) {
-      var end = parseFloat(dt.getAttribute('data-count')) || 0;
+      var end = parseFloat(dt.getAttribute('data-count'));
+      if (!isFinite(end)) return;
       var suf = dt.getAttribute('data-suffix') || '';
-      if (REDUCED) { dt.textContent = end + suf; return; }
       var o = { v: 0 };
       ScrollTrigger.create({
         trigger: dt, start: 'top 90%', once: true,
         onEnter: function () {
+          dt.textContent = '0' + suf;            // zera so na hora de animar
           gsap.to(o, {
             v: end, duration: 1.8, ease: 'power2.out',
-            onUpdate: function () { dt.textContent = Math.round(o.v) + suf; }
+            onUpdate: function () { dt.textContent = Math.round(o.v) + suf; },
+            onComplete: function () { dt.textContent = end + suf; }
           });
         }
       });
@@ -574,11 +643,14 @@
     var vp = $('#cardsViewport'), track = $('#cardsTrack');
     if (!vp || !track) return;
 
+    var sec = vp.closest('.cards');
     var drag = null;
 
     function build() {
       if (drag) { drag.kill(); drag = null; }
       var overflow = track.scrollWidth - vp.clientWidth;
+      // todos os cards cabem: sem arraste, sem aviso de "arraste"
+      sec.classList.toggle('is-static', overflow <= 0);
       if (overflow <= 0) { gsap.set(track, { x: 0 }); return; }
 
       drag = Draggable.create(track, {
@@ -698,6 +770,7 @@
     initMagnetic();
     initNav();
     initIntro(hasGL);
+    initDepoimentos();
     initReveals();
     initParallax(hasGL);
     initCounters();
