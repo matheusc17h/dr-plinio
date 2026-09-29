@@ -15,8 +15,10 @@
   --line:       rgba(201,169,106,.22);
   --line-dk:    rgba(20,20,26,.10);
 
-  --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
-  --sans:  "Jost", "Helvetica Neue", Arial, sans-serif;
+  /* site inteiro em Montserrat; os dois tokens continuam existindo
+     para que títulos e texto possam voltar a divergir no futuro */
+  --serif: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+  --sans:  "Montserrat", "Helvetica Neue", Arial, sans-serif;
 
   /* respiro lateral único de todas as seções.
      max() com env(): em iPhone com viewport-fit=cover o conteúdo
@@ -32,7 +34,9 @@
 }
 
 *,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+/* clip na raiz: o que ficar fora de main (nav, menu, rodapé) também não
+   consegue criar rolagem lateral no celular */
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
 body{
   margin:0; background:var(--paper); color:var(--ink);
   font-family:var(--sans); font-weight:300; font-size:clamp(.95rem,.92rem + .2vw,1.05rem);
@@ -40,8 +44,15 @@ body{
   overflow-x:hidden;
 }
 body.is-locked{overflow:hidden}
+/* rede de segurança: nada dentro do conteúdo pode alargar a página no
+   celular (overflow-x do body não impede o navegador mobile de esticar
+   a viewport). clip não cria rolagem, então sticky e o pin do GSAP seguem ok */
+main{overflow-x:clip}
 img,video,svg,iframe{display:block;max-width:100%}
 img,video{height:auto}
+/* <picture> só escolhe o formato (WebP com JPG/PNG de reserva):
+   não gera caixa, então todo o CSS continua mirando o <img> */
+picture{display:contents}
 a{color:inherit;text-decoration:none}
 dl,dd,figure,address{margin:0}
 address{font-style:normal}
@@ -77,7 +88,9 @@ section[id]{scroll-margin-top:var(--nav-h)}
    O padding/margem compensados alargam a máscara para baixo
    para que descendentes (p, q, ç) não sejam cortados. */
 .l{display:block;overflow:hidden;margin-bottom:-.14em}
-.l > span{display:block;padding-bottom:.14em;will-change:transform}
+/* sem will-change: seriam ~25 camadas de GPU permanentes só para títulos
+   que animam uma vez. O GSAP já promove a camada durante o tween. */
+.l > span{display:block;padding-bottom:.14em}
 .l:last-child{margin-bottom:0}
 .r,.rv{overflow:hidden}
 .r > span,.rv > span{display:block}
@@ -114,19 +127,26 @@ section[id]{scroll-margin-top:var(--nav-h)}
   padding:.95rem 0; color:rgba(20,20,26,.7);
   transition:color .4s var(--ease);
 }
-.link-arrow i{
-  width:2.2rem;height:1px;background:currentColor;position:relative;
-  transition:width .45s var(--ease);
+/* a seta cresce 2.2rem → 3.2rem só com transform: a linha tem o
+   comprimento final e escala a partir da esquerda; a ponta desliza 1rem */
+.link-arrow i{width:2.2rem;height:1px;position:relative}
+.link-arrow i::before{
+  content:"";position:absolute;left:0;top:0;width:3.2rem;height:1px;background:currentColor;
+  transform:scaleX(.6875);transform-origin:left;transition:transform .45s var(--ease);
 }
 .link-arrow i::after{
   content:"";position:absolute;right:0;top:-3px;width:7px;height:7px;
   border-top:1px solid currentColor;border-right:1px solid currentColor;transform:rotate(45deg);
+  transition:transform .45s var(--ease);
 }
 .link-arrow:hover{color:var(--gold)}
-.link-arrow:hover i{width:3.2rem}
+.link-arrow:hover i::before{transform:scaleX(1)}
+.link-arrow:hover i::after{transform:translateX(1rem) rotate(45deg)}
 
 /* ═══ ABERTURA ═══ */
-.loader{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;pointer-events:none}
+/* overflow:hidden: as cortinas saem 101% para os lados ao abrir; sem o
+   corte, no celular elas alargam a página e ela abre deslocada */
+.loader{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;pointer-events:none;overflow:hidden}
 .loader__curtain{position:absolute;top:0;bottom:0;width:50.5%;background:var(--paper)}
 .loader__curtain--l{left:0}
 .loader__curtain--r{right:0}
@@ -265,7 +285,6 @@ body.is-locked .nav__logo--light{opacity:1}
   position:relative;margin:0;width:100%;aspect-ratio:9/16;
   border-radius:200px 200px 14px 14px; overflow:hidden;
   background:var(--ink-2); box-shadow:0 40px 90px -30px rgba(0,0,0,.75);
-  will-change:transform;
 }
 .frame::after{
   content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
@@ -380,11 +399,17 @@ body.is-locked .nav__logo--light{opacity:1}
   box-shadow:0 30px 70px -34px rgba(20,20,26,.5);
 }
 .ba__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none}
-/* recorte por clip-path: independe da largura do container */
-.ba__clip{position:absolute;inset:0;clip-path:inset(0 50% 0 0);will-change:clip-path}
+/* recorte por transform (ver initBeforeAfter): a janela desliza para a
+   esquerda e a foto dentro dela volta o mesmo tanto. Percentuais do
+   próprio tamanho — independe da largura do container. Estes valores
+   são o estado de 50% sem JS; com JS o GSAP assume. */
+.ba__clip{position:absolute;inset:0;overflow:hidden;transform:translateX(-50%)}
+.ba__clip .ba__img{transform:translateX(50%)}
+/* trilho do tamanho do comparador: move a alça com translate em vez de left */
+.ba__rail{position:absolute;inset:0;pointer-events:none}
 .ba__handle{
   position:absolute;top:0;bottom:0;left:50%;width:2px;background:var(--paper);
-  transform:translateX(-50%);will-change:left;
+  transform:translateX(-50%);pointer-events:auto;
 }
 .ba__handle i{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
@@ -476,19 +501,32 @@ body.is-locked .nav__logo--light{opacity:1}
 .cards__hint{padding-inline:var(--pad);margin:1.6rem 0 0;font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;color:rgba(20,20,26,.36)}
 
 /* ═══ 6. DÚVIDAS ═══ */
-.faq{padding:var(--sec-y) var(--pad);max-width:var(--maxw);margin-inline:auto}
+/* overflow-x:clip: as perguntas entram vindo 60px da direita; antes da
+   animação elas ficam fora da coluna e, no celular, alargavam a página
+   inteira (vão branco ao arrastar para o lado, nav fora do lugar).
+   clip e não hidden: hidden quebraria o título sticky no desktop. */
+.faq{padding:var(--sec-y) var(--pad);max-width:var(--maxw);margin-inline:auto;overflow-x:clip}
 .faq .h2{margin-bottom:clamp(2.2rem,4vw,3.4rem)}
 .faq__list{display:grid;gap:.75rem;max-width:64rem}
 
+/* z-index:0 cria um contexto por item: a sombra (z-index:-1) fica
+   atrás do próprio fundo, e o item seguinte pinta por cima dela —
+   a mesma ordem que um box-shadow comum teria */
 .faq__it{
+  position:relative; z-index:0;
   border:1px solid var(--line-dk); border-radius:10px; background:var(--paper);
-  transition:border-color .55s var(--ease), background .55s var(--ease), box-shadow .55s var(--ease);
+  transition:border-color .55s var(--ease), background .55s var(--ease);
+}
+/* a sombra existe sempre e só a opacidade anima (box-shadow
+   animado repinta o desfoque a cada quadro) */
+.faq__it::after{
+  content:""; position:absolute; inset:-1px; z-index:-1; border-radius:inherit; pointer-events:none;
+  box-shadow:0 26px 60px -44px rgba(20,20,26,.55);
+  opacity:0; transition:opacity .55s var(--ease);
 }
 .faq__it:hover{border-color:var(--line)}
-.faq__it.is-open{
-  border-color:var(--line); background:#FBFAF7;
-  box-shadow:0 26px 60px -44px rgba(20,20,26,.55);
-}
+.faq__it.is-open{border-color:var(--line); background:#FBFAF7}
+.faq__it.is-open::after{opacity:1}
 .faq__h{margin:0;font-weight:inherit}
 
 .faq__q{
@@ -814,7 +852,8 @@ body.is-locked .nav__logo--light{opacity:1}
   .btn--gold:active{color:var(--paper)}
   .btn--wa:active{color:#fff}
   .link-arrow:hover{color:inherit}
-  .link-arrow:hover i{width:2.2rem}
+  .link-arrow:hover i::before{transform:scaleX(.6875)}
+  .link-arrow:hover i::after{transform:rotate(45deg)}
   .gal__it:hover img,.card:hover img{transform:none;filter:saturate(.85) brightness(.82)}
   .step:hover{background:var(--ink)}
   .faq__it:hover{border-color:var(--line-dk)}

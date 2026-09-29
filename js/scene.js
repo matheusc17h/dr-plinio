@@ -87,30 +87,92 @@ window.HeroScene = (function () {
     '}'
   ].join('\n');
 
-  var renderer, scene, camera, mat, raf = null, running = false;
+  /* Modo leve: poucos núcleos, pouca memória ou tela de celular.
+     O shader é o mesmo — só roda com menos pixels e menos quadros. */
+  var LITE = (navigator.hardwareConcurrency || 8) <= 4 ||
+             (navigator.deviceMemory || 8) <= 4 ||
+             Math.min(screen.width, screen.height) <= 720;
+
+  // O campo é um fbm pesado em tela cheia: cada pixel a mais custa caro
+  // e, por ser um desfoque suave, acima de 1.5x a diferença não aparece.
+  var MAX_DPR = LITE ? 1 : 1.5;
+
+  // Quadros por segundo: "ativo" enquanto a luz persegue o cursor ou o
+  // scroll/abertura mexem na cena; "ocioso" é só a deriva lenta das
+  // cáusticas (t * 0.045), que a 30 fps é indistinguível de 60.
+  var FPS_ATIVO  = LITE ? 30 : 60;
+  var FPS_OCIOSO = LITE ? 24 : 30;
+
+  var renderer, scene, camera, mat, geo, raf = null;
   var mouse = { x: 0.5, y: 0.5 }, target = { x: 0.5, y: 0.5 };
-  var canvas, clock;
+  var canvas, tempo = 0, ultimo = 0, ultimoQuadro = 0, agitoAte = 0;
+  var naTela = true, coberto = false, largura = 0, altura = 0, dprAtual = 0;
+  var caixa = { left: 0, top: 0, width: 1, height: 1 };
+
+  function podeRodar() { return naTela && !coberto && !document.hidden; }
 
   function resize() {
     if (!renderer) return;
     var w = canvas.clientWidth, h = canvas.clientHeight;
     if (!w || !h) return;
-    var dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+    var r = canvas.getBoundingClientRect();
+    caixa = { left: r.left + window.pageXOffset, top: r.top + window.pageYOffset, width: r.width, height: r.height };
+    var dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+    // barra de endereço do celular dispara resize sem mudar nada aqui:
+    // realocar o buffer à toa custa um quadro preto e memória
+    if (w === largura && h === altura && dpr === dprAtual) return;
+    largura = w; altura = h; dprAtual = dpr;
     renderer.setPixelRatio(dpr);
     renderer.setSize(w, h, false);
     mat.uniforms.uRes.value.set(w * dpr, h * dpr);
+    // redimensionar limpa o canvas; parado, ele ficaria vazio
+    if (!raf) renderer.render(scene, camera);
   }
 
-  function loop() {
-    raf = requestAnimationFrame(loop);
-    if (!running) return;
-    // suavização do cursor — a luz tem inércia, nunca gruda no ponteiro
-    mouse.x += (target.x - mouse.x) * 0.045;
-    mouse.y += (target.y - mouse.y) * 0.045;
+  var resizeAgendado = false;
+  function onResize() {
+    if (resizeAgendado) return;
+    resizeAgendado = true;
+    requestAnimationFrame(function () { resizeAgendado = false; resize(); });
+  }
+
+  function desenha(agora) {
+    var dt = ultimo ? Math.min((agora - ultimo) / 1000, 0.1) : 0;
+    ultimo = agora;
+    tempo += dt;
+    // suavização do cursor — a luz tem inércia, nunca gruda no ponteiro.
+    // Corrigida pelo tempo: a 60 fps é exatamente o 0.045 por quadro de
+    // antes, e não acelera em telas de 120 Hz.
+    var k = 1 - Math.pow(1 - 0.045, dt * 60);
+    mouse.x += (target.x - mouse.x) * k;
+    mouse.y += (target.y - mouse.y) * k;
     mat.uniforms.uMouse.value.set(mouse.x, mouse.y);
-    mat.uniforms.uTime.value = clock.getElapsedTime();
+    mat.uniforms.uTime.value = tempo;
     renderer.render(scene, camera);
   }
+
+  function loop(agora) {
+    raf = requestAnimationFrame(loop);
+    var ativo = agora < agitoAte ||
+      Math.abs(target.x - mouse.x) > 0.0005 || Math.abs(target.y - mouse.y) > 0.0005;
+    // 0.9: tolera a variação natural do rAF sem pular quadros a 60 Hz
+    var intervalo = 900 / (ativo ? FPS_ATIVO : FPS_OCIOSO);
+    if (agora - ultimoQuadro < intervalo) return;
+    ultimoQuadro = agora;
+    desenha(agora);
+  }
+
+  function sincroniza() {
+    if (podeRodar()) {
+      if (!raf) { ultimo = 0; ultimoQuadro = 0; raf = requestAnimationFrame(loop); }
+    } else if (raf) {
+      cancelAnimationFrame(raf);
+      raf = null;
+    }
+  }
+
+  // uniforms mudaram: garante quadros cheios por um instante
+  function agita() { agitoAte = performance.now() + 250; }
 
   function init(el) {
     canvas = el;
@@ -121,18 +183,24 @@ window.HeroScene = (function () {
 
     try {
       renderer = new THREE.WebGLRenderer({
-        canvas: canvas, antialias: false, alpha: false, powerPreference: 'low-power'
+        canvas: canvas, antialias: false, alpha: false,
+        depth: false, stencil: false,         // um plano 2D não precisa de buffers 3D
+        powerPreference: 'low-power'
       });
     } catch (e) { return false; }
     if (!renderer || !renderer.getContext()) return false;
 
+    // o plano cobre todos os pixels: limpar antes é uma passada inteira perdida
+    renderer.autoClear = false;
+
     scene = new THREE.Scene();
     camera = new THREE.Camera();
-    clock = new THREE.Clock();
 
     mat = new THREE.ShaderMaterial({
       vertexShader: VERT,
       fragmentShader: FRAG,
+      depthTest: false,
+      depthWrite: false,
       uniforms: {
         uTime:   { value: 0 },
         uRes:    { value: new THREE.Vector2(1, 1) },
@@ -142,36 +210,67 @@ window.HeroScene = (function () {
       }
     });
 
-    scene.add(new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), mat));
+    geo = new THREE.PlaneBufferGeometry(2, 2);
+    scene.add(new THREE.Mesh(geo, mat));
 
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', onResize);
 
+    // posição do canvas na página: só muda com resize, então é medida
+    // lá e não a cada movimento do mouse (evita forçar layout)
     window.addEventListener('pointermove', function (e) {
-      var r = canvas.getBoundingClientRect();
-      target.x = (e.clientX - r.left) / r.width;
-      target.y = 1.0 - (e.clientY - r.top) / r.height;
+      target.x = (e.clientX + window.pageXOffset - caixa.left) / caixa.width;
+      target.y = 1.0 - (e.clientY + window.pageYOffset - caixa.top) / caixa.height;
     }, { passive: true });
 
-    // pausa fora da tela e em aba oculta — nada de queimar bateria à toa
+    // pausa fora da tela e em aba oculta — nada de queimar bateria à toa.
+    // O loop é cancelado de verdade, não só ignorado a cada quadro.
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (es) {
-        running = es[0].isIntersecting && !document.hidden;
+        naTela = es[0].isIntersecting;
+        sincroniza();
       }, { threshold: 0.01 }).observe(canvas);
-    } else { running = true; }
-    document.addEventListener('visibilitychange', function () {
-      if (document.hidden) running = false;
-    });
+    }
+    // voltar para a aba não dispara o IntersectionObserver
+    document.addEventListener('visibilitychange', sincroniza);
 
-    running = true;
-    loop();
+    sincroniza();
     return true;
+  }
+
+  // Libera GPU se o hero um dia for removido da página.
+  function destroy() {
+    if (raf) cancelAnimationFrame(raf);
+    raf = null;
+    window.removeEventListener('resize', onResize);
+    document.removeEventListener('visibilitychange', sincroniza);
+    if (geo) geo.dispose();
+    if (mat) mat.dispose();
+    if (renderer) renderer.dispose();
+    renderer = scene = camera = mat = geo = null;
   }
 
   return {
     init: init,
-    setScroll: function (v) { if (mat) mat.uniforms.uScroll.value = v; },
-    setIntro:  function (v) { if (mat) mat.uniforms.uIntro.value = v; },
-    resize: resize
+    setScroll: function (v) {
+      if (!mat || mat.uniforms.uScroll.value === v) return;
+      mat.uniforms.uScroll.value = v; agita();
+    },
+    setIntro: function (v) {
+      if (!mat) return;
+      mat.uniforms.uIntro.value = v; agita();
+    },
+    // No celular o vídeo ocupa o hero inteiro por cima do canvas:
+    // enquanto estiver tapado, não há por que desenhar nada.
+    setCovered: function (v) {
+      if (!mat || coberto === v) return;
+      // último quadro com os uniforms atuais — é ele que fica "congelado"
+      if (v && raf) desenha(performance.now());
+      coberto = v;
+      sincroniza();
+    },
+    resize: resize,
+    destroy: destroy,
+    lite: LITE
   };
 })();

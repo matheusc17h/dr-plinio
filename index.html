@@ -14,7 +14,7 @@
 <link rel="icon" href="assets/img/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 
 <script type="application/ld+json">
@@ -98,8 +98,8 @@
 <header class="nav" id="nav">
   <a href="#hero" class="nav__brand" aria-label="Dr. Plínio Mota, Cirurgião-Dentista, CRO-SP 177.444 — início">
     <span class="nav__mark">
-      <img class="nav__logo nav__logo--light" src="assets/img/logo-mark-light.png" alt="" aria-hidden="true">
-      <img class="nav__logo nav__logo--dark" src="assets/img/logo-mark.png" alt="" aria-hidden="true">
+      <picture><source srcset="assets/img/logo-mark-light.webp" type="image/webp"><img class="nav__logo nav__logo--light" src="assets/img/logo-mark-light.png" width="153" height="113" alt="" aria-hidden="true"></picture>
+      <picture><source srcset="assets/img/logo-mark.webp" type="image/webp"><img class="nav__logo nav__logo--dark" src="assets/img/logo-mark.png" width="153" height="113" alt="" aria-hidden="true"></picture>
     </span>
     <span class="nav__word"><b>Dr. Plínio Mota</b><i>Odontologia Estética</i></span>
   </a>
@@ -157,7 +157,7 @@
     <div class="hero__stage">
      <div class="hero__frameWrap" id="heroFrameWrap">
       <figure class="frame" id="heroFrame">
-        <img class="frame__poster" id="heroPoster" src="assets/img/sorriso-34.jpg" alt="" aria-hidden="true">
+        <picture><source srcset="assets/img/sorriso-34.webp" type="image/webp"><img class="frame__poster" id="heroPoster" src="assets/img/sorriso-34.jpg" width="853" height="1280" fetchpriority="high" alt="" aria-hidden="true"></picture>
         <video class="frame__video" data-slot="a" playsinline muted preload="auto"></video>
         <video class="frame__video" data-slot="b" playsinline muted preload="none"></video>
         <span class="frame__grain" aria-hidden="true"></span>
@@ -187,8 +187,8 @@
 <!-- ══ 2. SOBRE ══ -->
 <section class="sobre" id="sobre">
   <div class="sobre__media">
-    <div class="par"><img src="assets/img/dr-plinio.jpg" alt="Dr. Plínio Mota realizando um procedimento" data-speed="0.86"></div>
-    <div class="sobre__float"><img src="assets/img/sorriso-perfil.jpg" alt="Sorriso em perfil após clareamento de resinas" data-speed="1.12"></div>
+    <div class="par"><picture><source srcset="assets/img/dr-plinio.webp" type="image/webp"><img src="assets/img/dr-plinio.jpg" width="1109" height="1280" loading="lazy" decoding="async" alt="Dr. Plínio Mota realizando um procedimento" data-speed="0.86"></picture></div>
+    <div class="sobre__float"><picture><source srcset="assets/img/sorriso-perfil.webp" type="image/webp"><img src="assets/img/sorriso-perfil.jpg" width="853" height="1280" loading="lazy" decoding="async" alt="Sorriso em perfil após clareamento de resinas" data-speed="1.12"></picture></div>
   </div>
 
   <div class="sobre__copy">
@@ -229,7 +229,7 @@
   </div>
 
   <figure class="tecnica__shot rv">
-    <img src="assets/img/etapas.jpg" alt="Comparativo em três estágios — inicial, imediato e final — de um clareamento de resinas">
+    <picture><source srcset="assets/img/etapas.webp" type="image/webp"><img src="assets/img/etapas.jpg" width="887" height="1280" loading="lazy" decoding="async" alt="Comparativo em três estágios — inicial, imediato e final — de um clareamento de resinas"></picture>
     <figcaption>Inicial · Imediato · Final — caso real atendido na clínica</figcaption>
   </figure>
 </section>
@@ -245,18 +245,18 @@
   </div>
 
   <div class="ba" id="ba" role="group" aria-label="Comparação antes e depois — arraste para revelar">
-    <img class="ba__img" src="assets/img/slider-depois.jpg" alt="Sorriso depois do clareamento de resinas">
-    <div class="ba__clip" id="baClip"><img class="ba__img" src="assets/img/slider-antes.jpg" alt="Sorriso antes do clareamento de resinas"></div>
-    <div class="ba__handle" id="baHandle" tabindex="0" role="slider" aria-label="Revelar antes e depois" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i></div>
+    <picture><source srcset="assets/img/slider-depois.webp" type="image/webp"><img class="ba__img" src="assets/img/slider-depois.jpg" width="1400" height="875" loading="lazy" decoding="async" alt="Sorriso depois do clareamento de resinas"></picture>
+    <div class="ba__clip" id="baClip"><picture><source srcset="assets/img/slider-antes.webp" type="image/webp"><img class="ba__img" src="assets/img/slider-antes.jpg" width="1400" height="875" loading="lazy" decoding="async" alt="Sorriso antes do clareamento de resinas"></picture></div>
+    <div class="ba__rail" id="baRail"><div class="ba__handle" id="baHandle" tabindex="0" role="slider" aria-label="Revelar antes e depois" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i></div></div>
     <span class="ba__tag ba__tag--l">Antes</span>
     <span class="ba__tag ba__tag--r">Depois</span>
   </div>
 
   <div class="gal">
-    <figure class="gal__it tilt"><img src="assets/img/antes-depois-01.jpg" alt="Antes e depois de clareamento de resinas"></figure>
-    <figure class="gal__it tilt"><img src="assets/img/antes-depois-02.jpg" alt="Antes e depois de clareamento de resinas"></figure>
-    <figure class="gal__it tilt"><img src="assets/img/sorriso-macro-01.jpg" alt="Detalhe de sorriso finalizado"></figure>
-    <figure class="gal__it tilt"><img src="assets/img/tecnica-01.jpg" alt="Registro clínico do resultado final"></figure>
+    <figure class="gal__it tilt"><picture><source srcset="assets/img/antes-depois-01.webp" type="image/webp"><img src="assets/img/antes-depois-01.jpg" width="1024" height="1280" loading="lazy" decoding="async" alt="Antes e depois de clareamento de resinas"></picture></figure>
+    <figure class="gal__it tilt"><picture><source srcset="assets/img/antes-depois-02.webp" type="image/webp"><img src="assets/img/antes-depois-02.jpg" width="698" height="865" loading="lazy" decoding="async" alt="Antes e depois de clareamento de resinas"></picture></figure>
+    <figure class="gal__it tilt"><picture><source srcset="assets/img/sorriso-macro-01.webp" type="image/webp"><img src="assets/img/sorriso-macro-01.jpg" width="1280" height="853" loading="lazy" decoding="async" alt="Detalhe de sorriso finalizado"></picture></figure>
+    <figure class="gal__it tilt"><picture><source srcset="assets/img/tecnica-01.webp" type="image/webp"><img src="assets/img/tecnica-01.jpg" width="1280" height="853" loading="lazy" decoding="async" alt="Registro clínico do resultado final"></picture></figure>
   </div>
 </section>
 
@@ -304,11 +304,11 @@
 
   <div class="cards__viewport" id="cardsViewport">
     <div class="cards__track" id="cardsTrack">
-      <article class="card"><img src="assets/img/sorriso-34.jpg" alt=""><div class="card__body"><span class="card__kpi">01</span><h3>Cor medida, não estimada</h3><p>Escala de cor e fotografia padronizada em cada etapa — você vê a evolução, não uma promessa.</p></div></article>
-      <article class="card"><img src="assets/img/retrato-01.jpg" alt=""><div class="card__body"><span class="card__kpi">02</span><h3>Resina que acompanha o esmalte</h3><p>Clarear só o dente e esquecer a resina deixa manchas. Aqui as duas coisas andam juntas.</p></div></article>
-      <article class="card"><img src="assets/img/sorriso-macro-02.jpg" alt=""><div class="card__body"><span class="card__kpi">03</span><h3>Sensibilidade controlada</h3><p>Protocolo dessensibilizante antes e depois. Clarear não precisa doer.</p></div></article>
-      <article class="card"><img src="assets/img/retrato-02.jpg" alt=""><div class="card__body"><span class="card__kpi">04</span><h3>Acompanhamento pós</h3><p>Retorno de controle e orientação de manutenção — o brilho dura porque alguém cuida dele.</p></div></article>
-      <article class="card"><img src="assets/img/sorriso-perfil.jpg" alt=""><div class="card__body"><span class="card__kpi">05</span><h3>Um só profissional</h3><p>Do diagnóstico ao acabamento, quem avalia é quem executa. Sem repassar o caso.</p></div></article>
+      <article class="card"><picture><source srcset="assets/img/sorriso-34.webp" type="image/webp"><img src="assets/img/sorriso-34.jpg" width="853" height="1280" loading="lazy" decoding="async" alt=""></picture><div class="card__body"><span class="card__kpi">01</span><h3>Cor medida, não estimada</h3><p>Escala de cor e fotografia padronizada em cada etapa — você vê a evolução, não uma promessa.</p></div></article>
+      <article class="card"><picture><source srcset="assets/img/retrato-01.webp" type="image/webp"><img src="assets/img/retrato-01.jpg" width="853" height="1280" loading="lazy" decoding="async" alt=""></picture><div class="card__body"><span class="card__kpi">02</span><h3>Resina que acompanha o esmalte</h3><p>Clarear só o dente e esquecer a resina deixa manchas. Aqui as duas coisas andam juntas.</p></div></article>
+      <article class="card"><picture><source srcset="assets/img/sorriso-macro-02.webp" type="image/webp"><img src="assets/img/sorriso-macro-02.jpg" width="1280" height="853" loading="lazy" decoding="async" alt=""></picture><div class="card__body"><span class="card__kpi">03</span><h3>Sensibilidade controlada</h3><p>Protocolo dessensibilizante antes e depois. Clarear não precisa doer.</p></div></article>
+      <article class="card"><picture><source srcset="assets/img/retrato-02.webp" type="image/webp"><img src="assets/img/retrato-02.jpg" width="853" height="1280" loading="lazy" decoding="async" alt=""></picture><div class="card__body"><span class="card__kpi">04</span><h3>Acompanhamento pós</h3><p>Retorno de controle e orientação de manutenção — o brilho dura porque alguém cuida dele.</p></div></article>
+      <article class="card"><picture><source srcset="assets/img/sorriso-perfil.webp" type="image/webp"><img src="assets/img/sorriso-perfil.jpg" width="853" height="1280" loading="lazy" decoding="async" alt=""></picture><div class="card__body"><span class="card__kpi">05</span><h3>Um só profissional</h3><p>Do diagnóstico ao acabamento, quem avalia é quem executa. Sem repassar o caso.</p></div></article>
     </div>
   </div>
   <p class="cards__hint r"><span>arraste para o lado →</span></p>
@@ -402,7 +402,7 @@
 <!-- ══ FOOTER ══ -->
 <footer class="foot">
   <div class="foot__top">
-    <img class="foot__logo" src="assets/img/logo-light.png" alt="Dr. Plínio Mota">
+    <picture><source srcset="assets/img/logo-light.webp" type="image/webp"><img class="foot__logo" src="assets/img/logo-light.png" width="382" height="227" loading="lazy" decoding="async" alt="Dr. Plínio Mota"></picture>
     <p class="foot__claim">Cuidamos do seu sorriso com<br><em>precisão e delicadeza.</em></p>
   </div>
   <div class="foot__grid">
@@ -419,12 +419,14 @@
   <span class="wa-float__lbl">Agendar consulta</span>
 </a>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/config.js"></script>
-<script src="js/scene.js"></script>
-<script src="js/main.js"></script>
+<!-- defer: baixam em paralelo sem travar a montagem da página e
+     executam na ordem, logo antes do DOMContentLoaded -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script defer src="js/config.js"></script>
+<script defer src="js/scene.js"></script>
+<script defer src="js/main.js"></script>
 </body>
 </html>

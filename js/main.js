@@ -13,6 +13,9 @@
 
   gsap.registerPlugin(ScrollTrigger, Draggable);
   gsap.config({ nullTargetWarn: false });
+  // a barra de endereço do celular aparece/some a cada rolagem; recalcular
+  // todos os triggers (e o pin dos depoimentos) nisso causa engasgo
+  ScrollTrigger.config({ ignoreMobileResize: true });
 
   var $  = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
@@ -224,6 +227,25 @@
   }
 
   /* ───────────────────────────────────────────────
+     2b. CAMPO DE LUZ TAPADO
+         No mobile a moldura do vídeo é full-bleed e opaca
+         (tem fundo próprio): depois que ela sobe na abertura,
+         o canvas por baixo não aparece — até o scroll encolher
+         a moldura e revelar as bordas. Só nesse intervalo
+         vale a pena desenhar.
+     ─────────────────────────────────────────────── */
+  var heroCover = { gl: false, revelado: false, progresso: 0 };
+
+  function syncHeroCover() {
+    if (!heroCover.gl) return;
+    window.HeroScene.setCovered(
+      MOBILE_Q.matches && heroCover.revelado && heroCover.progresso < 0.001
+    );
+  }
+  if (MOBILE_Q.addEventListener) MOBILE_Q.addEventListener('change', syncHeroCover);
+  else if (MOBILE_Q.addListener) MOBILE_Q.addListener(syncHeroCover);
+
+  /* ───────────────────────────────────────────────
      3. CURSOR
      ─────────────────────────────────────────────── */
   function initCursor() {
@@ -355,7 +377,10 @@
       }, '-=0.9')
 
       // o vídeo sobe
-      .to(frame, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.25, ease: 'power4.inOut' }, '-=1.15')
+      .to(frame, {
+        clipPath: 'inset(0% 0% 0% 0%)', duration: 1.25, ease: 'power4.inOut',
+        onComplete: function () { heroCover.revelado = true; syncHeroCover(); }
+      }, '-=1.15')
       .from(frame, { scale: 1.12, duration: 1.6, ease: 'power3.out' }, '<')
 
       // o título, linha a linha
@@ -381,7 +406,7 @@
     var sec = $('#depoimentos');
     if (!sec || REDUCED) return;
     var cards = $$('.depo__card', sec);
-    var num = $('#depoNum'), bar = $('#depoBar');
+    var num = $('#depoNum'), bar = $('#depoBar'), atual = 1;
     sec.classList.add('is-live');
 
     gsap.set(cards, { xPercent: -50, yPercent: -50, autoAlpha: 0 });
@@ -394,7 +419,9 @@
         pin: true, scrub: 0.9, anticipatePin: 1, invalidateOnRefresh: true,
         onUpdate: function (self) {
           var i = Math.min(cards.length, Math.floor(self.progress * cards.length) + 1);
-          num.textContent = (i < 10 ? '0' : '') + i;
+          // só mexe no texto quando o número muda: reescrever a cada
+          // quadro de scroll invalida o layout à toa
+          if (i !== atual) { atual = i; num.textContent = (i < 10 ? '0' : '') + i; }
           gsap.set(bar, { scaleX: self.progress });
         }
       }
@@ -517,17 +544,24 @@
     if (hasGL) {
       ScrollTrigger.create({
         trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true,
-        onUpdate: function (self) { window.HeroScene.setScroll(self.progress); }
+        onUpdate: function (self) {
+          window.HeroScene.setScroll(self.progress);
+          heroCover.progresso = self.progress;
+          syncHeroCover();
+        }
       });
     }
 
-    // marquee: rola sozinho e acelera conforme o scroll
+    // marquee: rola sozinho e acelera conforme o scroll.
+    // Fora da tela fica pausado — é um loop sem emenda, então
+    // retomar de onde parou é visualmente idêntico.
     var track = $('#marqueeTrack');
     if (track) {
       var half = track.scrollWidth / 2;
-      var loop = gsap.to(track, { x: -half, duration: 26, ease: 'none', repeat: -1 });
+      var loop = gsap.to(track, { x: -half, duration: 26, ease: 'none', repeat: -1, paused: true });
       ScrollTrigger.create({
         trigger: '.marquee', start: 'top bottom', end: 'bottom top',
+        onToggle: function (self) { self.isActive ? loop.play() : loop.pause(); },
         onUpdate: function (self) {
           gsap.to(loop, { timeScale: 1 + Math.abs(self.getVelocity()) / 2200, duration: 0.3, overwrite: true });
         }
@@ -567,31 +601,53 @@
      10. ANTES & DEPOIS
      ─────────────────────────────────────────────── */
   function initBeforeAfter() {
-    var ba = $('#ba'), clip = $('#baClip'), handle = $('#baHandle');
-    if (!ba || !clip || !handle) return;
+    var ba = $('#ba'), clip = $('#baClip'), handle = $('#baHandle'), rail = $('#baRail');
+    if (!ba || !clip || !handle || !rail) return;
+    var clipImg = $('.ba__img', clip);
 
     var pct = 50;
+
+    // Recorte só com transform: a "janela" (clip, overflow:hidden) anda
+    // para a esquerda e a foto dentro dela anda o mesmo tanto para a
+    // direita, então a imagem fica parada e só a borda do recorte se move.
+    // O trilho leva a alça junto. Nada de left/clip-path → sem layout nem
+    // repaint a cada movimento. (x:0 zera o translate que o CSS usa como
+    // estado inicial sem JS, para não somar com o xPercent.)
+    function alvos(p) {
+      return [
+        [clip,    { xPercent: p - 100, x: 0 }],
+        [clipImg, { xPercent: 100 - p, x: 0 }],
+        [rail,    { xPercent: p - 50,  x: 0 }]
+      ];
+    }
 
     function apply(p, animate) {
       pct = Math.max(0, Math.min(100, p));
       handle.setAttribute('aria-valuenow', Math.round(pct));
-      var o = { clipPath: 'inset(0 ' + (100 - pct) + '% 0 0)' };
-      if (animate) {
-        gsap.to(clip, Object.assign(o, { duration: 0.5, ease: 'power3.out' }));
-        gsap.to(handle, { left: pct + '%', duration: 0.5, ease: 'power3.out' });
-      } else {
-        gsap.set(clip, o);
-        gsap.set(handle, { left: pct + '%' });
-      }
+      alvos(pct).forEach(function (a) {
+        if (animate) gsap.to(a[0], Object.assign(a[1], { duration: 0.5, ease: 'power3.out' }));
+        else gsap.set(a[0], a[1]);
+      });
     }
 
-    function fromX(clientX) {
+    // a caixa do comparador só é medida ao começar a interação,
+    // nunca a cada movimento do ponteiro
+    var caixa = null;
+    function mede() {
       var r = ba.getBoundingClientRect();
-      apply(((clientX - r.left) / r.width) * 100, false);
+      caixa = { left: r.left + window.pageXOffset, width: r.width };
+    }
+    window.addEventListener('resize', function () { caixa = null; });
+
+    function fromX(clientX) {
+      if (!caixa) mede();
+      apply(((clientX + window.pageXOffset - caixa.left) / caixa.width) * 100, false);
     }
 
     var dragging = false;
+    ba.addEventListener('pointerenter', mede);
     ba.addEventListener('pointerdown', function (e) {
+      mede();
       dragging = true; ba.setPointerCapture(e.pointerId); fromX(e.clientX);
     });
     ba.addEventListener('pointermove', function (e) { if (dragging) fromX(e.clientX); });
@@ -666,6 +722,15 @@
     build();
     ScrollTrigger.addEventListener('refreshInit', build);
 
+    // As fotos dos cards são lazy, mas as que ficam além da borda
+    // direita estão recortadas pelo overflow da seção e o navegador
+    // só as baixaria no meio do arraste. Libera todas antes de a
+    // seção chegar à tela.
+    ScrollTrigger.create({
+      trigger: sec, start: 'top bottom+=600', once: true,
+      onEnter: function () { $$('img[loading="lazy"]', track).forEach(function (i) { i.loading = 'eager'; }); }
+    });
+
     // roda do mouse na horizontal
     vp.addEventListener('wheel', function (e) {
       if (!drag) return;
@@ -711,6 +776,16 @@
       $('.faq__a', it).setAttribute('aria-hidden', open ? 'false' : 'true');
     }
 
+    // Os triggers abaixo da lista precisam ser remedidos, mas só depois
+    // que a altura terminou de animar (.55s no CSS): medir no clique
+    // pegaria a altura antiga, e refresh é caro para rodar à toa.
+    var refreshTm = null;
+    function refreshDepois() {
+      if (!window.ScrollTrigger) return;
+      clearTimeout(refreshTm);
+      refreshTm = setTimeout(function () { ScrollTrigger.refresh(); }, 600);
+    }
+
     items.forEach(function (it) {
       setOpen(it, false);
       $('.faq__q', it).addEventListener('click', function () {
@@ -718,7 +793,7 @@
         // um por vez: duas respostas abertas viram parede de texto
         items.forEach(function (o) { if (o !== it) setOpen(o, false); });
         setOpen(it, willOpen);
-        if (window.ScrollTrigger) ScrollTrigger.refresh();
+        refreshDepois();
       });
     });
 
@@ -758,6 +833,9 @@
   function boot() {
     var hasGL = false;
     try { hasGL = window.HeroScene && window.HeroScene.init($('#gl')); } catch (e) { hasGL = false; }
+    heroCover.gl = hasGL;
+    // a altura do hero pode mudar sem resize da janela (fontes carregando)
+    if (hasGL) ScrollTrigger.addEventListener('refresh', window.HeroScene.resize);
     if (!hasGL) {
       // sem WebGL o hero continua elegante, só sem o campo de luz
       var c = $('#gl');

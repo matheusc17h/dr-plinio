@@ -73,9 +73,11 @@ Paleta tirada da logo:
 | `--gold` | `#C9A96A` | dourado da assinatura — acentos e itálicos |
 | `--paper` | `#F5F4F1` | off-white do fundo da logo |
 
-Tipografia: **Cormorant Garamond** (serifada de alto contraste, próxima do
-lettering da logo) + **Jost** (geométrica, tracking largo, como o
-"CIRURGIÃO-DENTISTA" da marca).
+Tipografia: **Montserrat** no site inteiro (pesos 300, 400 e 500, com
+itálico em 300 e 400). Os tokens `--serif` e `--sans` continuam existindo e
+hoje apontam para a mesma família. Para títulos e texto voltarem a usar
+fontes diferentes, basta trocar um deles e o link do Google Fonts no
+`index.html`.
 
 A logo original tinha fundo off-white opaco — virava um retângulo branco sobre
 o escuro. Foram geradas versões com fundo transparente:
@@ -172,6 +174,15 @@ Não é enfeite: é a "luminosidade" do título. O foco de luz segue o cursor co
 inércia, some conforme o hero sai de cena, e nasce do escuro durante a abertura.
 Pausa sozinho fora da viewport e em aba oculta. Sem WebGL, cai para um gradiente
 CSS.
+
+**Performance** — o shader é o item mais caro do site. Ele roda com no máximo
+1,5x de resolução (1x no *modo leve*: ≤ 4 núcleos, ≤ 4 GB de RAM ou tela de
+celular), a 60 fps enquanto a luz segue o cursor e a 30 fps quando só as
+cáusticas derivam. No mobile ele para quando o vídeo full-bleed o cobre por
+inteiro. As imagens são servidas em WebP via `<picture>`, com o JPG/PNG como
+reserva. Ao trocar uma foto, gere o `.webp` junto e mantenha `width`/`height`
+iguais ao tamanho real do arquivo. O comparador antes/depois só anima
+`transform`. Não volte para `left`/`clip-path`.
 
 **Acessibilidade** — `prefers-reduced-motion: reduce` desliga a abertura, o
 parallax, o shader, o cursor custom e os tilts; o conteúdo aparece direto.
