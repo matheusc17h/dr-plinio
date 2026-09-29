@@ -14,6 +14,7 @@
   gsap.registerPlugin(ScrollTrigger, Draggable);
   if (window.ScrollSmoother) gsap.registerPlugin(ScrollSmoother);
   if (window.ScrambleTextPlugin) gsap.registerPlugin(ScrambleTextPlugin);
+  if (window.SplitText) gsap.registerPlugin(SplitText);
   var smoother = null;
   gsap.config({ nullTargetWarn: false });
   // a barra de endereço do celular aparece/some a cada rolagem; recalcular
@@ -449,46 +450,18 @@
     tl.to({}, { duration: 0.3 });                 // respiro final antes de liberar o scroll
   }
 
-  /* Título que se decifra conforme o scroll: cada trecho de texto
-     começa embaralhado (mesmo comprimento, para a linha não pular)
-     e as letras certas vão aparecendo da esquerda para a direita.
-     Trechos separados preservam o <em> dourado. */
-  var SCRAMBLE_CHARS = 'abcdefghijklmnopqrstuvwxyzáéíóúç';
-  function embaralha(txt) {
-    return txt.replace(/\S/g, function () {
-      return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+  /* Random letter reveal: o título é quebrado em letras (SplitText),
+     todas começam quase transparentes e acendem em ordem aleatória
+     conforme o scroll — "trabalho" pode mostrar r, a, l, o primeiro.
+     Quebrar por palavra também mantém cada palavra inteira na linha;
+     o <em> dourado é preservado e o SplitText põe aria-label no título. */
+  function initLetras(h) {
+    var split = new SplitText($$('.l > span', h), { type: 'words,chars', tag: 'span' });
+    gsap.fromTo(split.chars, { opacity: 0.08 }, {
+      opacity: 1, ease: 'none',
+      stagger: { each: 0.05, from: 'random' },
+      scrollTrigger: { trigger: h, start: 'top 88%', end: 'top 40%', scrub: smoother ? true : 0.5 }
     });
-  }
-
-  function initScramble(h) {
-    var rotulo = h.textContent.replace(/\s+/g, ' ').trim();
-    var partes = [];
-    $$('.l > span', h).forEach(function (linha) {
-      // envolve cada nó de texto num span próprio; o <em> vira um trecho também
-      Array.prototype.slice.call(linha.childNodes).forEach(function (no) {
-        var alvo = no;
-        if (no.nodeType === 3) {
-          if (!no.textContent.trim()) return;
-          alvo = document.createElement('span');
-          alvo.textContent = no.textContent;
-          linha.replaceChild(alvo, no);
-        }
-        if (alvo.nodeType === 1 && alvo.textContent.trim()) partes.push(alvo);
-      });
-    });
-
-    var tl = gsap.timeline({
-      scrollTrigger: { trigger: h, start: 'top 88%', end: 'top 42%', scrub: smoother ? true : 0.5 }
-    });
-    partes.forEach(function (el) {
-      var real = el.textContent;
-      el.setAttribute('aria-hidden', 'true');
-      el.textContent = embaralha(real);
-      // duração proporcional ao tamanho: o ritmo de revelação é o mesmo em todo o título
-      tl.to(el, { scrambleText: { text: real, chars: SCRAMBLE_CHARS, speed: 0.4 }, duration: real.length, ease: 'none' });
-    });
-    // leitores de tela leem o título inteiro, não o embaralhado
-    h.setAttribute('aria-label', rotulo);
   }
 
   function initReveals() {
@@ -496,7 +469,7 @@
 
     // títulos em máscara de linha (fora do hero)
     $$('.h2').forEach(function (h) {
-      if (h.hasAttribute('data-scramble') && window.ScrambleTextPlugin) return initScramble(h);
+      if (h.hasAttribute('data-letters') && window.SplitText) return initLetras(h);
       var lines = $$('.l > span', h);
       gsap.set(lines, { yPercent: 118 });
       ScrollTrigger.create({
@@ -534,10 +507,14 @@
       });
       steps.forEach(function (st, i) {
         tlSteps.to(st, { y: 0, opacity: 1, duration: 1, ease: 'power2.out' }, i);
+        // o número sorteia dígitos enquanto a etapa entra e assenta no
+        // valor real (01, 02, 03) só quando ela termina de chegar
         var n = $('.step__n', st);
         if (n && window.ScrambleTextPlugin) {
-          tlSteps.fromTo(n, { scrambleText: { text: '00', chars: '0123456789' } },
-            { scrambleText: { text: n.textContent, chars: '0123456789' }, duration: 0.6, ease: 'none' }, i + 0.2);
+          var real = n.textContent;
+          n.setAttribute('aria-label', real);
+          n.textContent = '00';
+          tlSteps.to(n, { scrambleText: { text: real, chars: '0123456789', speed: 1, revealDelay: 0.6 }, duration: 1, ease: 'none' }, i);
         }
       });
     }
