@@ -497,22 +497,6 @@
       });
     });
 
-    // etapas 01 → 02 → 03, uma de cada vez, guiadas pelo scroll:
-    // a próxima só começa quando a anterior terminou de entrar
-    var steps = $$('.step');
-    if (steps.length) {
-      gsap.set(steps, { y: 60, opacity: 0 });
-      var tlSteps = gsap.timeline({
-        scrollTrigger: {
-          trigger: '.steps', start: 'top 82%', end: 'bottom 60%',
-          scrub: smoother ? true : 0.6
-        }
-      });
-      steps.forEach(function (st, i) {
-        tlSteps.to(st, { y: 0, opacity: 1, duration: 1, ease: 'power2.out' }, i);
-      });
-    }
-
     // galeria
     ScrollTrigger.create({
       trigger: '.gal', start: 'top 85%', once: true,
