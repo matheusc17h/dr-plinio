@@ -13,7 +13,6 @@
 
   gsap.registerPlugin(ScrollTrigger, Draggable);
   if (window.ScrollSmoother) gsap.registerPlugin(ScrollSmoother);
-  if (window.ScrambleTextPlugin) gsap.registerPlugin(ScrambleTextPlugin);
   if (window.SplitText) gsap.registerPlugin(SplitText);
   var smoother = null;
   gsap.config({ nullTargetWarn: false });
@@ -452,15 +451,19 @@
 
   /* Random letter reveal: o título é quebrado em letras (SplitText),
      todas começam invisíveis e acendem em ordem aleatória
-     conforme o scroll — "trabalho" pode mostrar r, a, l, o primeiro.
+     quando o título entra na tela — "trabalho" pode mostrar r, a, l, o
+     primeiro. Toca uma vez, no próprio tempo, sem seguir o scroll.
      Quebrar por palavra também mantém cada palavra inteira na linha;
      o <em> dourado é preservado e o SplitText põe aria-label no título. */
   function initLetras(h) {
     var split = new SplitText($$('.l > span', h), { type: 'words,chars', tag: 'span' });
-    gsap.fromTo(split.chars, { opacity: 0 }, {
-      opacity: 1, ease: 'none',
-      stagger: { each: 0.05, from: 'random' },
-      scrollTrigger: { trigger: h, start: 'top 88%', end: 'top 40%', scrub: smoother ? true : 0.5 }
+    gsap.set(split.chars, { opacity: 0 });
+    ScrollTrigger.create({
+      trigger: h, start: 'top 82%', once: true,
+      onEnter: function () {
+        // amount: o título inteiro acende em ~1,4s, seja qual for o nº de letras
+        gsap.to(split.chars, { opacity: 1, duration: 0.5, ease: 'power1.out', stagger: { amount: 1.4, from: 'random' } });
+      }
     });
   }
 
@@ -507,15 +510,6 @@
       });
       steps.forEach(function (st, i) {
         tlSteps.to(st, { y: 0, opacity: 1, duration: 1, ease: 'power2.out' }, i);
-        // o número sorteia dígitos enquanto a etapa entra e assenta no
-        // valor real (01, 02, 03) só quando ela termina de chegar
-        var n = $('.step__n', st);
-        if (n && window.ScrambleTextPlugin) {
-          var real = n.textContent;
-          n.setAttribute('aria-label', real);
-          n.textContent = '00';
-          tlSteps.to(n, { scrambleText: { text: real, chars: '0123456789', speed: 1, revealDelay: 0.6 }, duration: 1, ease: 'none' }, i);
-        }
       });
     }
 
