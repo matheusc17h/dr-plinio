@@ -497,6 +497,21 @@
       });
     });
 
+    // etapas: Diagnóstico → Clareamento → Acabamento, uma de cada vez.
+    // Toca uma vez ao chegar na seção, no próprio tempo (não segue o
+    // scroll, então não "desfaz" ao subir); os números ficam fixos.
+    var steps = $$('.step');
+    if (steps.length) {
+      gsap.set(steps, { y: 50, opacity: 0 });
+      ScrollTrigger.create({
+        trigger: '.steps', start: 'top 80%', once: true,
+        onEnter: function () {
+          // stagger maior que meia duração: a próxima entra quando a anterior já assentou
+          gsap.to(steps, { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', stagger: 0.55 });
+        }
+      });
+    }
+
     // galeria
     ScrollTrigger.create({
       trigger: '.gal', start: 'top 85%', once: true,
