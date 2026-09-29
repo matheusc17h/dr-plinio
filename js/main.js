@@ -415,8 +415,8 @@
       defaults: { ease: 'power2.out' },
       scrollTrigger: {
         trigger: sec, start: 'top top',
-        end: function () { return '+=' + window.innerHeight * cards.length * 0.95; },
-        pin: true, scrub: 0.9, anticipatePin: 1, invalidateOnRefresh: true,
+        end: function () { return '+=' + window.innerHeight * cards.length * 0.5; },
+        pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
         onUpdate: function (self) {
           var i = Math.min(cards.length, Math.floor(self.progress * cards.length) + 1);
           // só mexe no texto quando o número muda: reescrever a cada
@@ -430,7 +430,7 @@
     cards.forEach(function (card, i) {
       var lado = i % 2 === 0 ? -1 : 1;           // esquerda, direita, esquerda...
       var rot = parseFloat(getComputedStyle(card).getPropertyValue('--r')) || 0;
-      var at = i * 2.6;                            // o próximo chega enquanto o anterior sai
+      var at = i * 2.1;                           // o próximo chega enquanto o anterior sai
 
       tl.fromTo(card,
         { x: lado * 140, y: 50, rotation: rot + lado * 6, autoAlpha: 0 },
@@ -438,10 +438,10 @@
 
       // o último card fica na tela até a seção soltar
       if (i < cards.length - 1) {
-        tl.to(card, { y: -70, x: lado * -30, autoAlpha: 0, duration: 0.9, ease: 'power1.in' }, at + 2.2);
+        tl.to(card, { y: -70, x: lado * -30, autoAlpha: 0, duration: 0.9, ease: 'power1.in' }, at + 1.7);
       }
     });
-    tl.to({}, { duration: 0.6 });                  // respiro final antes de liberar o scroll
+    tl.to({}, { duration: 0.3 });                 // respiro final antes de liberar o scroll
   }
 
   function initReveals() {
@@ -693,18 +693,60 @@
   }
 
   /* ───────────────────────────────────────────────
-     11. CARDS — arraste horizontal
+     11. CARDS — scroll horizontal: a seção fica presa e a
+     rolagem vertical leva a fileira para o lado. Criado logo
+     depois dos depoimentos pelo mesmo motivo: o pin empurra
+     a página e os triggers seguintes medem com esse espaço.
+     Com movimento reduzido, volta ao arraste.
      ─────────────────────────────────────────────── */
   function initCards() {
     var vp = $('#cardsViewport'), track = $('#cardsTrack');
     if (!vp || !track) return;
 
     var sec = vp.closest('.cards');
+    var hint = $('.cards__hint > span', sec);
+
+    // As fotos dos cards são lazy, mas as que ficam além da borda
+    // direita estão recortadas pelo overflow da seção e o navegador
+    // só as baixaria no meio do movimento. Libera todas antes de a
+    // seção chegar à tela.
+    ScrollTrigger.create({
+      trigger: sec, start: 'top bottom+=600', once: true,
+      onEnter: function () { $$('img[loading="lazy"]', track).forEach(function (i) { i.loading = 'eager'; }); }
+    });
+
+    // quanto a fileira precisa andar para o último card encostar
+    // na margem direita (a mesma respiração lateral da página)
+    function distancia() {
+      var cs = getComputedStyle(vp);
+      var util = vp.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      return Math.max(0, track.scrollWidth - util);
+    }
+
+    if (!REDUCED) {
+      if (hint) hint.textContent = 'continue rolando →';
+      vp.style.cursor = 'auto';             // não há mais o que arrastar
+
+      gsap.to(track, {
+        x: function () { return -distancia(); },
+        ease: 'none',
+        scrollTrigger: {
+          trigger: sec,
+          // seção mais baixa que a tela prende centralizada; mais alta, pelo topo
+          start: function () { return sec.offsetHeight < window.innerHeight ? 'center center' : 'top top'; },
+          end: function () { return '+=' + distancia(); },
+          pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
+          onRefresh: function () { sec.classList.toggle('is-static', distancia() <= 0); }
+        }
+      });
+      return;
+    }
+
     var drag = null;
 
     function build() {
       if (drag) { drag.kill(); drag = null; }
-      var overflow = track.scrollWidth - vp.clientWidth;
+      var overflow = distancia();
       // todos os cards cabem: sem arraste, sem aviso de "arraste"
       sec.classList.toggle('is-static', overflow <= 0);
       if (overflow <= 0) { gsap.set(track, { x: 0 }); return; }
@@ -721,15 +763,6 @@
 
     build();
     ScrollTrigger.addEventListener('refreshInit', build);
-
-    // As fotos dos cards são lazy, mas as que ficam além da borda
-    // direita estão recortadas pelo overflow da seção e o navegador
-    // só as baixaria no meio do arraste. Libera todas antes de a
-    // seção chegar à tela.
-    ScrollTrigger.create({
-      trigger: sec, start: 'top bottom+=600', once: true,
-      onEnter: function () { $$('img[loading="lazy"]', track).forEach(function (i) { i.loading = 'eager'; }); }
-    });
 
     // roda do mouse na horizontal
     vp.addEventListener('wheel', function (e) {
@@ -849,11 +882,11 @@
     initNav();
     initIntro(hasGL);
     initDepoimentos();
+    initCards();
     initReveals();
     initParallax(hasGL);
     initCounters();
     initBeforeAfter();
-    initCards();
     initTilt();
     initFaq();
     initAnchors();
