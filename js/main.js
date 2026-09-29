@@ -451,13 +451,13 @@
   }
 
   /* Random letter reveal: o título é quebrado em letras (SplitText),
-     todas começam quase transparentes e acendem em ordem aleatória
+     todas começam invisíveis e acendem em ordem aleatória
      conforme o scroll — "trabalho" pode mostrar r, a, l, o primeiro.
      Quebrar por palavra também mantém cada palavra inteira na linha;
      o <em> dourado é preservado e o SplitText põe aria-label no título. */
   function initLetras(h) {
     var split = new SplitText($$('.l > span', h), { type: 'words,chars', tag: 'span' });
-    gsap.fromTo(split.chars, { opacity: 0.08 }, {
+    gsap.fromTo(split.chars, { opacity: 0 }, {
       opacity: 1, ease: 'none',
       stagger: { each: 0.05, from: 'random' },
       scrollTrigger: { trigger: h, start: 'top 88%', end: 'top 40%', scrub: smoother ? true : 0.5 }
