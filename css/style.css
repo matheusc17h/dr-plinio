@@ -500,6 +500,30 @@ body.is-locked .nav__logo--light{opacity:1}
 .cards.is-static .cards__hint{display:none}
 .cards__hint{padding-inline:var(--pad);margin:1.6rem 0 0;font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;color:rgba(20,20,26,.36)}
 
+/* scroll horizontal (JS põe .is-h): a seção vira um palco de uma tela,
+   presa pelo topo — título, fileira e contador, sem as vizinhas à mostra.
+   A altura do card sai da altura da tela para tudo caber em qualquer aparelho. */
+.cards__prog{display:none}
+.cards.is-h{
+  height:100vh;height:100svh;display:flex;flex-direction:column;justify-content:center;
+  padding:calc(var(--nav-h) + clamp(.5rem,2vh,1.5rem)) 0 clamp(1.2rem,4vh,2.6rem);
+}
+/* width:100%: numa coluna flex a margem auto encolheria o título ao texto e o centralizaria */
+.cards.is-h .cards__head{width:100%}
+.cards.is-h .h2{margin-bottom:clamp(1.2rem,3.5vh,2.4rem)}
+.cards.is-h .cards__viewport{cursor:auto}
+.cards.is-h .card{width:auto;height:min(54svh,520px)}
+/* a foto recebe transform do GSAP (parallax); a transição do hover
+   em transform atrasaria cada quadro */
+.cards.is-h .card img{transition:filter .8s var(--ease)}
+.cards.is-h .cards__hint{display:none}
+.cards.is-h .cards__prog{
+  display:flex;align-items:center;gap:.9rem;padding-inline:var(--pad);margin-top:clamp(1.2rem,3.5vh,2.2rem);
+  font-size:.66rem;letter-spacing:.28em;color:rgba(20,20,26,.45);
+}
+.cards__prog i{display:block;width:clamp(5rem,12vw,9rem);height:1px;background:var(--line-dk);overflow:hidden}
+.cards__prog b{display:block;height:100%;background:var(--gold);transform:scaleX(0);transform-origin:left}
+
 /* ═══ 6. DÚVIDAS ═══ */
 /* overflow-x:clip: as perguntas entram vindo 60px da direita; antes da
    animação elas ficam fora da coluna e, no celular, alargavam a página
@@ -758,8 +782,12 @@ body.is-locked .nav__logo--light{opacity:1}
   .hero__copy{position:relative;z-index:3;padding-bottom:4.6rem}
   .hero::after{
     content:"";position:absolute;inset:0;z-index:1;
-    background:linear-gradient(to top,rgba(10,10,14,.96) 0%,rgba(10,10,14,.9) 30%,rgba(10,10,14,.58) 64%,rgba(10,10,14,.8) 100%);
+    /* mais denso na faixa do texto (metade de baixo) e um véu leve
+       no resto, para o título e o parágrafo lerem sobre qualquer quadro */
+    background:linear-gradient(to top,rgba(10,10,14,.97) 0%,rgba(10,10,14,.92) 34%,rgba(10,10,14,.74) 62%,rgba(10,10,14,.6) 82%,rgba(10,10,14,.82) 100%);
   }
+  /* sombra difusa só atrás das letras: separa do vídeo sem parecer contorno */
+  .hero__title,.hero__lead,.hero__copy .eyebrow{text-shadow:0 1px 18px rgba(10,10,14,.55)}
   .hero__scroll{display:none}
 
   /* nav enxuta: o botão flutuante do WhatsApp já cobre o CTA */

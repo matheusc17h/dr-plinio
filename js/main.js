@@ -416,11 +416,11 @@
     gsap.set(cards, { xPercent: -50, yPercent: -50, autoAlpha: 0 });
 
     var tl = gsap.timeline({
-      defaults: { ease: 'power2.out' },
+      defaults: { ease: 'power2.out', force3D: true },
       scrollTrigger: {
         trigger: sec, start: 'top top',
         end: function () { return '+=' + window.innerHeight * cards.length * 0.5; },
-        pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
+        pin: true, scrub: smoother ? true : 0.6, anticipatePin: smoother ? 0 : 1, invalidateOnRefresh: true,
         onUpdate: function (self) {
           var i = Math.min(cards.length, Math.floor(self.progress * cards.length) + 1);
           // só mexe no texto quando o número muda: reescrever a cada
@@ -708,7 +708,6 @@
     if (!vp || !track) return;
 
     var sec = vp.closest('.cards');
-    var hint = $('.cards__hint > span', sec);
 
     // As fotos dos cards são lazy, mas as que ficam além da borda
     // direita estão recortadas pelo overflow da seção e o navegador
@@ -728,20 +727,40 @@
     }
 
     if (!REDUCED) {
-      if (hint) hint.textContent = 'continue rolando →';
-      vp.style.cursor = 'auto';             // não há mais o que arrastar
+      // .is-h vira a seção num palco de uma tela: título em cima,
+      // fileira no meio, contador embaixo — nada das vizinhas aparece
+      sec.classList.add('is-h');
+      var cards = $$('.card', track);
+      var num = $('#cardsNum'), bar = $('#cardsBar'), atual = 1;
 
-      gsap.to(track, {
+      var move = gsap.to(track, {
         x: function () { return -distancia(); },
         ease: 'none',
         scrollTrigger: {
-          trigger: sec,
-          // seção mais baixa que a tela prende centralizada; mais alta, pelo topo
-          start: function () { return sec.offsetHeight < window.innerHeight ? 'center center' : 'top top'; },
+          trigger: sec, start: 'top top',
           end: function () { return '+=' + distancia(); },
-          pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
-          onRefresh: function () { sec.classList.toggle('is-static', distancia() <= 0); }
+          pin: true, scrub: smoother ? true : 0.6, anticipatePin: smoother ? 0 : 1, invalidateOnRefresh: true,
+          onUpdate: function (self) {
+            var i = Math.round(self.progress * (cards.length - 1)) + 1;
+            if (i !== atual) { atual = i; num.textContent = (i < 10 ? '0' : '') + i; }
+            gsap.set(bar, { scaleX: self.progress });
+          }
         }
+      });
+
+      // parallax dentro de cada card: a foto anda um pouco menos que a
+      // moldura enquanto ela atravessa a tela
+      cards.forEach(function (card) {
+        var img = $('img', card);
+        if (!img) return;
+        gsap.set(img, { scale: 1.16 });
+        gsap.fromTo(img, { xPercent: -6 }, {
+          xPercent: 6, ease: 'none',
+          scrollTrigger: {
+            trigger: card, containerAnimation: move,
+            start: 'left right', end: 'right left', scrub: true
+          }
+        });
       });
       return;
     }
@@ -876,7 +895,10 @@
      atraso ali parece travamento.
      ─────────────────────────────────────────────── */
   function initSmoother() {
-    if (REDUCED || !window.ScrollSmoother || !$('#smooth-wrapper')) return;
+    // Só toque (celular/tablet): nem cria. Mesmo com smoothTouch
+    // desligado ele segue transformando o conteúdo, e as seções presas
+    // (depoimentos, diferenciais) tremem contra a rolagem nativa.
+    if (REDUCED || ScrollTrigger.isTouch === 1 || !window.ScrollSmoother || !$('#smooth-wrapper')) return;
     smoother = ScrollSmoother.create({
       wrapper: '#smooth-wrapper', content: '#smooth-content',
       smooth: 1.1, smoothTouch: false, effects: false
