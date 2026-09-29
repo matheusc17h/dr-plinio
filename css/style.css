@@ -696,6 +696,8 @@ body.is-locked .nav__logo--light{opacity:1}
     column-gap:clamp(3rem,6vw,6rem);align-items:start;
   }
   .faq__head{grid-row:span 2;position:sticky;top:calc(var(--nav-h) + 2rem)}
+  /* com ScrollSmoother o sticky não age; quem prende é o ScrollTrigger */
+  .has-smoother .faq__head{position:relative;top:auto}
   .faq__list,.faq__cta{grid-column:2}
   .faq__q{padding-block:1.05rem}
   .faq__cta{margin-top:1.8rem;padding-top:1.6rem}

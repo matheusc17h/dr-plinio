@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   main.js — GSAP + ScrollTrigger + Draggable
+   main.js — GSAP + ScrollTrigger + ScrollSmoother + Draggable
    Dr. Plínio Mota · Odontologia Estética
    ═══════════════════════════════════════════════════════════ */
 
@@ -12,6 +12,8 @@
   var FINE = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   gsap.registerPlugin(ScrollTrigger, Draggable);
+  if (window.ScrollSmoother) gsap.registerPlugin(ScrollSmoother);
+  var smoother = null;
   gsap.config({ nullTargetWarn: false });
   // a barra de endereço do celular aparece/some a cada rolagem; recalcular
   // todos os triggers (e o pin dos depoimentos) nisso causa engasgo
@@ -314,6 +316,8 @@
       menu.setAttribute('aria-hidden', String(!open));
       menu.classList.toggle('is-open', open);
       document.body.classList.toggle('is-locked', open);
+      // com o smoother o overflow do body não trava a rolagem
+      if (smoother) smoother.paused(open);
       open ? tl.play() : tl.reverse();
     }
 
@@ -854,7 +858,9 @@
         var t = document.querySelector(id);
         if (!t) return;
         e.preventDefault();
-        var top = t.getBoundingClientRect().top + window.pageYOffset - ($('#nav').offsetHeight - 8);
+        var folga = $('#nav').offsetHeight - 8;
+        if (smoother) { smoother.scrollTo(t, true, 'top ' + folga + 'px'); return; }
+        var top = t.getBoundingClientRect().top + window.pageYOffset - folga;
         window.scrollTo({ top: top, behavior: REDUCED ? 'auto' : 'smooth' });
       });
     });
@@ -863,7 +869,36 @@
   /* ───────────────────────────────────────────────
      BOOT
      ─────────────────────────────────────────────── */
+  /* ───────────────────────────────────────────────
+     SCROLL SMOOTHER — rolagem com inércia. Precisa nascer
+     antes de qualquer ScrollTrigger. No toque fica a rolagem
+     nativa (smoothTouch desligado): o dedo já tem inércia e
+     atraso ali parece travamento.
+     ─────────────────────────────────────────────── */
+  function initSmoother() {
+    if (REDUCED || !window.ScrollSmoother || !$('#smooth-wrapper')) return;
+    smoother = ScrollSmoother.create({
+      wrapper: '#smooth-wrapper', content: '#smooth-content',
+      smooth: 1.1, smoothTouch: false, effects: false
+    });
+    document.documentElement.classList.add('has-smoother');
+
+    // position:sticky não funciona dentro do conteúdo transformado:
+    // no desktop o título das dúvidas passa a ser preso pelo ScrollTrigger
+    gsap.matchMedia().add('(min-width: 1081px)', function () {
+      var head = $('.faq__head'), list = $('#faqList');
+      if (!head || !list) return;
+      var topo = function () { return $('#nav').offsetHeight + 32; };
+      ScrollTrigger.create({
+        trigger: head, start: function () { return 'top ' + topo(); },
+        endTrigger: list, end: function () { return 'bottom ' + (topo() + head.offsetHeight); },
+        pin: true, pinSpacing: false, invalidateOnRefresh: true
+      });
+    });
+  }
+
   function boot() {
+    initSmoother();
     var hasGL = false;
     try { hasGL = window.HeroScene && window.HeroScene.init($('#gl')); } catch (e) { hasGL = false; }
     heroCover.gl = hasGL;
