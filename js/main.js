@@ -13,6 +13,7 @@
 
   gsap.registerPlugin(ScrollTrigger, Draggable);
   if (window.ScrollSmoother) gsap.registerPlugin(ScrollSmoother);
+  if (window.ScrambleTextPlugin) gsap.registerPlugin(ScrambleTextPlugin);
   var smoother = null;
   gsap.config({ nullTargetWarn: false });
   // a barra de endereço do celular aparece/some a cada rolagem; recalcular
@@ -448,11 +449,54 @@
     tl.to({}, { duration: 0.3 });                 // respiro final antes de liberar o scroll
   }
 
+  /* Título que se decifra conforme o scroll: cada trecho de texto
+     começa embaralhado (mesmo comprimento, para a linha não pular)
+     e as letras certas vão aparecendo da esquerda para a direita.
+     Trechos separados preservam o <em> dourado. */
+  var SCRAMBLE_CHARS = 'abcdefghijklmnopqrstuvwxyzáéíóúç';
+  function embaralha(txt) {
+    return txt.replace(/\S/g, function () {
+      return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+    });
+  }
+
+  function initScramble(h) {
+    var rotulo = h.textContent.replace(/\s+/g, ' ').trim();
+    var partes = [];
+    $$('.l > span', h).forEach(function (linha) {
+      // envolve cada nó de texto num span próprio; o <em> vira um trecho também
+      Array.prototype.slice.call(linha.childNodes).forEach(function (no) {
+        var alvo = no;
+        if (no.nodeType === 3) {
+          if (!no.textContent.trim()) return;
+          alvo = document.createElement('span');
+          alvo.textContent = no.textContent;
+          linha.replaceChild(alvo, no);
+        }
+        if (alvo.nodeType === 1 && alvo.textContent.trim()) partes.push(alvo);
+      });
+    });
+
+    var tl = gsap.timeline({
+      scrollTrigger: { trigger: h, start: 'top 88%', end: 'top 42%', scrub: smoother ? true : 0.5 }
+    });
+    partes.forEach(function (el) {
+      var real = el.textContent;
+      el.setAttribute('aria-hidden', 'true');
+      el.textContent = embaralha(real);
+      // duração proporcional ao tamanho: o ritmo de revelação é o mesmo em todo o título
+      tl.to(el, { scrambleText: { text: real, chars: SCRAMBLE_CHARS, speed: 0.4 }, duration: real.length, ease: 'none' });
+    });
+    // leitores de tela leem o título inteiro, não o embaralhado
+    h.setAttribute('aria-label', rotulo);
+  }
+
   function initReveals() {
     if (REDUCED) return;
 
     // títulos em máscara de linha (fora do hero)
     $$('.h2').forEach(function (h) {
+      if (h.hasAttribute('data-scramble') && window.ScrambleTextPlugin) return initScramble(h);
       var lines = $$('.l > span', h);
       gsap.set(lines, { yPercent: 118 });
       ScrollTrigger.create({
@@ -477,13 +521,26 @@
       });
     });
 
-    // etapas em cascata
-    ScrollTrigger.create({
-      trigger: '.steps', start: 'top 80%', once: true,
-      onEnter: function () {
-        gsap.fromTo('.step', { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'power3.out', stagger: 0.12 });
-      }
-    });
+    // etapas 01 → 02 → 03, uma de cada vez, guiadas pelo scroll:
+    // a próxima só começa quando a anterior terminou de entrar
+    var steps = $$('.step');
+    if (steps.length) {
+      gsap.set(steps, { y: 60, opacity: 0 });
+      var tlSteps = gsap.timeline({
+        scrollTrigger: {
+          trigger: '.steps', start: 'top 82%', end: 'bottom 60%',
+          scrub: smoother ? true : 0.6
+        }
+      });
+      steps.forEach(function (st, i) {
+        tlSteps.to(st, { y: 0, opacity: 1, duration: 1, ease: 'power2.out' }, i);
+        var n = $('.step__n', st);
+        if (n && window.ScrambleTextPlugin) {
+          tlSteps.fromTo(n, { scrambleText: { text: '00', chars: '0123456789' } },
+            { scrambleText: { text: n.textContent, chars: '0123456789' }, duration: 0.6, ease: 'none' }, i + 0.2);
+        }
+      });
+    }
 
     // galeria
     ScrollTrigger.create({
