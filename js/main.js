@@ -540,11 +540,17 @@
       }
     });
 
-    // cards entrando
+    // cards entrando; no fim o CSS assume (.is-ready) e o card ativo sobe
     ScrollTrigger.create({
       trigger: '.cards__viewport', start: 'top 82%', once: true,
       onEnter: function () {
-        gsap.fromTo('.card', { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: 1.05, ease: 'power3.out', stagger: 0.09 });
+        gsap.fromTo('.card', { y: 70, opacity: 0 }, {
+          y: 0, opacity: 1, duration: 1.05, ease: 'power3.out', stagger: 0.09,
+          onComplete: function () {
+            $('.cards').classList.add('is-ready');
+            gsap.set('.card', { clearProps: 'transform,opacity' });
+          }
+        });
       }
     });
   }
@@ -724,105 +730,91 @@
   }
 
   /* ───────────────────────────────────────────────
-     11. CARDS — scroll horizontal: a seção fica presa e a
-     rolagem vertical leva a fileira para o lado. Criado logo
-     depois dos depoimentos pelo mesmo motivo: o pin empurra
-     a página e os triggers seguintes medem com esse espaço.
-     Com movimento reduzido, volta ao arraste.
+     11. CARDS — carrossel no estilo Instagram: setas e
+     bolinhas trocam o card em destaque, que fica centralizado,
+     levantado e um pouco maior. Também troca com arraste
+     (dedo ou mouse), teclado e clique num card vizinho.
      ─────────────────────────────────────────────── */
   function initCards() {
     var vp = $('#cardsViewport'), track = $('#cardsTrack');
     if (!vp || !track) return;
 
     var sec = vp.closest('.cards');
+    var cards = $$('.card', track);
+    var prev = $('#cardsPrev'), next = $('#cardsNext'), dotsBox = $('#cardsDots');
+    var atual = 0;
 
-    // As fotos dos cards são lazy, mas as que ficam além da borda
-    // direita estão recortadas pelo overflow da seção e o navegador
-    // só as baixaria no meio do movimento. Libera todas antes de a
-    // seção chegar à tela.
-    ScrollTrigger.create({
-      trigger: sec, start: 'top bottom+=600', once: true,
-      onEnter: function () { $$('img[loading="lazy"]', track).forEach(function (i) { i.loading = 'eager'; }); }
+    // sem animação de entrada (movimento reduzido) o CSS já assume
+    if (REDUCED) sec.classList.add('is-ready');
+
+    var dots = cards.map(function (card, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Diferencial ' + (i + 1) + ' de ' + cards.length);
+      b.addEventListener('click', function () { ir(i); });
+      dotsBox.appendChild(b);
+      return b;
     });
 
-    // quanto a fileira precisa andar para o último card encostar
-    // na margem direita (a mesma respiração lateral da página)
-    function distancia() {
-      var cs = getComputedStyle(vp);
-      var util = vp.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-      return Math.max(0, track.scrollWidth - util);
+    // desloca a fileira para o centro do card ativo cair no centro da tela
+    function posicao() {
+      var c = cards[atual];
+      return vp.clientWidth / 2 - (c.offsetLeft + c.offsetWidth / 2);
     }
 
-    if (!REDUCED) {
-      // .is-h vira a seção num palco de uma tela: título em cima,
-      // fileira no meio, contador embaixo — nada das vizinhas aparece
-      sec.classList.add('is-h');
-      var cards = $$('.card', track);
-      var num = $('#cardsNum'), bar = $('#cardsBar'), atual = 1;
-
-      var move = gsap.to(track, {
-        x: function () { return -distancia(); },
-        ease: 'none',
-        scrollTrigger: {
-          trigger: sec, start: 'top top',
-          end: function () { return '+=' + distancia(); },
-          pin: true, scrub: smoother ? true : 0.6, anticipatePin: smoother ? 0 : 1, invalidateOnRefresh: true,
-          onUpdate: function (self) {
-            var i = Math.round(self.progress * (cards.length - 1)) + 1;
-            if (i !== atual) { atual = i; num.textContent = (i < 10 ? '0' : '') + i; }
-            gsap.set(bar, { scaleX: self.progress });
-          }
-        }
+    function ir(i, instantaneo) {
+      atual = gsap.utils.clamp(0, cards.length - 1, i);
+      cards.forEach(function (c, k) {
+        c.classList.toggle('is-active', k === atual);
+        c.setAttribute('aria-hidden', k === atual ? 'false' : 'true');
       });
-
-      // parallax dentro de cada card: a foto anda um pouco menos que a
-      // moldura enquanto ela atravessa a tela
-      cards.forEach(function (card) {
-        var img = $('img', card);
-        if (!img) return;
-        gsap.set(img, { scale: 1.16 });
-        gsap.fromTo(img, { xPercent: -6 }, {
-          xPercent: 6, ease: 'none',
-          scrollTrigger: {
-            trigger: card, containerAnimation: move,
-            start: 'left right', end: 'right left', scrub: true
-          }
-        });
-      });
-      return;
+      dots.forEach(function (d, k) { d.setAttribute('aria-current', k === atual ? 'true' : 'false'); });
+      prev.disabled = atual === 0;
+      next.disabled = atual === cards.length - 1;
+      gsap.to(track, { x: posicao(), duration: instantaneo || REDUCED ? 0 : 0.8, ease: 'power3.out', overwrite: true });
     }
 
-    var drag = null;
+    prev.addEventListener('click', function () { ir(atual - 1); });
+    next.addEventListener('click', function () { ir(atual + 1); });
+    cards.forEach(function (c, k) {
+      c.addEventListener('click', function () { if (k !== atual) ir(k); });
+    });
 
-    function build() {
-      if (drag) { drag.kill(); drag = null; }
-      var overflow = distancia();
-      // todos os cards cabem: sem arraste, sem aviso de "arraste"
-      sec.classList.toggle('is-static', overflow <= 0);
-      if (overflow <= 0) { gsap.set(track, { x: 0 }); return; }
+    sec.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); ir(atual - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); ir(atual + 1); }
+    });
 
-      drag = Draggable.create(track, {
-        type: 'x',
-        bounds: { minX: -overflow, maxX: 0 },
-        edgeResistance: 0.75,
-        dragClickables: true,
-        cursor: 'grab',
-        activeCursor: 'grabbing'
-      })[0];
-    }
+    // arraste: passou de 50px para um lado, troca de card
+    var x0 = null, arrastou = false;
+    vp.addEventListener('pointerdown', function (e) { x0 = e.clientX; arrastou = false; });
+    vp.addEventListener('pointerup', function (e) {
+      if (x0 === null) return;
+      var d = e.clientX - x0;
+      x0 = null;
+      if (Math.abs(d) < 50) return;
+      arrastou = true;
+      ir(atual + (d < 0 ? 1 : -1));
+    });
+    vp.addEventListener('pointercancel', function () { x0 = null; });
+    // o clique que fecha um arraste não deve selecionar o card embaixo do dedo
+    vp.addEventListener('click', function (e) {
+      if (arrastou) { e.stopPropagation(); arrastou = false; }
+    }, true);
 
-    build();
-    ScrollTrigger.addEventListener('refreshInit', build);
-
-    // roda do mouse na horizontal
+    // roda do trackpad na horizontal
+    var travado = false;
     vp.addEventListener('wheel', function (e) {
-      if (!drag) return;
-      var d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : 0;
-      if (!d) return;
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) < 20) return;
       e.preventDefault();
-      var x = gsap.getProperty(track, 'x') - d;
-      gsap.to(track, { x: gsap.utils.clamp(drag.minX, drag.maxX, x), duration: 0.4, ease: 'power3.out' });
+      if (travado) return;
+      travado = true;
+      ir(atual + (e.deltaX > 0 ? 1 : -1));
+      setTimeout(function () { travado = false; }, 600);
     }, { passive: false });
+
+    ir(0, true);
+    window.addEventListener('resize', function () { ir(atual, true); });
   }
 
   /* ───────────────────────────────────────────────
