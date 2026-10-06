@@ -234,13 +234,19 @@ body.is-locked .nav__logo--light{opacity:1}
 .nav__burger[aria-expanded="true"] i:first-child{transform:translateY(3px) rotate(45deg)}
 .nav__burger[aria-expanded="true"] i:last-child{transform:translateY(-3px) rotate(-45deg)}
 
+/* o painel só recorta (clip-path animado); quem rola é .menu__scroll.
+   No iOS, juntar clip-path e overflow:auto no mesmo elemento faz o recorte
+   não atualizar e o menu nunca aparece */
 .menu{
   position:fixed;inset:0;z-index:790;background:var(--ink);color:var(--paper);
+  clip-path:inset(0 0 100% 0); pointer-events:none;
+}
+/* celular em paisagem: os links não cabem na altura — rola dentro do painel
+   sem contaminar o scroll da página atrás */
+.menu__scroll{
+  height:100%;
   display:flex;flex-direction:column;justify-content:center;gap:3rem;
   padding:calc(var(--nav-h) + 1.6rem) var(--pad) calc(2.4rem + env(safe-area-inset-bottom, 0px));
-  clip-path:inset(0 0 100% 0); pointer-events:none;
-  /* celular em paisagem: os links não cabem na altura — rola dentro do painel
-     sem contaminar o scroll da página atrás */
   overflow-y:auto; overscroll-behavior:contain;
 }
 .menu.is-open{pointer-events:auto}
@@ -860,7 +866,7 @@ body.is-locked .nav__logo--light{opacity:1}
   .hero__scroll{display:none}
   /* painel do menu: alinhar ao topo, senão o conteúdo centralizado
      que não cabe fica cortado e sem como rolar */
-  .menu{justify-content:flex-start;gap:1.6rem}
+  .menu__scroll{justify-content:flex-start;gap:1.6rem}
   .menu__links a{font-size:1.6rem}
 }
 @media (max-height:520px) and (orientation:landscape) and (min-width:721px){

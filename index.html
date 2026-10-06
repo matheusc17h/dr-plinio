@@ -130,6 +130,9 @@
   </header>
 
   <div class="menu" id="menu" aria-hidden="true">
+    <!-- a rolagem fica num filho: no iOS um elemento com overflow:auto vira
+       camada de rolagem nativa e para de aplicar o clip-path animado -->
+    <div class="menu__scroll">
     <nav class="menu__links">
       <a href="#sobre"><em>01</em> Sobre</a>
       <a href="#tecnica"><em>02</em> A técnica</a>
@@ -143,6 +146,7 @@
       <p>Av. Hilário Pereira de Souza, 406<br>Jardim Agu · Osasco — SP</p>
       <a class="btn js-wa" data-wa-msg="Olá! Vim pelo site e gostaria de agendar uma avaliação."><span>Falar no
           WhatsApp</span></a>
+    </div>
     </div>
   </div>
 
