@@ -483,17 +483,28 @@
       });
     });
 
-    // blocos genéricos
+    // blocos: cada tipo entra de um jeito, para não virar o mesmo fade em tudo.
+    // Rótulo sobe pela máscara como as linhas do título; foto e mapa abrem
+    // de baixo para cima como a cortina da abertura; o resto sobe com fade.
     $$('.rv').forEach(function (el) {
       if (el.classList.contains('h2')) return;
       var inner = el.children.length === 1 && el.firstElementChild.tagName === 'SPAN'
         ? el.firstElementChild : el;
-      gsap.set(inner, { y: 34, opacity: 0 });
+      var de, para;
+      if (el.classList.contains('eyebrow')) {
+        de = { yPercent: 105 };
+        para = { yPercent: 0, duration: 0.9, ease: 'power4.out' };
+      } else if (el.tagName === 'FIGURE' || el.classList.contains('local__map')) {
+        de = { clipPath: 'inset(100% 0 0 0)' };
+        para = { clipPath: 'inset(0% 0 0 0)', duration: 1.3, ease: 'power4.inOut', clearProps: 'clipPath' };
+      } else {
+        de = { y: 34, opacity: 0 };
+        para = { y: 0, opacity: 1, duration: 1, ease: 'power3.out' };
+      }
+      gsap.set(inner, de);
       ScrollTrigger.create({
         trigger: el, start: 'top 88%', once: true,
-        onEnter: function () {
-          gsap.to(inner, { y: 0, opacity: 1, duration: 1, ease: 'power3.out' });
-        }
+        onEnter: function () { gsap.to(inner, para); }
       });
     });
 

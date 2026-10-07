@@ -16,7 +16,10 @@
   --line-dk:    rgba(20,20,26,.10);
 
   /* site inteiro em Montserrat; os dois tokens continuam existindo
-     para que títulos e texto possam voltar a divergir no futuro */
+     para que títulos e texto possam voltar a divergir no futuro.
+     Uma família só pede contraste de peso para criar hierarquia:
+     títulos em 200 (finos, como a assinatura da logo), texto em 300,
+     subtítulos e rótulos em 600. */
   --serif: "Montserrat", "Helvetica Neue", Arial, sans-serif;
   --sans:  "Montserrat", "Helvetica Neue", Arial, sans-serif;
 
@@ -72,17 +75,17 @@ section[id]{scroll-margin-top:var(--nav-h)}
 
 /* ── tipografia base ─────────────────────────────── */
 .h2{
-  font-family:var(--serif); font-weight:300;
-  font-size:clamp(2.05rem,1.3rem + 2.9vw,4.05rem);
+  font-family:var(--serif); font-weight:200;
+  font-size:clamp(2.35rem,1.5rem + 2.9vw,4.05rem);
   line-height:1.06; letter-spacing:-.015em; margin:.5rem 0 1.6rem;
 }
 .h2 em, .hero__title em{font-style:italic;color:var(--gold)}
 .eyebrow{
   font-size:.7rem; letter-spacing:.34em; text-transform:uppercase;
-  font-weight:400; color:var(--gold); margin:0;
+  font-weight:600; color:var(--gold); margin:0;
 }
 .prose p{margin:0 0 1.1rem; max-width:52ch; color:rgba(20,20,26,.72)}
-.prose strong{font-weight:500;color:var(--ink)}
+.prose strong{font-weight:600;color:var(--ink)}
 
 /* máscara de linha (reveal).
    O padding/margem compensados alargam a máscara para baixo
@@ -252,7 +255,7 @@ body.is-locked .nav__logo--light{opacity:1}
 .menu.is-open{pointer-events:auto}
 .menu__links{display:flex;flex-direction:column;gap:.4rem}
 .menu__links a{
-  font-family:var(--serif);font-size:clamp(2rem,9vw,3.2rem);font-weight:300;line-height:1.2;
+  font-family:var(--serif);font-size:clamp(2rem,9vw,3.2rem);font-weight:200;line-height:1.2;
   display:flex;align-items:baseline;gap:1rem;
 }
 .menu__links em{font-family:var(--sans);font-style:normal;font-size:.62rem;letter-spacing:.3em;color:var(--gold)}
@@ -273,7 +276,7 @@ body.is-locked .nav__logo--light{opacity:1}
 }
 .hero__copy .eyebrow{margin-bottom:1.15rem}
 .hero__title{
-  font-family:var(--serif);font-weight:300;
+  font-family:var(--serif);font-weight:200;
   font-size:clamp(2.7rem,1.1rem + 5.3vw,6.2rem); line-height:.98; letter-spacing:-.025em;
   margin:0 0 1.35rem;
 }
@@ -373,7 +376,7 @@ body.is-locked .nav__logo--light{opacity:1}
 .sobre__float img{width:100%;height:112%;object-fit:cover;will-change:transform}
 
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;margin:2.6rem 0;border-top:1px solid var(--line-dk);padding-top:1.8rem}
-.stats dt{font-family:var(--serif);font-size:clamp(2rem,3.6vw,3.1rem);font-weight:300;line-height:1;color:var(--gold);letter-spacing:-.02em}
+.stats dt{font-family:var(--serif);font-size:clamp(2rem,3.6vw,3.1rem);font-weight:200;line-height:1;color:var(--gold);letter-spacing:-.02em}
 .stats dd{margin:.5rem 0 0;font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(20,20,26,.52);line-height:1.6}
 
 /* ═══ 3. TÉCNICA ═══ */
@@ -388,7 +391,7 @@ body.is-locked .nav__logo--light{opacity:1}
 .step{background:var(--ink);padding:2.6rem clamp(1.2rem,2.4vw,2.2rem) 3rem;transition:background .6s var(--ease)}
 .step:hover{background:var(--ink-2)}
 .step__n{font-size:.68rem;letter-spacing:.3em;color:var(--gold)}
-.step h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.35rem,2.1vw,1.85rem);margin:1.4rem 0 .8rem;line-height:1.2}
+.step h3{font-family:var(--serif);font-weight:600;font-size:clamp(1.35rem,2.1vw,1.85rem);margin:1.4rem 0 .8rem;line-height:1.2}
 .step p{margin:0;color:rgba(245,244,241,.62);font-size:.94rem;max-width:36ch}
 
 .tecnica__shot{max-width:var(--maxw);margin:4.5rem auto 0}
@@ -507,7 +510,7 @@ body.is-locked .nav__logo--light{opacity:1}
 .card:hover img{transform:scale(1.07);filter:saturate(1) brightness(.9)}
 .card__body{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:1.6rem clamp(1.1rem,1.8vw,1.6rem)}
 .card__kpi{font-size:.66rem;letter-spacing:.3em;color:var(--gold)}
-.card__body h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.2rem,1.7vw,1.6rem);line-height:1.18;margin:.8rem 0 .6rem;color:var(--paper)}
+.card__body h3{font-family:var(--serif);font-weight:600;font-size:clamp(1.2rem,1.7vw,1.6rem);line-height:1.18;margin:.8rem 0 .6rem;color:var(--paper)}
 .card__body p{margin:0;font-size:.85rem;line-height:1.62;color:rgba(245,244,241,.62)}
 /* setas + bolinhas (como o carrossel do Instagram) */
 .cards__nav{display:flex;align-items:center;justify-content:center;gap:1.4rem;margin-top:clamp(.6rem,2vw,1.2rem);padding-inline:var(--pad)}
@@ -591,6 +594,13 @@ body.is-locked .nav__logo--light{opacity:1}
   margin:0; padding:0 clamp(1.1rem,2.2vw,1.8rem) clamp(1.3rem,2.2vw,1.7rem);
   max-width:62ch; font-size:.95rem; color:rgba(20,20,26,.7);
 }
+/* resposta em blocos (manutenção): subtítulo pequeno no estilo dos rótulos,
+   em dourado escurecido para ter contraste no fundo claro do item aberto */
+.faq__sub{
+  margin:0; padding:0 clamp(1.1rem,2.2vw,1.8rem) .35rem;
+  font-size:.66rem; font-weight:600; letter-spacing:.24em; text-transform:uppercase; color:#98793E;
+}
+.faq__bloco p{padding-bottom:1.1rem}
 
 .faq__cta{
   display:flex; flex-wrap:wrap; align-items:center; gap:1.2rem;
@@ -621,10 +631,10 @@ body.is-locked .nav__logo--light{opacity:1}
 .foot > *{max-width:var(--maxw);margin-inline:auto}
 .foot__top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2rem;padding-bottom:3rem;border-bottom:1px solid rgba(245,244,241,.12)}
 .foot__logo{height:clamp(66px,8vw,96px);width:auto;object-fit:contain}
-.foot__claim{margin:0;font-family:var(--serif);font-size:clamp(1.4rem,2.6vw,2.2rem);font-weight:300;line-height:1.24}
+.foot__claim{margin:0;font-family:var(--serif);font-size:clamp(1.4rem,2.6vw,2.2rem);font-weight:200;line-height:1.24}
 .foot__claim em{font-style:italic;color:var(--gold)}
 .foot__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;padding:2.6rem 0}
-.foot__grid h4{margin:0 0 .9rem;font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;font-weight:400;color:var(--gold)}
+.foot__grid h4{margin:0 0 .9rem;font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;font-weight:600;color:var(--gold)}
 .foot__grid p{margin:0;font-size:.9rem;color:rgba(245,244,241,.6);line-height:1.8}
 .foot__grid a{border-bottom:1px solid rgba(201,169,106,.4);cursor:pointer;transition:color .35s}
 .foot__grid a:hover{color:var(--gold)}
@@ -670,7 +680,7 @@ body.is-locked .nav__logo--light{opacity:1}
    da altura visível. Aqui a altura (svh) vira o teto. */
 @media (min-width:1081px){
   :root{--sec-y:clamp(4rem,8vh,7rem)}
-  .h2{font-size:min(clamp(2.05rem,1.3rem + 2.9vw,4.05rem),6.2svh)}
+  .h2{font-size:min(clamp(2.35rem,1.5rem + 2.9vw,4.05rem),6.2svh)}
   .hero__title{font-size:min(clamp(2.7rem,1.1rem + 5.3vw,6.2rem),10.5svh)}
   .hero__frameWrap{width:min(100%,332px,34svh)}
 
@@ -823,8 +833,8 @@ body.is-locked .nav__logo--light{opacity:1}
 /* ── celular ─────────────────────────────────────── */
 @media (max-width:480px){
   :root{--sec-y:clamp(3.6rem,9vh,5rem)}
-  .h2{font-size:clamp(1.85rem,1.1rem + 3.6vw,2.45rem)}
-  .hero__title{font-size:clamp(2.3rem,9.5vw,3.1rem)}
+  .h2{font-size:clamp(2.3rem,1.4rem + 3.6vw,2.75rem)}
+  .hero__title{font-size:clamp(2.8rem,11vw,3.3rem)}   /* sempre acima do .h2 */
   .hero__lead{font-size:.95rem;margin-bottom:1.6rem}
 
   /* CTAs em bloco: alvo de toque cheio, sem dois botões
@@ -851,8 +861,8 @@ body.is-locked .nav__logo--light{opacity:1}
 /* ── celular pequeno (≤ iPhone SE) ───────────────── */
 @media (max-width:380px){
   :root{--pad-base:1.1rem}
-  .hero__title{font-size:2.1rem}
-  .h2{font-size:1.78rem}
+  .hero__title{font-size:2.5rem}
+  .h2{font-size:2.2rem}
   .menu__links a{font-size:1.9rem}
   .stats dt{font-size:1.9rem}
   .btn{padding:.9rem 1.3rem;letter-spacing:.16em}
