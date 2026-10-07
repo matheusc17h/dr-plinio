@@ -237,20 +237,19 @@ body.is-locked .nav__logo--light{opacity:1}
 .nav__burger[aria-expanded="true"] i:first-child{transform:translateY(3px) rotate(45deg)}
 .nav__burger[aria-expanded="true"] i:last-child{transform:translateY(-3px) rotate(-45deg)}
 
-/* o painel só recorta (clip-path animado); quem rola é .menu__scroll.
-   No iOS, juntar clip-path e overflow:auto no mesmo elemento faz o recorte
-   não atualizar e o menu nunca aparece */
+/* iOS: NADA de clip-path aqui. No Safari do iPhone, um clip-path animado
+   num ancestral de uma caixa com rolagem (overflow:auto) atualiza o fundo
+   mas não a camada de rolagem: o painel ficava preto e sem os links.
+   O painel desce com transform (o GSAP assume a partir daqui) e fica
+   invisível com visibility quando fechado. */
 .menu{
   position:fixed;inset:0;z-index:790;background:var(--ink);color:var(--paper);
-  clip-path:inset(0 0 100% 0); pointer-events:none;
+  transform:translateY(-100%); visibility:hidden; pointer-events:none;
 }
-/* celular em paisagem: os links não cabem na altura — rola dentro do painel
-   sem contaminar o scroll da página atrás */
 .menu__scroll{
   height:100%;
   display:flex;flex-direction:column;justify-content:center;gap:3rem;
   padding:calc(var(--nav-h) + 1.6rem) var(--pad) calc(2.4rem + env(safe-area-inset-bottom, 0px));
-  overflow-y:auto; overscroll-behavior:contain;
 }
 .menu.is-open{pointer-events:auto}
 .menu__links{display:flex;flex-direction:column;gap:.4rem}
@@ -662,6 +661,8 @@ body.is-locked .nav__logo--light{opacity:1}
 .foot{
   background:var(--ink);color:var(--paper);
   padding:clamp(3.5rem,8vh,6rem) var(--pad) calc(1.6rem + env(safe-area-inset-bottom, 0px));
+  /* a frase entra pela direita: sem isto ela alarga a página no celular */
+  overflow:hidden;
 }
 .foot > *{max-width:var(--maxw);margin-inline:auto}
 .foot__top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2rem;padding-bottom:3rem;border-bottom:1px solid rgba(245,244,241,.12)}
@@ -914,7 +915,10 @@ body.is-locked .nav__logo--light{opacity:1}
   .hero__scroll{display:none}
   /* painel do menu: alinhar ao topo, senão o conteúdo centralizado
      que não cabe fica cortado e sem como rolar */
-  .menu__scroll{justify-content:flex-start;gap:1.6rem}
+  /* celular deitado: os links não cabem na altura e o painel rola por
+     dentro, sem contaminar o scroll da página atrás. Só aqui existe
+     overflow:auto no menu (em pé não há camada de rolagem nenhuma). */
+  .menu__scroll{justify-content:flex-start;gap:1.6rem;overflow-y:auto;overscroll-behavior:contain}
   .menu__links a{font-size:1.6rem}
 }
 @media (max-height:520px) and (orientation:landscape) and (min-width:721px){

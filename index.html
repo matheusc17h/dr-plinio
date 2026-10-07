@@ -138,8 +138,7 @@
   </header>
 
   <div class="menu" id="menu" aria-hidden="true">
-    <!-- a rolagem fica num filho: no iOS um elemento com overflow:auto vira
-       camada de rolagem nativa e para de aplicar o clip-path animado -->
+    <!-- o painel desce com transform, sem clip-path (bug do iPhone: ver .menu no CSS) -->
     <div class="menu__scroll">
     <nav class="menu__links">
       <a href="#sobre"><em>01</em> Sobre</a>

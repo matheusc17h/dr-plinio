@@ -306,8 +306,13 @@
 
     if (!burger || !menu) return;
     var open = false;
+    // o painel desce com transform (sem clip-path: ver o CSS de .menu, bug do iOS).
+    // visibility liga no começo da abertura e desliga no fim do fechamento.
+    // y:0 zera o translateY(-100%) do CSS (estado sem JS); senão o GSAP soma os dois
+    gsap.set(menu, { y: 0, yPercent: -100 });
     var tl = gsap.timeline({ paused: true })
-      .to(menu, { clipPath: 'inset(0 0 0% 0)', duration: 0.8, ease: 'power4.inOut' })
+      .set(menu, { visibility: 'visible' })
+      .to(menu, { yPercent: 0, duration: 0.8, ease: 'power4.inOut' })
       .from($$('.menu__links a', menu), { yPercent: 110, opacity: 0, stagger: 0.06, duration: 0.6, ease: 'power3.out' }, '-=0.4')
       .from($('.menu__foot', menu), { opacity: 0, y: 20, duration: 0.5 }, '-=0.35');
 
@@ -903,6 +908,32 @@
   }
 
   /* ───────────────────────────────────────────────
+     RODAPÉ — uma sequência só, quando o rodapé aparece:
+     a marca sobe, a frase entra pela direita e as três
+     colunas aparecem uma de cada vez. Cada parte começa
+     antes da anterior terminar (~2s no total).
+     ─────────────────────────────────────────────── */
+  function initRodape() {
+    if (REDUCED) return;
+    var logo = $('.foot__logo'), frase = $('.foot__claim'), cols = $$('.foot__grid > div');
+    if (!logo || !frase || !cols.length) return;
+
+    gsap.set(logo, { y: 50, autoAlpha: 0 });
+    gsap.set(frase, { x: 90, autoAlpha: 0 });
+    gsap.set(cols, { y: 28, autoAlpha: 0 });
+
+    ScrollTrigger.create({
+      trigger: '.foot', start: 'top 82%', once: true,
+      onEnter: function () {
+        gsap.timeline({ defaults: { ease: 'power3.out' } })
+          .to(logo, { y: 0, autoAlpha: 1, duration: 0.9 })
+          .to(frase, { x: 0, autoAlpha: 1, duration: 1 }, '-=0.55')
+          .to(cols, { y: 0, autoAlpha: 1, duration: 0.7, stagger: 0.22 }, '-=0.45');
+      }
+    });
+  }
+
+  /* ───────────────────────────────────────────────
      14. ÂNCORAS SUAVES
      ─────────────────────────────────────────────── */
   function initAnchors() {
@@ -982,6 +1013,7 @@
     initBeforeAfter();
     initTilt();
     initFaq();
+    initRodape();
     initAnchors();
 
     window.addEventListener('load', function () { ScrollTrigger.refresh(); });
