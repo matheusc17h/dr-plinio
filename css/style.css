@@ -454,12 +454,15 @@ body.is-locked .nav__logo--light{opacity:1}
   /* texto e comparador juntos, o par centralizado */
   .caso{grid-template-columns:minmax(0,20rem) minmax(0,48rem);justify-content:center;gap:clamp(2rem,5vw,4.5rem)}
 }
-@media (min-width:1081px){
-  .caso{grid-column:1 / -1}
-}
 
-.gal{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(.7rem,1.4vw,1.2rem);margin-top:clamp(1.2rem,2.4vw,2rem)}
-.gal__it{margin:0;overflow:hidden;border-radius:8px;aspect-ratio:3/4;background:var(--paper-2)}
+.gal{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(.7rem,1.4vw,1.2rem);margin-top:clamp(1.2rem,2.4vw,2rem)}
+.gal__it{position:relative;margin:0;overflow:hidden;border-radius:8px;aspect-ratio:3/4;background:var(--paper-2)}
+/* mesma etiqueta dos comparadores: antes à esquerda, depois à direita */
+.gal__tag{
+  position:absolute;left:.8rem;bottom:.8rem;padding:.36rem .8rem;border-radius:999px;
+  font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  background:rgba(20,20,26,.6);color:var(--paper);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
 .gal__it img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s var(--ease)}
 .gal__it:hover img{transform:scale(1.06)}
 
@@ -749,16 +752,15 @@ body.is-locked .nav__logo--light{opacity:1}
   .tecnica__shot{grid-area:shot;margin:0;align-self:center}
   .tecnica__shot img{width:auto;max-height:calc(100svh - 2 * var(--sec-y) - 2.5rem)}
 
-  /* resultados: antes/depois e galeria lado a lado, mesma altura */
-  .resultados{
-    --rh:min(58svh,540px);
-    display:grid;grid-template-columns:1.75fr 1fr;column-gap:clamp(.7rem,1.4vw,1.2rem);
-  }
-  .resultados__head{grid-column:1 / -1;width:100%}
+  /* resultados: comparador em cima, par antes | depois embaixo, na largura toda */
+  .resultados{--rh:min(62svh,560px)}
   .resultados .h2{margin-bottom:1.8rem}
+  /* comparador na proporção das fotos (16/10) pela altura da tela, centralizado;
+     o par antes | depois usa a mesma largura para os dois ficarem alinhados */
   .ba{height:var(--rh);aspect-ratio:auto;max-height:none}
-  .gal{height:var(--rh);margin-top:0;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
-  .gal__it{aspect-ratio:auto}
+  .ba:not(.ba--caso),.gal{width:min(100%,calc(var(--rh) * 1.6));margin-inline:auto}
+  .gal__it{aspect-ratio:16/10}
+  .gal__tag{left:1.2rem;bottom:1.2rem;padding:.42rem 1rem;font-size:.62rem;letter-spacing:.24em}
 
   /* diferenciais */
   .cards .h2{margin-bottom:2rem}
@@ -795,7 +797,6 @@ body.is-locked .nav__logo--light{opacity:1}
   .hero__lead{max-width:56ch}          /* uma coluna só: a linha pode crescer */
   .sobre,.local{grid-template-columns:1fr}
   .sobre__media{margin-bottom:3.5rem}
-  .gal{grid-template-columns:repeat(2,1fr)}
   .foot__grid{grid-template-columns:repeat(2,1fr);gap:2.2rem 2.5rem}
 }
 
