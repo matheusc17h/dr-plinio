@@ -494,12 +494,14 @@ body.is-locked .nav__logo--light{opacity:1}
    o espaço vertical do viewport é a folga para ele subir sem cortar */
 .cards__viewport{padding-block:clamp(1.4rem,3vw,2.2rem);touch-action:pan-y;user-select:none}
 .cards__track{position:relative;display:flex;gap:clamp(1rem,2vw,1.8rem);width:max-content;will-change:transform}
-/* altura: o ::before guarda a proporção 3/4.1 como altura mínima e o texto
-   divide a mesma célula do grid, ancorado embaixo. Se o texto for maior que
-   a proporção, o card cresce em vez de cortar; a fileira é flex com stretch,
-   então os 5 ficam com a altura do maior. */
+/* card em duas partes: a foto em cima, limpa (sem escurecer, para o
+   resultado aparecer com a cor real) e o texto embaixo, num painel grafite.
+   A fileira é flex com stretch, então os 5 ficam com a altura do maior;
+   quem absorve a sobra nos cards de texto curto é a foto (flex-grow), que
+   parte de 4/3 como mínimo. Assim o texto fica sempre justo, sem vão. */
 .card{
-  position:relative;width:clamp(240px,26vw,340px);display:grid;
+  position:relative;width:clamp(240px,26vw,340px);
+  display:flex;flex-direction:column;
   border-radius:10px;overflow:hidden;background:var(--ink);flex:0 0 auto;
   cursor:pointer;box-shadow:0 0 0 rgba(20,20,26,0);
 }
@@ -507,21 +509,21 @@ body.is-locked .nav__logo--light{opacity:1}
 .cards.is-ready .card{transition:transform .7s var(--ease),box-shadow .7s var(--ease),opacity .7s var(--ease)}
 .cards.is-ready .card:not(.is-active){opacity:.55}
 .card.is-active{transform:translateY(-14px) scale(1.07);box-shadow:0 30px 60px -22px rgba(20,20,26,.55);z-index:1;cursor:auto}
-.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease),filter .8s var(--ease);filter:saturate(.85) brightness(.82)}
-.card img{pointer-events:none;-webkit-user-drag:none}
-.card.is-active img{filter:saturate(1) brightness(.9)}
-.card::before{content:"";grid-area:1/1;aspect-ratio:3/4.1}
-.card::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,14,.94) 12%,rgba(10,10,14,.35) 52%,transparent 78%)}
-.card:hover img{transform:scale(1.07);filter:saturate(1) brightness(.9)}
-/* o texto leva o próprio escuro: seja qual for a foto ou o tamanho do texto,
-   o fundo atrás das letras fica em ≥ 80% de preto (contraste AA) */
+/* fora de foco a foto fica levemente apagada; o card ativo mostra a cor real */
+.card img{
+  display:block;width:100%;height:auto;aspect-ratio:4/3;flex:1 0 auto;object-fit:cover;
+  transition:transform 1.2s var(--ease),filter .8s var(--ease);filter:saturate(.85) brightness(.9);
+  pointer-events:none;-webkit-user-drag:none;
+}
+.card.is-active img{filter:none}
+.card:hover img{transform:scale(1.05);filter:none}
+/* fundo próprio + z-index: o zoom da foto no hover passa por baixo do texto */
 .card__body{
-  grid-area:1/1;align-self:end;position:relative;z-index:2;
-  padding:3.2rem clamp(1.1rem,1.8vw,1.6rem) 1.6rem;
-  background:linear-gradient(to top,rgba(10,10,14,.9) 0,rgba(10,10,14,.8) calc(100% - 3.2rem),rgba(10,10,14,0) 100%);
+  flex:none;position:relative;z-index:1;background:var(--ink);
+  padding:1.3rem clamp(1.1rem,1.8vw,1.6rem) 1.6rem;
 }
 .card__kpi{font-size:.66rem;letter-spacing:.3em;color:var(--gold)}
-.card__body h3{font-family:var(--serif);font-weight:600;font-size:clamp(1.12rem,1.5vw,1.4rem);line-height:1.2;margin:.8rem 0 .5rem;color:var(--paper)}
+.card__body h3{font-family:var(--serif);font-weight:600;font-size:clamp(1.12rem,1.5vw,1.4rem);line-height:1.2;margin:.7rem 0 .5rem;color:var(--paper)}
 .card__sub{margin:0 0 .8rem;font-size:.64rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;line-height:1.5;color:var(--gold)}
 .card__body p:not(.card__sub){margin:0;font-size:.85rem;line-height:1.62;color:rgba(245,244,241,.8)}
 /* setas + bolinhas (como o carrossel do Instagram) */
@@ -909,7 +911,9 @@ body.is-locked .nav__logo--light{opacity:1}
   .link-arrow:hover{color:inherit}
   .link-arrow:hover i::before{transform:scaleX(.6875)}
   .link-arrow:hover i::after{transform:rotate(45deg)}
-  .gal__it:hover img,.card:hover img{transform:none;filter:saturate(.85) brightness(.82)}
+  .gal__it:hover img{transform:none;filter:saturate(.85) brightness(.82)}
+  .card:hover img{transform:none;filter:saturate(.85) brightness(.9)}
+  .card.is-active:hover img{filter:none}
   .step:hover{background:var(--ink)}
   .faq__it:hover{border-color:var(--line-dk)}
   .faq__q:hover{color:inherit}
@@ -927,7 +931,7 @@ body.is-locked .nav__logo--light{opacity:1}
   body,.hero,.tecnica,.foot{background:#fff!important;color:#000!important}
   .hero,.sobre,.tecnica,.resultados,.cards,.local,.foot{padding-block:1.5rem}
   .hero__lead,.step p,.card__body p:not(.card__sub),.foot__grid p{color:#333!important}
-  .card::after,.frame::after,.hero::after{display:none}
+  .frame::after,.hero::after{display:none}
   .cards__track{flex-wrap:wrap;width:auto;transform:none!important}
   .card{transform:none!important;opacity:1!important}
   .faq__ico{display:none}
