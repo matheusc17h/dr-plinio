@@ -261,9 +261,21 @@
     var rx = gsap.quickTo(ring, 'x', { duration: 0.55, ease: 'power3' });
     var ry = gsap.quickTo(ring, 'y', { duration: 0.55, ease: 'power3' });
 
+    // só aparece no primeiro movimento do mouse, já na posição dele (sem
+    // voar do canto da tela), e some quando o mouse sai da janela
+    var ligado = false;
     window.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      if (!ligado) {
+        gsap.set([dot, ring], { x: e.clientX, y: e.clientY });
+        c.classList.add('is-on'); ligado = true;
+      }
       dx(e.clientX); dy(e.clientY); rx(e.clientX); ry(e.clientY);
     }, { passive: true });
+    document.addEventListener('pointerout', function (e) {
+      if (!e.relatedTarget) { c.classList.remove('is-on'); ligado = false; }
+    });
+    window.addEventListener('blur', function () { c.classList.remove('is-on'); ligado = false; });
 
     $$('a, button, .ba, .cards__viewport').forEach(function (el) {
       el.addEventListener('pointerenter', function () {
@@ -342,19 +354,17 @@
     var heroLines = $$('.hero__title .l > span');
     var heroRs    = $$('.hero .r > span');
     var frame     = $('#heroFrame');
-    var badge     = $('#heroBadge');
 
     // estado inicial (imediato, evita flash)
     gsap.set(heroLines, { yPercent: 118 });
     gsap.set(heroRs, { yPercent: 105, opacity: 0 });
     gsap.set(frame, { clipPath: 'inset(100% 0% 0% 0%)' });
-    gsap.set(badge, { scale: 0, opacity: 0 });
     gsap.set('#waFloat', { scale: 0 });
 
     if (REDUCED) {
       gsap.set([heroLines, heroRs], { clearProps: 'all' });
       gsap.set(frame, { clipPath: 'inset(0% 0% 0% 0%)' });
-      gsap.set([badge, '#waFloat'], { scale: 1, opacity: 1 });
+      gsap.set('#waFloat', { scale: 1, opacity: 1 });
       if (loader) loader.classList.add('is-done');
       return;
     }
@@ -396,8 +406,7 @@
       // o título, linha a linha
       .to(heroLines, { yPercent: 0, duration: 1.15, ease: 'power4.out', stagger: 0.09 }, '-=1.0')
       .to(heroRs, { yPercent: 0, opacity: 1, duration: 0.9, ease: 'power3.out', stagger: 0.1 }, '-=0.75')
-      .to(badge, { scale: 1, opacity: 1, duration: 0.8, ease: 'back.out(1.7)' }, '-=0.6')
-      .to('#waFloat', { scale: 1, duration: 0.7, ease: 'back.out(1.8)' }, '-=0.4');
+      .to('#waFloat', { scale: 1, duration: 0.7, ease: 'back.out(1.8)' }, '-=0.5');
 
     return tl;
   }

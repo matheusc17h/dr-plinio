@@ -169,11 +169,13 @@ section[id]{scroll-margin-top:var(--nav-h)}
 .loader{animation:loaderFailsafe .6s linear 8s forwards}
 
 /* ═══ CURSOR ═══ */
-.cursor{position:fixed;top:0;left:0;z-index:9000;pointer-events:none;mix-blend-mode:difference;opacity:0}
+/* escondido até o primeiro movimento do mouse (o JS põe .is-on) e de novo
+   quando o mouse sai da janela: nunca fica parado num canto no carregamento */
+.cursor{position:fixed;top:0;left:0;z-index:9000;pointer-events:none;mix-blend-mode:difference;opacity:0;transition:opacity .3s}
 .cursor__dot,.cursor__ring{position:absolute;border-radius:50%;transform:translate(-50%,-50%)}
 .cursor__dot{width:5px;height:5px;background:var(--gold)}
 .cursor__ring{width:38px;height:38px;border:1px solid rgba(201,169,106,.55)}
-@media (hover:hover) and (pointer:fine){ .cursor{opacity:1} }
+@media (hover:hover) and (pointer:fine){ .cursor.is-on{opacity:1} }
 @media (hover:none){ .cursor{display:none} }
 
 /* ═══ NAV ═══ */
@@ -271,12 +273,12 @@ body.is-locked .nav__logo--light{opacity:1}
 .hero__canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.9}
 .hero__inner{
   position:relative;z-index:2;width:100%;max-width:var(--maxw);margin-inline:auto;
-  display:grid; grid-template-columns:1.05fr .95fr; gap:clamp(2rem,5vw,5rem); align-items:center;
+  display:grid; grid-template-columns:1.1fr .9fr; gap:clamp(2rem,5vw,6rem); align-items:center;
 }
 .hero__copy .eyebrow{margin-bottom:1.15rem}
 .hero__title{
   font-family:var(--serif);font-weight:200;
-  font-size:clamp(2.7rem,1.1rem + 5.3vw,6.2rem); line-height:.98; letter-spacing:-.025em;
+  font-size:clamp(2.7rem,4.4vw,4.3rem); line-height:1.02; letter-spacing:-.025em;
   margin:0 0 1.35rem;
 }
 .hero__lead{max-width:44ch;color:rgba(245,244,241,.72);margin:0 0 1.9rem}
@@ -288,7 +290,7 @@ body.is-locked .nav__logo--light{opacity:1}
 /* moldura retrato do vídeo */
 .hero__stage{position:relative;display:flex;justify-content:center}
 /* o selo acompanha a moldura, não a coluna inteira */
-.hero__frameWrap{position:relative;width:min(100%,332px);will-change:transform}
+.hero__frameWrap{position:relative;width:min(100%,382px);will-change:transform}
 .frame{
   position:relative;margin:0;width:100%;aspect-ratio:9/16;
   border-radius:200px 200px 14px 14px; overflow:hidden;
@@ -303,6 +305,11 @@ body.is-locked .nav__logo--light{opacity:1}
 .frame__poster,.frame__video{
   position:absolute;inset:0;width:100%;height:100%;
   object-fit:cover;object-position:center;
+}
+/* tratamento provisório só na foto (os vídeos ficam como estão). Só no
+   desktop: no celular ela fica atrás do texto e clarear prejudica a leitura */
+@media (min-width:721px){
+  .frame__poster{filter:brightness(1.12) contrast(1.06)}
 }
 .frame__video{opacity:0}
 .frame__poster{opacity:1;transition:opacity .6s var(--ease)}
@@ -326,23 +333,16 @@ body.is-locked .nav__logo--light{opacity:1}
   position:absolute;inset:0;pointer-events:none;opacity:.35;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='.5'/></svg>");
 }
+/* CRO legível sobre qualquer quadro do vídeo: escuro na base do arco
+   (40% da altura) e texto claro; contraste AA mesmo sobre um quadro branco */
 .frame__cap{
-  position:absolute;left:0;right:0;bottom:0;padding:2.6rem 1.4rem 1.1rem;text-align:center;
-  font-size:.64rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(245,244,241,.8);
-  background:linear-gradient(to top,rgba(0,0,0,.72),transparent);
+  position:absolute;left:0;right:0;bottom:0;height:40%;
+  display:flex;align-items:flex-end;justify-content:center;padding:0 1.4rem 1.1rem;
+  font-size:.64rem;letter-spacing:.28em;text-transform:uppercase;color:var(--paper);
+  background:linear-gradient(to top,rgba(0,0,0,.65),transparent);
 }
-.frame__cap em{font-style:normal;color:var(--gold)}
+.frame__cap em{font-style:normal;color:var(--gold-soft)}
 
-.frame__badge{
-  position:absolute;left:-16%;bottom:9%;width:clamp(78px,9vw,106px);aspect-ratio:1;
-  display:grid;place-items:center;border-radius:50%;
-  background:rgba(20,20,26,.72);backdrop-filter:blur(8px);
-  border:1px solid rgba(201,169,106,.34);
-}
-.frame__badge svg{position:absolute;inset:0;width:100%;height:100%;animation:spin 26s linear infinite}
-.frame__badge text{font-family:var(--sans);font-size:7.4px;letter-spacing:.26em;fill:var(--gold-soft)}
-.frame__badge-core{font-family:var(--serif);font-size:1.5rem;color:var(--gold);letter-spacing:.04em}
-@keyframes spin{to{transform:rotate(360deg)}}
 
 .hero__scroll{
   position:absolute;left:var(--pad);bottom:clamp(1.4rem,4vh,2.4rem);z-index:2;
@@ -667,7 +667,9 @@ body.is-locked .nav__logo--light{opacity:1}
 /* ═══ FOOTER ═══ */
 .foot{
   background:var(--ink);color:var(--paper);
-  padding:clamp(3.5rem,8vh,6rem) var(--pad) calc(1.6rem + env(safe-area-inset-bottom, 0px));
+  /* embaixo: folga para o botão flutuante do WhatsApp (58px + margem) não
+     cobrir a última linha do rodapé quando a página chega ao fim */
+  padding:clamp(3.5rem,8vh,6rem) var(--pad) calc(1.6rem + 92px + env(safe-area-inset-bottom, 0px));
   /* a frase entra pela direita: sem isto ela alarga a página no celular */
   overflow:hidden;
 }
@@ -688,20 +690,17 @@ body.is-locked .nav__logo--light{opacity:1}
   position:fixed;z-index:850;
   right:max(clamp(1rem,3vw,2rem), env(safe-area-inset-right, 0px));
   bottom:calc(clamp(1rem,3vw,2rem) + env(safe-area-inset-bottom, 0px));
-  display:flex;align-items:center;gap:0;height:58px;padding:0 17px;
-  border-radius:999px;background:#1F8F5F;color:#fff;cursor:pointer;
-  box-shadow:0 14px 34px -10px rgba(31,143,95,.6);
+  /* dourado do botão "Agendar avaliação" com ícone grafite: combina com a
+     paleta e o desenho do ícone continua o do WhatsApp */
+  display:grid;place-items:center;width:58px;height:58px;
+  border-radius:50%;background:var(--gold);color:var(--ink);cursor:pointer;
+  box-shadow:0 14px 34px -12px rgba(20,20,26,.55);
   transform:scale(0); transform-origin:bottom right;
-  transition:gap .5s var(--ease), padding .5s var(--ease), background .4s;
+  /* o GSAP usa transform na entrada: o hover usa a propriedade scale, à parte */
+  transition:scale .4s var(--ease), box-shadow .4s var(--ease);
 }
-.wa-float svg{width:25px;height:25px;flex:0 0 auto}
-.wa-float__lbl{
-  max-width:0;overflow:hidden;white-space:nowrap;
-  font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
-  transition:max-width .55s var(--ease);
-}
-.wa-float:hover{gap:11px;padding-right:22px;background:#17754C}
-.wa-float:hover .wa-float__lbl{max-width:180px}
+.wa-float svg{width:26px;height:26px}
+.wa-float:hover{scale:1.06;box-shadow:0 18px 40px -12px rgba(20,20,26,.65)}
 
 /* ═══════════════════════════════════════════════════════════
    RESPONSIVO
@@ -713,7 +712,7 @@ body.is-locked .nav__logo--light{opacity:1}
 
 /* ── monitores largos ────────────────────────────── */
 @media (min-width:1600px){
-  .hero__frameWrap{width:min(100%,372px)}
+  .hero__frameWrap{width:min(100%,428px)}
   .stats{gap:2.2rem}
 }
 
@@ -724,8 +723,12 @@ body.is-locked .nav__logo--light{opacity:1}
 @media (min-width:1081px){
   :root{--sec-y:clamp(4rem,8vh,7rem)}
   .h2{font-size:min(clamp(2.35rem,1.5rem + 2.9vw,4.05rem),6.2svh)}
-  .hero__title{font-size:min(clamp(2.7rem,1.1rem + 5.3vw,6.2rem),10.5svh)}
-  .hero__frameWrap{width:min(100%,332px,34svh)}
+  /* 3 linhas no desktop ("Sorrisos construídos / de maneira / natural"): o teto
+     em svh garante que os dois botões caibam na primeira tela em 1366×768 */
+  .hero__title{font-size:min(clamp(2.7rem,4.4vw,4.3rem),8.6svh)}
+  /* a foto encosta no lado do texto: sem o vão da coluna centralizada */
+  .hero__stage{justify-content:flex-start}
+  .hero__frameWrap{width:min(100%,382px,39svh)}
 
   /* sobre: a foto em arco segue a altura da tela */
   .sobre__media{width:min(100%,48svh);justify-self:end}
@@ -788,7 +791,7 @@ body.is-locked .nav__logo--light{opacity:1}
 @media (max-width:1280px){
   .nav{gap:1.2rem}
   .nav__links{gap:1.5rem}
-  .hero__frameWrap{width:min(100%,300px)}
+  .hero__frameWrap{width:min(100%,345px,39svh)}
 }
 
 /* ── tablet: a nav vira menu ─────────────────────── */
@@ -831,7 +834,6 @@ body.is-locked .nav__logo--light{opacity:1}
   }
   .frame::after{border:0;box-shadow:inset 0 0 200px 60px rgba(10,10,14,.75)}
   .frame__cap{display:none}
-  .frame__badge{display:none}
   .frame__steps{display:none}   /* o texto ocupa o rodapé no mobile */
   /* o padding inferior reserva a faixa do botão flutuante do
      WhatsApp (58px + respiro): nenhum CTA fica embaixo dele */
@@ -860,8 +862,6 @@ body.is-locked .nav__logo--light{opacity:1}
   .ba{aspect-ratio:4/5}
   .foot__grid{grid-template-columns:1fr;gap:2rem}
   .foot__top{flex-direction:column;align-items:flex-start}
-  .wa-float__lbl{display:none}
-  .wa-float{padding:0;width:58px;justify-content:center}
 
   .marquee{padding:.9rem 0}
   .sobre__media{margin-bottom:4rem}
@@ -952,14 +952,14 @@ body.is-locked .nav__logo--light{opacity:1}
   .faq__q:hover .faq__ico{border-color:var(--line-dk);color:var(--ink)}
   .faq__it.is-open:hover{border-color:var(--line)}
   .local__map:hover iframe{filter:grayscale(1) contrast(.92) brightness(1.04)}
-  .wa-float:hover{gap:0;padding-right:17px;background:#1F8F5F}
+  .wa-float:hover{scale:1;box-shadow:0 14px 34px -12px rgba(20,20,26,.55)}
   .nav__links a:hover::after{transform:scaleX(0)}
 }
 
 /* ── impressão ───────────────────────────────────── */
 @media print{
   .loader,.cursor,.nav,.menu,.wa-float,.hero__canvas,.marquee,
-  .hero__scroll,.frame__badge,.cards__nav,.local__map{display:none!important}
+  .hero__scroll,.cards__nav,.local__map{display:none!important}
   body,.hero,.tecnica,.foot{background:#fff!important;color:#000!important}
   .hero,.sobre,.tecnica,.resultados,.cards,.local,.foot{padding-block:1.5rem}
   .hero__lead,.step p,.card__body p:not(.card__sub),.foot__grid p{color:#333!important}
@@ -978,6 +978,5 @@ body.is-locked .nav__logo--light{opacity:1}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .loader{display:none}
   .l > span,.r > span,.rv > span{transform:none!important;opacity:1!important}
-  .frame__badge svg{animation:none}
 }
 :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
