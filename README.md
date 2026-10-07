@@ -52,7 +52,7 @@ campo — essa pasta não existe mais.
 │  ├─ scene.js         Three.js: campo de luz do hero
 │  └─ main.js          GSAP: abertura, revelações, parallax, slider, cards
 ├─ assets/img/         imagens curadas e renomeadas
-├─ assets/video/       hero-01/02/03.mp4 (playlist do hero)
+├─ assets/video/       hero-01.mp4, hero-02.mp4, hero-3.mp4 (playlist do hero)
 └─ tools/hero-video.sh pipeline de corte do vídeo (precisa de ffmpeg)
 ```
 
@@ -103,7 +103,7 @@ Traços finos no rodapé da moldura mostram em que clipe você está.
 |---|---------|--------|--------------|
 | 1 | `hero-01.mp4` | `videoheader3.mp4` | Dr. Plínio trabalhando, plano fechado |
 | 2 | `hero-02.mp4` | `montagemdevideos2.mp4` | Dr. Plínio de perfil, atendendo |
-| 3 | `hero-03.mp4` | `videomae2.mp4` | macro do sorriso finalizado |
+| 3 | `hero-3.mp4` | enviado pelo cliente (out/2026), 21,3s | substituiu o antigo `hero-03.mp4` |
 
 Os cortes (`ini`/`fim` em `js/config.js`) são aplicados **na reprodução** —
 dá para reajustar o trecho de cada clipe sem reexportar nada. Para tirar um

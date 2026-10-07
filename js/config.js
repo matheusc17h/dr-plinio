@@ -27,8 +27,9 @@ window.CLINICA = {
     // Dr. Plínio de perfil, atendendo
     { src: 'assets/video/hero-02.mp4', ini: 2.0, fim: 8.6, alt: 'Dr. Plínio Mota atendendo uma paciente' },
 
-    // macro do sorriso finalizado
-    { src: 'assets/video/hero-03.mp4', ini: 0.5, fim: 7.0, alt: 'Sorriso finalizado após clareamento de resinas' }
+    // vídeo novo enviado pelo cliente (21,3s): toca inteiro.
+    // Para usar só um trecho, como os outros dois, ajuste ini/fim.
+    { src: 'assets/video/hero-3.mp4', ini: 0, fim: 21.3, alt: 'Sorriso finalizado no consultório do Dr. Plínio Mota' }
   ],
 
   /* Duração do crossfade entre clipes, em segundos. */

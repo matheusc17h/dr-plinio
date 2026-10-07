@@ -626,7 +626,8 @@
     // e enfeite, nunca o unico caminho ate o conteudo.
     if (REDUCED || !window.gsap || !window.ScrollTrigger) return;
 
-    $$('.stats dt').forEach(function (dt) {
+    // o contador anima só o número (o "+ de" fica fixo ao lado, em outro span)
+    $$('.stats [data-count]').forEach(function (dt) {
       var end = parseFloat(dt.getAttribute('data-count'));
       if (!isFinite(end)) return;
       var suf = dt.getAttribute('data-suffix') || '';

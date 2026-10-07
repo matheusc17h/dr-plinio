@@ -377,6 +377,9 @@ body.is-locked .nav__logo--light{opacity:1}
 
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;margin:2.6rem 0;border-top:1px solid var(--line-dk);padding-top:1.8rem}
 .stats dt{font-family:var(--serif);font-size:clamp(2rem,3.6vw,3.1rem);font-weight:200;line-height:1;color:var(--gold);letter-spacing:-.02em}
+.stats dt{white-space:nowrap}
+/* "+ de" pequeno ao lado do número: os três destaques ficam numa linha só */
+.stats__pre{font-size:.42em;letter-spacing:.02em;vertical-align:.55em;margin-right:.1em}
 .stats dd{margin:.5rem 0 0;font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(20,20,26,.52);line-height:1.6}
 
 /* ═══ 3. TÉCNICA ═══ */
@@ -464,7 +467,9 @@ body.is-locked .nav__logo--light{opacity:1}
   border:1px solid var(--line);
   box-shadow:0 30px 60px -22px rgba(20,20,26,.45),0 8px 20px -10px rgba(20,20,26,.25);
 }
-.depo__card p{margin:0 0 1.3rem;font-family:var(--serif);font-style:italic;font-size:clamp(1.25rem,1.1rem + .6vw,1.6rem);line-height:1.4;font-weight:400;color:var(--champagne)}
+/* depoimentos longos (até ~190 caracteres): fonte contida para o card
+   não encostar no título nem na barra de progresso em telas baixas */
+.depo__card p{margin:0 0 1.3rem;font-family:var(--serif);font-style:italic;font-size:clamp(1.15rem,1rem + .5vw,1.4rem);line-height:1.4;font-weight:400;color:var(--champagne)}
 .depo__card cite{font-style:normal;font-size:.68rem;letter-spacing:.24em;color:var(--gold)}
 .depo__prog{display:none}
 
@@ -700,7 +705,9 @@ body.is-locked .nav__logo--light{opacity:1}
 
   /* sobre: a foto em arco segue a altura da tela */
   .sobre__media{width:min(100%,48svh);justify-self:end}
-  .sobre .h2{margin-bottom:1.2rem}
+  /* título mais longo do site (uma frase inteira): um degrau menor que os
+     outros h2 para a seção continuar cabendo na altura da tela */
+  .sobre .h2{margin-bottom:1.2rem;font-size:min(clamp(2.2rem,1.3rem + 2.4vw,3.3rem),5svh)}
   .stats{margin:1.8rem 0 2rem;padding-top:1.4rem}
 
   /* técnica: a foto de etapas é vertical — em vez de ocupar
