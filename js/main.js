@@ -649,9 +649,14 @@
   /* ───────────────────────────────────────────────
      10. ANTES & DEPOIS
      ─────────────────────────────────────────────── */
+  // um comparador por .ba (o principal e o caso de facetas de resina)
   function initBeforeAfter() {
-    var ba = $('#ba'), clip = $('#baClip'), handle = $('#baHandle'), rail = $('#baRail');
-    if (!ba || !clip || !handle || !rail) return;
+    $$('.ba').forEach(initComparador);
+  }
+
+  function initComparador(ba) {
+    var clip = $('.ba__clip', ba), handle = $('.ba__handle', ba), rail = $('.ba__rail', ba);
+    if (!clip || !handle || !rail) return;
     var clipImg = $('.ba__img', clip);
 
     var pct = 50;

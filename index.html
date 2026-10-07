@@ -331,21 +331,21 @@
             </h2>
           </div>
 
-          <div class="ba" id="ba" role="group" aria-label="Comparação antes e depois: arraste para revelar">
+          <div class="ba" role="group" aria-label="Comparação antes e depois: arraste para revelar">
             <picture>
               <source srcset="assets/img/slider-depois.webp" type="image/webp"><img class="ba__img"
                 src="assets/img/slider-depois.jpg" width="1400" height="875" loading="lazy" decoding="async"
                 alt="Sorriso depois do clareamento de resinas">
             </picture>
-            <div class="ba__clip" id="baClip">
+            <div class="ba__clip">
               <picture>
                 <source srcset="assets/img/slider-antes.webp" type="image/webp"><img class="ba__img"
                   src="assets/img/slider-antes.jpg" width="1400" height="875" loading="lazy" decoding="async"
                   alt="Sorriso antes do clareamento de resinas">
               </picture>
             </div>
-            <div class="ba__rail" id="baRail">
-              <div class="ba__handle" id="baHandle" tabindex="0" role="slider" aria-label="Revelar antes e depois"
+            <div class="ba__rail">
+              <div class="ba__handle" tabindex="0" role="slider" aria-label="Revelar antes e depois"
                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i></div>
             </div>
             <span class="ba__tag ba__tag--l">Antes</span>
@@ -380,6 +380,28 @@
                   width="1280" height="853" loading="lazy" decoding="async" alt="Registro clínico do resultado final">
               </picture>
             </figure>
+          </div>
+
+          <!-- caso de facetas de resina: comparador próprio, na proporção das fotos -->
+          <div class="caso">
+            <div class="caso__txt rv">
+              <h3>Facetas de resina</h3>
+              <p>Caso real atendido na clínica. Arraste para comparar o antes e o depois.</p>
+            </div>
+            <div class="ba ba--caso" role="group" aria-label="Facetas de resina: antes e depois, arraste para revelar">
+              <img class="ba__img" src="assets/img/caso-resina-depois.jpg" width="1600" height="1024" loading="lazy"
+                decoding="async" alt="Sorriso depois das facetas de resina">
+              <div class="ba__clip">
+                <img class="ba__img" src="assets/img/caso-resina-antes.jpg" width="1600" height="1018" loading="lazy"
+                  decoding="async" alt="Sorriso antes das facetas de resina">
+              </div>
+              <div class="ba__rail">
+                <div class="ba__handle" tabindex="0" role="slider" aria-label="Revelar antes e depois das facetas de resina"
+                  aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i></div>
+              </div>
+              <span class="ba__tag ba__tag--l">Antes</span>
+              <span class="ba__tag ba__tag--r">Depois</span>
+            </div>
           </div>
         </section>
 
