@@ -784,7 +784,7 @@ body.is-locked .nav__logo--light{opacity:1}
   .sobre .h2{margin-bottom:1.2rem;font-size:min(clamp(2.2rem,1.3rem + 2.4vw,3.3rem),5svh)}
   .stats{margin:1.8rem 0 2rem;padding-top:1.4rem}
 
-  /* técnica: a foto de etapas é vertical — em vez de ocupar
+  /* técnica: a foto do antes | depois é vertical — em vez de ocupar
      a largura toda (≈2 telas de altura) ela vai para a direita
      e as etapas empilham à esquerda */
   .tecnica{
