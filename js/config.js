@@ -14,21 +14,22 @@ window.CLINICA = {
 
   /* ── PLAYLIST DO HERO ──────────────────────────────────────
      Os clipes tocam em sequência com crossfade e repetem.
-     `ini` e `fim` são segundos DENTRO do arquivo — o corte é
-     feito na reprodução, então dá para ajustar o trecho sem
-     reexportar nada. Todos são 9:16 (servem desktop e mobile).
+     `ini` e `fim` são segundos DENTRO do arquivo. Os arquivos já
+     foram cortados no trecho que toca e comprimidos (1,8 MB os três),
+     por isso começam em 0. Todos são 9:16 (servem desktop e mobile).
+     Para usar outro trecho, reexportar do original com o ffmpeg
+     (ver tools/hero-video.sh).
 
      Para tirar um clipe: comente a linha.
      Para trocar o trecho: mexa em ini/fim.                     */
   heroPlaylist: [
     // Dr. Plínio trabalhando — plano fechado, luz do refletor
-    { src: 'assets/video/hero-01.mp4', ini: 0.4, fim: 6.9, alt: 'Dr. Plínio Mota durante um procedimento' },
+    { src: 'assets/video/hero-01.mp4', ini: 0, fim: 6.5, alt: 'Dr. Plínio Mota durante um procedimento' },
 
     // Dr. Plínio de perfil, atendendo
-    { src: 'assets/video/hero-02.mp4', ini: 2.0, fim: 8.6, alt: 'Dr. Plínio Mota atendendo uma paciente' },
+    { src: 'assets/video/hero-02.mp4', ini: 0, fim: 6.6, alt: 'Dr. Plínio Mota atendendo uma paciente' },
 
-    // vídeo novo enviado pelo cliente (21,3s): toca inteiro.
-    // Para usar só um trecho, como os outros dois, ajuste ini/fim.
+    // vídeo enviado pelo cliente (21,3s): toca inteiro.
     { src: 'assets/video/hero-3.mp4', ini: 0, fim: 21.3, alt: 'Sorriso finalizado no consultório do Dr. Plínio Mota' }
   ],
 

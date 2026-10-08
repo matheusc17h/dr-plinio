@@ -5,13 +5,12 @@ Sem build, sem dependências para instalar — é só servir a pasta.
 
 ---
 
-## ⚠️ Pendência antes de publicar
+## Vídeos do hero
 
-**Peso do vídeo** — o hero toca 3 clipes em sequência, mas os arquivos ainda
-são os originais inteiros (8 MB somados) porque os cortes são feitos na
-reprodução, não no arquivo. Só 1,5 MB é baixado de cara; o resto entra em
-background. Passar o ffmpeg derruba isso para ~1,5 MB no total.
-Veja *Vídeo do hero* abaixo.
+Os 3 clipes já estão cortados no trecho que toca e comprimidos com o
+ffmpeg: 1,8 MB no total (eram 9,5 MB). Por isso `ini` é 0 em
+`js/config.js`. Para trocar o trecho, reexporte do vídeo original
+(veja *Vídeo do hero* abaixo).
 
 O WhatsApp já está configurado: `(11) 97670-6634` → `5511976706634`, em
 `js/config.js`. Se um dia voltar a ficar em branco ou como placeholder, o
