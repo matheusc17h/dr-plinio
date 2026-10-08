@@ -1004,6 +1004,25 @@ body.is-locked .nav__logo--light{opacity:1}
   .nav__links a:hover::after{transform:scaleX(0)}
 }
 
+/* ── hero no celular: legibilidade sobre o vídeo ─────
+   Bloco no fim de propósito: vence os ajustes de 720/480 acima
+   sem mexer neles, e só toca no hero. O overlay é o mesmo
+   .hero::after do bloco de 720px (o vídeo só fica atrás do texto
+   até 720px; entre 721 e 768 ele está no arco, acima do texto). */
+@media (max-width:768px){
+  .hero::after{
+    background:linear-gradient(to bottom,rgba(0,0,0,.35) 0%,rgba(0,0,0,.55) 40%,rgba(0,0,0,.75) 100%);
+    pointer-events:none;
+  }
+  /* 300 está no import do Google Fonts (normal e itálico): sem peso simulado */
+  .hero__title{font-weight:300}
+  .hero__lead{font-weight:400;color:rgba(255,255,255,.9);font-size:max(1rem,16px);line-height:1.55}
+  .hero .link-arrow{
+    letter-spacing:.1em;font-weight:500;color:rgba(255,255,255,.85);
+    min-height:44px;
+  }
+}
+
 /* ── impressão ───────────────────────────────────── */
 @media print{
   .loader,.cursor,.nav,.menu,.wa-float,.hero__canvas,
