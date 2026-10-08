@@ -463,21 +463,96 @@
     tl.to({}, { duration: 0.3 });                 // respiro final antes de liberar o scroll
   }
 
+  /* ───────────────────────────────────────────────
+     SOBRE — uma coisa de cada vez, sem atropelar:
+     foto do doutor → foto do sorriso → rótulo → título (letras) →
+     1º parágrafo → 2º parágrafo (linhas subindo pela máscara) →
+     destaques (o 300 conta aqui) → botão.
+     Lado a lado (>=1081px): as duas fotos vêm da esquerda e o texto
+     segue na mesma timeline. Empilhado: doutor da esquerda, sorriso
+     da direita; o texto tem a própria timeline quando chega na tela.
+     ─────────────────────────────────────────────── */
+  function initSobre() {
+    var sec = $('.sobre');
+    if (!sec || REDUCED) return;
+    var media = $('.sobre__media', sec), copy = $('.sobre__copy', sec);
+    var dr = $('.par', sec), flt = $('.sobre__float', sec);
+    var eyebrow = $('.eyebrow > span', sec), h = $('.h2', sec);
+    var paras = $$('.prose p', sec), stats = $('.stats', sec), btn = $('.btn', copy);
+    var num = $('.stats [data-count]', sec);
+    var SPLIT = !!window.SplitText;
+
+    var letras = SPLIT && h.hasAttribute('data-letters') ? initLetras(h, true) : null;
+    var tituloLinhas = $$('.l > span', h);
+    if (!letras) gsap.set(tituloLinhas, { yPercent: 118 });
+
+    // parágrafos em linhas com máscara; sem SplitText, cada um sobe inteiro
+    var splits = [];
+    var linhas = paras.map(function (p) {
+      if (!SPLIT) return [p];
+      var sp = new SplitText(p, { type: 'lines', mask: 'lines' });
+      splits.push(sp);
+      return sp.lines;
+    });
+    linhas.forEach(function (ls) { gsap.set(ls, SPLIT ? { yPercent: 105 } : { y: 30, opacity: 0 }); });
+
+    gsap.set(eyebrow, { yPercent: 105 });
+    gsap.set([stats, btn], { y: 34, opacity: 0 });
+
+    // acrescenta o texto à timeline, na ordem, a partir de `at`
+    function texto(tl, at) {
+      tl.to(eyebrow, { yPercent: 0, duration: 0.9, ease: 'power4.out' }, at);
+      if (letras) tl.add(letras.play(), at + 0.25);
+      else tl.to(tituloLinhas, { yPercent: 0, duration: 1.15, ease: 'power4.out', stagger: 0.08 }, at + 0.25);
+      // 1º parágrafo quando o título já acendeu quase todo; o 2º depois do 1º
+      var t = at + 1.45;
+      linhas.forEach(function (ls) {
+        tl.to(ls, SPLIT
+          ? { yPercent: 0, duration: 0.9, ease: 'power3.out', stagger: 0.09 }
+          : { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out' }, t);
+        t += 0.9 + (ls.length - 1) * 0.09 - 0.35;
+      });
+      // devolve o texto inteiro depois (resize, leitores de tela)
+      tl.call(function () { splits.forEach(function (sp) { sp.revert(); }); }, null, t + 0.4);
+      tl.to(stats, { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out' }, t);
+      if (num && num._conta) tl.call(num._conta, null, t + 0.15);
+      tl.to(btn, { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', clearProps: 'transform,opacity' }, t + 0.45);
+    }
+
+    var lado = window.matchMedia('(min-width: 1081px)').matches;
+    gsap.set(dr, { x: -90, autoAlpha: 0 });
+    gsap.set(flt, { x: lado ? -70 : 70, autoAlpha: 0 });
+    var fotos = gsap.timeline({ paused: true })
+      .to(dr, { x: 0, autoAlpha: 1, duration: 1.2, ease: 'power3.out', clearProps: 'transform,opacity,visibility' }, 0)
+      .to(flt, { x: 0, autoAlpha: 1, duration: 1.1, ease: 'power3.out', clearProps: 'transform,opacity,visibility' }, 0.55);
+
+    if (lado) {
+      texto(fotos, 1.05);
+      ScrollTrigger.create({ trigger: sec, start: 'top 68%', once: true, onEnter: function () { fotos.play(); } });
+    } else {
+      var tl = gsap.timeline({ paused: true });
+      texto(tl, 0);
+      ScrollTrigger.create({ trigger: media, start: 'top 80%', once: true, onEnter: function () { fotos.play(); } });
+      ScrollTrigger.create({ trigger: copy, start: 'top 85%', once: true, onEnter: function () { tl.play(); } });
+    }
+  }
+
   /* Random letter reveal: o título é quebrado em letras (SplitText),
      todas começam invisíveis e acendem em ordem aleatória
      quando o título entra na tela — "trabalho" pode mostrar r, a, l, o
      primeiro. Toca uma vez, no próprio tempo, sem seguir o scroll.
      Quebrar por palavra também mantém cada palavra inteira na linha;
      o <em> dourado é preservado e o SplitText põe aria-label no título. */
-  function initLetras(h) {
+  // manual: devolve a animação pausada, para entrar numa timeline (ver initSobre)
+  function initLetras(h, manual) {
     var split = new SplitText($$('.l > span', h), { type: 'words,chars', tag: 'span' });
     gsap.set(split.chars, { opacity: 0 });
+    // amount: o título inteiro acende em ~1,4s, seja qual for o nº de letras
+    var acende = { opacity: 1, duration: 0.5, ease: 'power1.out', stagger: { amount: 1.4, from: 'random' } };
+    if (manual) return gsap.to(split.chars, Object.assign({ paused: true }, acende));
     ScrollTrigger.create({
       trigger: h, start: 'top 82%', once: true,
-      onEnter: function () {
-        // amount: o título inteiro acende em ~1,4s, seja qual for o nº de letras
-        gsap.to(split.chars, { opacity: 1, duration: 0.5, ease: 'power1.out', stagger: { amount: 1.4, from: 'random' } });
-      }
+      onEnter: function () { gsap.to(split.chars, acende); }
     });
   }
 
@@ -486,6 +561,7 @@
 
     // títulos em máscara de linha (fora do hero)
     $$('.h2').forEach(function (h) {
+      if (h.closest('.sobre')) return;            // a seção Sobre tem a própria ordem (initSobre)
       if (h.hasAttribute('data-letters') && window.SplitText) return initLetras(h);
       var lines = $$('.l > span', h);
       gsap.set(lines, { yPercent: 118 });
@@ -501,7 +577,7 @@
     // Rótulo sobe pela máscara como as linhas do título; foto e mapa abrem
     // de baixo para cima como a cortina da abertura; o resto sobe com fade.
     $$('.rv').forEach(function (el) {
-      if (el.classList.contains('h2')) return;
+      if (el.classList.contains('h2') || el.closest('.sobre')) return;
       var inner = el.children.length === 1 && el.firstElementChild.tagName === 'SPAN'
         ? el.firstElementChild : el;
       var de, para;
@@ -646,17 +722,17 @@
       if (!isFinite(end)) return;
       var suf = dt.getAttribute('data-suffix') || '';
       var o = { v: 0 };
-      ScrollTrigger.create({
-        trigger: dt, start: 'top 90%', once: true,
-        onEnter: function () {
-          dt.textContent = '0' + suf;            // zera so na hora de animar
-          gsap.to(o, {
-            v: end, duration: 1.8, ease: 'power2.out',
-            onUpdate: function () { dt.textContent = Math.round(o.v) + suf; },
-            onComplete: function () { dt.textContent = end + suf; }
-          });
-        }
-      });
+      function conta() {
+        dt.textContent = '0' + suf;              // zera so na hora de animar
+        gsap.to(o, {
+          v: end, duration: 1.8, ease: 'power2.out',
+          onUpdate: function () { dt.textContent = Math.round(o.v) + suf; },
+          onComplete: function () { dt.textContent = end + suf; }
+        });
+      }
+      // na seção Sobre o número conta quando os destaques entram (initSobre)
+      if (dt.closest('.sobre')) { dt._conta = conta; return; }
+      ScrollTrigger.create({ trigger: dt, start: 'top 90%', once: true, onEnter: conta });
     });
   }
 
@@ -666,6 +742,74 @@
   // um comparador por .ba (o principal e o caso de facetas de resina)
   function initBeforeAfter() {
     $$('.ba').forEach(initComparador);
+    initCasos();
+  }
+
+  // Casos da galeria: o par lado a lado vira comparador (mesmo design do
+  // principal) no botão ou no clique no par; "Ver lado a lado" desfaz.
+  function initCasos() {
+    $$('.gcaso').forEach(function (caso) {
+      var par = $('.gcaso__par', caso), ba = $('.ba', caso);
+      var abre = $('.gcaso__abre', caso), volta = $('.gcaso__volta', caso);
+      if (!par || !ba || !abre || !volta) return;
+
+      // as fotos do comparador começam a carregar quando o par recebe o
+      // mouse/toque, e a troca espera o decode: nunca aparece quadro vazio
+      var fotos = $$('.ba__img', ba);
+      function precarrega() { fotos.forEach(function (img) { img.loading = 'eager'; }); }
+      function prontas() {
+        precarrega();
+        return Promise.all(fotos.map(function (img) {
+          return img.decode ? img.decode().catch(function () {}) : null;
+        }));
+      }
+      par.addEventListener('pointerenter', precarrega);
+      par.addEventListener('touchstart', precarrega, { passive: true });
+      abre.addEventListener('focus', precarrega);
+
+      var ocupado = false;
+      function troca(aberto) {
+        if (ocupado) return;
+        ocupado = true;
+        if (aberto) { prontas().then(function () { troca2(true); }); return; }
+        troca2(false);
+      }
+
+      // Troca sem pulo: o bloco do caso fica com a altura travada, o conteúdo
+      // troca por fade cruzado e a altura anima até a nova. A página não rola
+      // sozinha; o topo do caso fica parado e só o que vem abaixo desliza.
+      function troca2(aberto) {
+        var sai = aberto ? [par, abre] : [ba, volta], entra = aberto ? [ba, volta] : [par, abre];
+        var t = REDUCED ? 0 : 1;
+        abre.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+        gsap.set(caso, { height: caso.offsetHeight, overflow: 'hidden' });
+        gsap.to(sai, {
+          autoAlpha: 0, duration: 0.2 * t, ease: 'power1.out',
+          onComplete: function () {
+            sai.forEach(function (el) { el.hidden = true; });
+            gsap.set(sai, { clearProps: 'opacity,visibility' });
+            gsap.set(entra, { autoAlpha: 0 });
+            entra.forEach(function (el) { el.hidden = false; });
+            var altura = caso.scrollHeight;
+            if (aberto && ba._varre) gsap.delayedCall(0.3 * t, ba._varre);
+            gsap.timeline({
+              onComplete: function () {
+                gsap.set(caso, { clearProps: 'height,overflow' });
+                ScrollTrigger.refresh();
+                (aberto ? $('.ba__handle', ba) : abre).focus({ preventScroll: true });
+                ocupado = false;
+              }
+            })
+              .to(caso, { height: altura, duration: 0.55 * t, ease: 'power3.inOut' }, 0)
+              .to(entra, { autoAlpha: 1, duration: 0.45 * t, ease: 'power1.out', clearProps: 'opacity,visibility' }, 0.1 * t);
+          }
+        });
+      }
+
+      par.addEventListener('click', function () { troca(true); });
+      abre.addEventListener('click', function () { troca(true); });
+      volta.addEventListener('click', function () { troca(false); });
+    });
   }
 
   function initComparador(ba) {
@@ -737,12 +881,10 @@
 
     apply(50, false);
 
-    // entrada: varre de ponta a ponta uma vez, mostrando o que faz
-    if (!REDUCED) {
-      ScrollTrigger.create({
-        trigger: ba, start: 'top 72%', once: true,
-        onEnter: function () {
-          gsap.timeline()
+    // varre de ponta a ponta uma vez, mostrando o que faz
+    function varre() {
+      if (REDUCED) return;
+      gsap.timeline()
             .to({ v: 50 }, {
               v: 92, duration: 1.1, ease: 'power2.inOut',
               onUpdate: function () { apply(this.targets()[0].v, false); }
@@ -755,8 +897,12 @@
               v: 50, duration: 0.9, ease: 'power3.out',
               onUpdate: function () { apply(this.targets()[0].v, false); }
             });
-        }
-      });
+    }
+    ba._varre = varre;
+
+    // entrada pelo scroll; os comparadores dos casos varrem ao abrir (initCasos)
+    if (!ba.closest('.gcaso')) {
+      ScrollTrigger.create({ trigger: ba, start: 'top 72%', once: true, onEnter: varre });
     }
   }
 
@@ -1019,6 +1165,7 @@
     initReveals();
     initParallax(hasGL);
     initCounters();
+    initSobre();
     initBeforeAfter();
     initTilt();
     initFaq();

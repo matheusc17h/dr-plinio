@@ -449,13 +449,37 @@ body.is-locked .nav__logo--light{opacity:1}
 .caso{display:grid;gap:1.6rem;align-items:center;margin-top:clamp(3rem,6vw,5rem)}
 .caso__txt h3{margin:0 0 .6rem;font-family:var(--serif);font-weight:200;font-size:clamp(1.8rem,1.2rem + 2vw,2.8rem);line-height:1.1}
 .caso__txt p{margin:0;max-width:34ch;color:rgba(20,20,26,.7)}
-.ba.ba--caso{aspect-ratio:1600/1018;height:auto;max-height:none;width:100%}
+.ba.ba--caso{aspect-ratio:var(--ar,16/10);height:auto;max-height:none;width:100%}
 @media (min-width:861px){
   /* texto e comparador juntos, o par centralizado */
   .caso{grid-template-columns:minmax(0,20rem) minmax(0,48rem);justify-content:center;gap:clamp(2rem,5vw,4.5rem)}
 }
 
-.gal{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(.7rem,1.4vw,1.2rem);margin-top:clamp(1.2rem,2.4vw,2rem)}
+.gal{display:grid;gap:clamp(.7rem,1.4vw,1.2rem);margin-top:clamp(1.2rem,2.4vw,2rem)}
+
+/* cada caso: par lado a lado que vira comparador no botão (ver initCasos) */
+.gcaso{position:relative}
+.gcaso [hidden]{display:none}
+.gcaso__par{position:relative;display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(.7rem,1.4vw,1.2rem);cursor:pointer}
+/* botões abaixo do caso, fora das fotos: "Arrastar e comparar" / "Ver lado a lado" */
+.gcaso__abre,.gcaso__volta{
+  display:flex;align-items:center;gap:.55rem;margin:.9rem auto 0;padding:.5rem 1.1rem;
+  border:1px solid rgba(20,20,26,.22);border-radius:999px;background:none;color:var(--graphite);
+  font:inherit;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;white-space:nowrap;
+  transition:border-color .4s var(--ease),color .4s var(--ease),background .4s var(--ease);
+}
+/* a mesma alça do comparador, em miniatura */
+.gcaso__abre i{position:relative;flex:none;width:9px;height:7px}
+.gcaso__abre i::before,.gcaso__abre i::after{
+  content:"";position:absolute;top:50%;width:5px;height:5px;
+  border-top:1.5px solid currentColor;border-right:1.5px solid currentColor;
+}
+.gcaso__abre i::before{left:0;transform:translateY(-50%) rotate(-135deg)}
+.gcaso__abre i::after{right:0;transform:translateY(-50%) rotate(45deg)}
+.gcaso__par:hover + .gcaso__abre,.gcaso__abre:hover,.gcaso__volta:hover{border-color:var(--gold);color:var(--ink)}
+.gcaso__abre:focus-visible,.gcaso__volta:focus-visible{border-color:var(--gold);color:var(--ink);outline:2px solid var(--gold);outline-offset:3px}
+/* retrato de rosto em pé: largura limitada pela altura da tela */
+.ba.ba--rosto{width:min(100%,40svh,28rem);margin-inline:auto}
 .gal__it{position:relative;margin:0;overflow:hidden;border-radius:8px;aspect-ratio:3/4;background:var(--paper-2)}
 /* mesma etiqueta dos comparadores: antes à esquerda, depois à direita */
 .gal__tag{
@@ -858,7 +882,7 @@ body.is-locked .nav__logo--light{opacity:1}
   .stats > div{display:flex;align-items:baseline;gap:1rem}
   .stats dd{margin-top:0}
   .stats dd br{display:none}
-  .gal{grid-template-columns:repeat(2,1fr);gap:.7rem}
+  .gal,.gcaso__par{gap:.7rem}
   .ba{aspect-ratio:4/5}
   .foot__grid{grid-template-columns:1fr;gap:2rem}
   .foot__top{flex-direction:column;align-items:flex-start}
@@ -893,6 +917,8 @@ body.is-locked .nav__logo--light{opacity:1}
   .ba__tag{bottom:.8rem;padding:.36rem .8rem;font-size:.58rem;letter-spacing:.18em}
   .ba__tag--l{left:.8rem}
   .ba__tag--r{right:.8rem}
+  /* fotos largas: no celular o comparador do caso fica 4:3, cortando só as laterais */
+  .gal .ba.ba--caso:not(.ba--rosto){aspect-ratio:4/3}
 
   .faq__q{font-size:1.05rem;padding-inline:1.1rem}
   .faq__a p{font-size:.92rem}

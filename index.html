@@ -326,13 +326,13 @@
           <div class="ba" role="group" aria-label="Comparação antes e depois: arraste para revelar">
             <picture>
               <source srcset="assets/img/slider-depois.webp" type="image/webp"><img class="ba__img"
-                src="assets/img/slider-depois.jpg" width="1400" height="933" loading="lazy" decoding="async"
+                src="assets/img/slider-depois.jpg" width="1400" height="946" loading="lazy" decoding="async"
                 alt="Sorriso depois do tratamento, vista frontal com afastador">
             </picture>
             <div class="ba__clip">
               <picture>
                 <source srcset="assets/img/slider-antes.webp" type="image/webp"><img class="ba__img"
-                  src="assets/img/slider-antes.jpg" width="1400" height="933" loading="lazy" decoding="async"
+                  src="assets/img/slider-antes.jpg" width="1400" height="946" loading="lazy" decoding="async"
                   alt="Sorriso antes do tratamento, vista frontal com afastador">
               </picture>
             </div>
@@ -344,46 +344,146 @@
             <span class="ba__tag ba__tag--r">Depois</span>
           </div>
 
-          <!-- pares antes | depois: em cada linha, antes à esquerda e depois à direita -->
+          <!-- pares antes | depois: cada caso mostra o par lado a lado e, no botão,
+               vira um comparador de arrastar. Fotos cmp-*: as originais, só
+               alinhadas por escala/posição/rotação e recortadas na área comum
+               (nenhum pixel gerado), usadas nos dois modos. -->
           <div class="gal">
-            <figure class="gal__it tilt">
-              <picture>
-                <source srcset="assets/img/sorriso-macro-01.webp" type="image/webp"><img
-                  src="assets/img/sorriso-macro-01.jpg" width="1280" height="853" loading="lazy" decoding="async"
-                  alt="Sorriso da paciente antes do procedimento">
-              </picture>
-              <figcaption class="gal__tag">Antes</figcaption>
-            </figure>
-            <figure class="gal__it tilt">
-              <picture>
-                <source srcset="assets/img/sorriso-macro-02.webp" type="image/webp"><img
-                  src="assets/img/sorriso-macro-02.jpg" width="1280" height="853" loading="lazy" decoding="async"
-                  alt="Sorriso da paciente depois do procedimento">
-              </picture>
-              <figcaption class="gal__tag">Depois</figcaption>
-            </figure>
-            <!-- segundo caso: as duas metades recortadas de uma foto única (sem outra alteração) -->
-            <figure class="gal__it tilt">
-              <img src="assets/img/caso-02-antes.jpg" width="1015" height="565" loading="lazy" decoding="async"
-                alt="Dentes amarelados antes do tratamento">
-              <figcaption class="gal__tag">Antes</figcaption>
-            </figure>
-            <figure class="gal__it tilt">
-              <img src="assets/img/caso-02-depois.jpg" width="1015" height="554" loading="lazy" decoding="async"
-                alt="Dentes depois do tratamento">
-              <figcaption class="gal__tag">Depois</figcaption>
-            </figure>
-            <!-- terceiro caso: retratos de rosto (metades de uma foto lado a lado, sem outra alteração) -->
-            <figure class="gal__it gal__it--rosto tilt">
-              <img src="assets/img/caso-03-antes.jpg" width="640" height="1280" loading="lazy" decoding="async"
-                alt="Paciente sorrindo antes do tratamento">
-              <figcaption class="gal__tag">Antes</figcaption>
-            </figure>
-            <figure class="gal__it gal__it--rosto tilt">
-              <img src="assets/img/caso-03-depois.jpg" width="640" height="1280" loading="lazy" decoding="async"
-                alt="Paciente sorrindo depois do tratamento">
-              <figcaption class="gal__tag">Depois</figcaption>
-            </figure>
+            <div class="gcaso" id="caso-1">
+              <div class="gcaso__par">
+                <figure class="gal__it tilt">
+                  <picture>
+                    <source srcset="assets/img/cmp-01-antes.webp" type="image/webp"><img
+                      src="assets/img/cmp-01-antes.jpg" width="1280" height="800" loading="lazy" decoding="async"
+                      alt="Sorriso da paciente antes do procedimento">
+                  </picture>
+                  <figcaption class="gal__tag">Antes</figcaption>
+                </figure>
+                <figure class="gal__it tilt">
+                  <picture>
+                    <source srcset="assets/img/cmp-01-depois.webp" type="image/webp"><img
+                      src="assets/img/cmp-01-depois.jpg" width="1280" height="800" loading="lazy" decoding="async"
+                      alt="Sorriso da paciente depois do procedimento">
+                  </picture>
+                  <figcaption class="gal__tag">Depois</figcaption>
+                </figure>
+              </div>
+              <button class="gcaso__abre" type="button" aria-controls="caso-1-ba" aria-expanded="false">
+                <i aria-hidden="true"></i>Arrastar e comparar
+              </button>
+              <div class="ba ba--caso" id="caso-1-ba" style="--ar:1280/800" role="group"
+                aria-label="Caso 1: antes e depois, arraste para revelar" hidden>
+                <picture>
+                  <source srcset="assets/img/cmp-01-depois.webp" type="image/webp"><img class="ba__img"
+                    src="assets/img/cmp-01-depois.jpg" width="1280" height="800" loading="lazy" decoding="async"
+                    alt="Sorriso da paciente depois do procedimento">
+                </picture>
+                <div class="ba__clip">
+                  <picture>
+                    <source srcset="assets/img/cmp-01-antes.webp" type="image/webp"><img class="ba__img"
+                      src="assets/img/cmp-01-antes.jpg" width="1280" height="800" loading="lazy" decoding="async"
+                      alt="Sorriso da paciente antes do procedimento">
+                  </picture>
+                </div>
+                <div class="ba__rail">
+                  <div class="ba__handle" tabindex="0" role="slider" aria-label="Revelar antes e depois: caso 1"
+                    aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i></div>
+                </div>
+                <span class="ba__tag ba__tag--l">Antes</span>
+                <span class="ba__tag ba__tag--r">Depois</span>
+              </div>
+              <button class="gcaso__volta" type="button" aria-controls="caso-1-ba" hidden>Ver lado a lado</button>
+            </div>
+            <div class="gcaso" id="caso-2">
+              <div class="gcaso__par">
+                <figure class="gal__it tilt">
+                  <picture>
+                    <source srcset="assets/img/cmp-02-antes.webp" type="image/webp"><img
+                      src="assets/img/cmp-02-antes.jpg" width="989" height="474" loading="lazy" decoding="async"
+                      alt="Dentes amarelados antes do tratamento">
+                  </picture>
+                  <figcaption class="gal__tag">Antes</figcaption>
+                </figure>
+                <figure class="gal__it tilt">
+                  <picture>
+                    <source srcset="assets/img/cmp-02-depois.webp" type="image/webp"><img
+                      src="assets/img/cmp-02-depois.jpg" width="989" height="474" loading="lazy" decoding="async"
+                      alt="Dentes depois do tratamento">
+                  </picture>
+                  <figcaption class="gal__tag">Depois</figcaption>
+                </figure>
+              </div>
+              <button class="gcaso__abre" type="button" aria-controls="caso-2-ba" aria-expanded="false">
+                <i aria-hidden="true"></i>Arrastar e comparar
+              </button>
+              <div class="ba ba--caso" id="caso-2-ba" style="--ar:989/474" role="group"
+                aria-label="Caso 2: antes e depois, arraste para revelar" hidden>
+                <picture>
+                  <source srcset="assets/img/cmp-02-depois.webp" type="image/webp"><img class="ba__img"
+                    src="assets/img/cmp-02-depois.jpg" width="989" height="474" loading="lazy" decoding="async"
+                    alt="Dentes depois do tratamento">
+                </picture>
+                <div class="ba__clip">
+                  <picture>
+                    <source srcset="assets/img/cmp-02-antes.webp" type="image/webp"><img class="ba__img"
+                      src="assets/img/cmp-02-antes.jpg" width="989" height="474" loading="lazy" decoding="async"
+                      alt="Dentes amarelados antes do tratamento">
+                  </picture>
+                </div>
+                <div class="ba__rail">
+                  <div class="ba__handle" tabindex="0" role="slider" aria-label="Revelar antes e depois: caso 2"
+                    aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i></div>
+                </div>
+                <span class="ba__tag ba__tag--l">Antes</span>
+                <span class="ba__tag ba__tag--r">Depois</span>
+              </div>
+              <button class="gcaso__volta" type="button" aria-controls="caso-2-ba" hidden>Ver lado a lado</button>
+            </div>
+            <div class="gcaso" id="caso-3">
+              <div class="gcaso__par">
+                <figure class="gal__it gal__it--rosto tilt">
+                  <picture>
+                    <source srcset="assets/img/cmp-03-antes.webp" type="image/webp"><img
+                      src="assets/img/cmp-03-antes.jpg" width="623" height="1280" loading="lazy" decoding="async"
+                      alt="Paciente sorrindo antes do tratamento">
+                  </picture>
+                  <figcaption class="gal__tag">Antes</figcaption>
+                </figure>
+                <figure class="gal__it gal__it--rosto tilt">
+                  <picture>
+                    <source srcset="assets/img/cmp-03-depois.webp" type="image/webp"><img
+                      src="assets/img/cmp-03-depois.jpg" width="623" height="1280" loading="lazy" decoding="async"
+                      alt="Paciente sorrindo depois do tratamento">
+                  </picture>
+                  <figcaption class="gal__tag">Depois</figcaption>
+                </figure>
+              </div>
+              <button class="gcaso__abre" type="button" aria-controls="caso-3-ba" aria-expanded="false">
+                <i aria-hidden="true"></i>Arrastar e comparar
+              </button>
+              <div class="ba ba--caso ba--rosto" id="caso-3-ba" style="--ar:623/1280" role="group"
+                aria-label="Caso 3: antes e depois, arraste para revelar" hidden>
+                <picture>
+                  <source srcset="assets/img/cmp-03-depois.webp" type="image/webp"><img class="ba__img"
+                    src="assets/img/cmp-03-depois.jpg" width="623" height="1280" loading="lazy" decoding="async"
+                    alt="Paciente sorrindo depois do tratamento">
+                </picture>
+                <div class="ba__clip">
+                  <picture>
+                    <source srcset="assets/img/cmp-03-antes.webp" type="image/webp"><img class="ba__img"
+                      src="assets/img/cmp-03-antes.jpg" width="623" height="1280" loading="lazy" decoding="async"
+                      alt="Paciente sorrindo antes do tratamento">
+                  </picture>
+                </div>
+                <div class="ba__rail">
+                  <div class="ba__handle" tabindex="0" role="slider" aria-label="Revelar antes e depois: caso 3"
+                    aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i></div>
+                </div>
+                <span class="ba__tag ba__tag--l">Antes</span>
+                <span class="ba__tag ba__tag--r">Depois</span>
+              </div>
+              <button class="gcaso__volta" type="button" aria-controls="caso-3-ba" hidden>Ver lado a lado</button>
+            </div>
           </div>
 
           <!-- caso de facetas de resina: comparador próprio, na proporção das fotos -->
@@ -392,11 +492,11 @@
               <h3>Facetas de resina</h3>
               <p>Caso real atendido na clínica. Arraste para comparar o antes e o depois.</p>
             </div>
-            <div class="ba ba--caso" role="group" aria-label="Facetas de resina: antes e depois, arraste para revelar">
-              <img class="ba__img" src="assets/img/caso-resina-depois.jpg" width="1600" height="1024" loading="lazy"
+            <div class="ba ba--caso" style="--ar:1556/978" role="group" aria-label="Facetas de resina: antes e depois, arraste para revelar">
+              <img class="ba__img" src="assets/img/caso-resina-depois.jpg" width="1556" height="978" loading="lazy"
                 decoding="async" alt="Sorriso depois das facetas de resina">
               <div class="ba__clip">
-                <img class="ba__img" src="assets/img/caso-resina-antes.jpg" width="1600" height="1018" loading="lazy"
+                <img class="ba__img" src="assets/img/caso-resina-antes.jpg" width="1556" height="978" loading="lazy"
                   decoding="async" alt="Sorriso antes das facetas de resina">
               </div>
               <div class="ba__rail">
