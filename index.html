@@ -854,9 +854,21 @@
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/Draggable.min.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollSmoother.min.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // Campo de luz do hero (Three.js, ~600 KB) só no computador: tela larga e mouse.
+    // No celular/tablet nem baixa; o hero usa o fundo em CSS (ver boot em main.js).
+    (function () {
+      var mm = window.matchMedia;
+      if (!mm('(min-width: 1081px) and (hover: hover) and (pointer: fine)').matches) return;
+      if (mm('(prefers-reduced-motion: reduce)').matches) return;
+      ['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', 'js/scene.js'].forEach(function (src) {
+        var s = document.createElement('script');
+        s.src = src; s.async = false;          // three antes do scene
+        document.head.appendChild(s);
+      });
+    })();
+  </script>
   <script defer src="js/config.js"></script>
-  <script defer src="js/scene.js"></script>
   <script defer src="js/main.js"></script>
 </body>
 

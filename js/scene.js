@@ -274,3 +274,6 @@ window.HeroScene = (function () {
     lite: LITE
   };
 })();
+
+// carregado sob demanda (só no computador): avisa o main.js, que pode já ter iniciado
+document.dispatchEvent(new Event('heroscene:pronto'));

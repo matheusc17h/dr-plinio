@@ -237,7 +237,7 @@
          a moldura e revelar as bordas. Só nesse intervalo
          vale a pena desenhar.
      ─────────────────────────────────────────────── */
-  var heroCover = { gl: false, revelado: false, progresso: 0 };
+  var heroCover = { gl: false, revelado: false, progresso: 0, intro: 0 };
 
   function syncHeroCover() {
     if (!heroCover.gl) return;
@@ -349,7 +349,7 @@
         Uma única sequência: monograma → cortina →
         vídeo → título linha a linha.
      ─────────────────────────────────────────────── */
-  function initIntro(hasGL) {
+  function initIntro() {
     var loader = $('#loader');
     var heroLines = $$('.hero__title .l > span');
     var heroRs    = $$('.hero .r > span');
@@ -393,7 +393,10 @@
       // o campo de luz nasce
       .to({ v: 0 }, {
         v: 1, duration: 1.4, ease: 'power2.out',
-        onUpdate: function () { if (hasGL) window.HeroScene.setIntro(this.targets()[0].v); }
+        onUpdate: function () {
+          heroCover.intro = this.targets()[0].v;
+          if (heroCover.gl) window.HeroScene.setIntro(heroCover.intro);
+        }
       }, '-=0.9')
 
       // o vídeo sobe
@@ -693,7 +696,7 @@
   /* ───────────────────────────────────────────────
      8. PARALLAX + HERO NO SCROLL
      ─────────────────────────────────────────────── */
-  function initParallax(hasGL) {
+  function initParallax() {
     if (REDUCED) return;
 
     $$('[data-speed]').forEach(function (img) {
@@ -713,16 +716,16 @@
       .to('.hero__copy', { yPercent: -18, opacity: 0.25, ease: 'none' }, 0)
       .to('#heroFrameWrap', { yPercent: 9, scale: 0.94, ease: 'none' }, 0);
 
-    if (hasGL) {
-      ScrollTrigger.create({
-        trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true,
-        onUpdate: function (self) {
-          window.HeroScene.setScroll(self.progress);
-          heroCover.progresso = self.progress;
-          syncHeroCover();
-        }
-      });
-    }
+    // o campo de luz chega depois (só no computador, ver ligaGL): o
+    // progresso fica guardado e é repassado quando ele estiver pronto
+    ScrollTrigger.create({
+      trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true,
+      onUpdate: function (self) {
+        heroCover.progresso = self.progress;
+        if (heroCover.gl) window.HeroScene.setScroll(self.progress);
+        syncHeroCover();
+      }
+    });
   }
 
   /* ───────────────────────────────────────────────
@@ -1161,28 +1164,46 @@
 
   function boot() {
     initSmoother();
-    var hasGL = false;
-    try { hasGL = window.HeroScene && window.HeroScene.init($('#gl')); } catch (e) { hasGL = false; }
-    heroCover.gl = hasGL;
-    // a altura do hero pode mudar sem resize da janela (fontes carregando)
-    if (hasGL) ScrollTrigger.addEventListener('refresh', window.HeroScene.resize);
-    if (!hasGL) {
-      // sem WebGL o hero continua elegante, só sem o campo de luz
-      var c = $('#gl');
-      if (c) c.style.background = 'radial-gradient(120% 90% at 65% 35%, #241f1a 0%, #14141A 62%)';
+    // Campo de luz: three.js e scene.js só são baixados no computador
+    // (script no <head>) e podem chegar antes ou depois daqui.
+    var canvasGL = $('#gl');
+    function semGL() {
+      // celular, sem WebGL ou CDN fora: o hero continua elegante, só sem o campo de luz
+      if (canvasGL) canvasGL.style.background = 'radial-gradient(120% 90% at 65% 35%, #241f1a 0%, #14141A 62%)';
     }
+    function ligaGL() {
+      var ok = false;
+      try { ok = window.HeroScene && window.HeroScene.init(canvasGL); } catch (e) { ok = false; }
+      if (!ok) return semGL();
+      heroCover.gl = true;
+      // a altura do hero pode mudar sem resize da janela (fontes carregando)
+      ScrollTrigger.addEventListener('refresh', window.HeroScene.resize);
+      window.HeroScene.setScroll(heroCover.progresso);
+      syncHeroCover();
+      // chegou depois da abertura: a luz nasce no próprio tempo
+      if (heroCover.intro >= 1) {
+        gsap.fromTo({ v: 0 }, { v: 0 }, {
+          v: 1, duration: 1.4, ease: 'power2.out',
+          onUpdate: function () { window.HeroScene.setIntro(this.targets()[0].v); }
+        });
+      } else window.HeroScene.setIntro(heroCover.intro);
+    }
+    if (window.HeroScene) ligaGL();
+    else if (document.querySelector('script[src$="js/scene.js"]')) {
+      document.addEventListener('heroscene:pronto', ligaGL, { once: true });
+    } else semGL();
 
     initWhatsapp();
     initHeroPlaylist();
     initCursor();
     initMagnetic();
     initNav();
-    initIntro(hasGL);
+    initIntro();
     initManifesto();
     initDepoimentos();
     initCards();
     initReveals();
-    initParallax(hasGL);
+    initParallax();
     initCounters();
     initSobre();
     initBeforeAfter();
