@@ -464,6 +464,40 @@
   }
 
   /* ───────────────────────────────────────────────
+     MANIFESTO — as palavras da frase acendem em sequência com o
+     scroll (scrub). Só opacity por palavra: barato até no iPhone.
+     Lado a lado (>=1081px, mouse): a seção fica presa só o tempo da
+     frase completar (+70% da tela). Celular/tablet: sem pin (evita
+     o pulo do iOS), o scrub acompanha a frase passando na tela.
+     autoSplit refaz o split no resize/troca de fonte e recria a
+     animação no mesmo progresso; aria:'auto' deixa a frase original
+     no aria-label e esconde os pedaços do leitor de tela.
+     Movimento reduzido ou sem SplitText: frase já revelada (CSS).
+     ─────────────────────────────────────────────── */
+  function initManifesto() {
+    var frase = $('.manifesto__frase');
+    if (!frase || REDUCED || !window.SplitText) return;
+    var sec = frase.closest('.manifesto');
+    var prende = window.matchMedia('(min-width: 1081px)').matches && ScrollTrigger.isTouch !== 1;
+
+    SplitText.create(frase, {
+      type: 'words', aria: 'auto', autoSplit: true,
+      onSplit: function (self) {
+        return gsap.fromTo(self.words, { opacity: 0.18 }, {
+          opacity: 1, duration: 0.3, ease: 'none', stagger: 0.12,
+          scrollTrigger: prende
+            ? {
+                trigger: sec, start: 'top top', end: '+=70%', scrub: smoother ? true : 0.6,
+                pin: true, anticipatePin: smoother ? 0 : 1, invalidateOnRefresh: true,
+                refreshPriority: 1     // primeiro pin da página: mede antes dos de baixo
+              }
+            : { trigger: frase, start: 'top 82%', end: 'bottom 42%', scrub: 0.6 }
+        });
+      }
+    });
+  }
+
+  /* ───────────────────────────────────────────────
      SOBRE — uma coisa de cada vez, sem atropelar:
      foto do doutor → foto do sorriso → rótulo → título (letras) →
      1º parágrafo → 2º parágrafo (linhas subindo pela máscara) →
@@ -686,22 +720,6 @@
           window.HeroScene.setScroll(self.progress);
           heroCover.progresso = self.progress;
           syncHeroCover();
-        }
-      });
-    }
-
-    // marquee: rola sozinho e acelera conforme o scroll.
-    // Fora da tela fica pausado — é um loop sem emenda, então
-    // retomar de onde parou é visualmente idêntico.
-    var track = $('#marqueeTrack');
-    if (track) {
-      var half = track.scrollWidth / 2;
-      var loop = gsap.to(track, { x: -half, duration: 26, ease: 'none', repeat: -1, paused: true });
-      ScrollTrigger.create({
-        trigger: '.marquee', start: 'top bottom', end: 'bottom top',
-        onToggle: function (self) { self.isActive ? loop.play() : loop.pause(); },
-        onUpdate: function (self) {
-          gsap.to(loop, { timeScale: 1 + Math.abs(self.getVelocity()) / 2200, duration: 0.3, overwrite: true });
         }
       });
     }
@@ -1160,6 +1178,7 @@
     initMagnetic();
     initNav();
     initIntro(hasGL);
+    initManifesto();
     initDepoimentos();
     initCards();
     initReveals();
