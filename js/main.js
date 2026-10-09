@@ -1065,6 +1065,67 @@
   }
 
   /* ───────────────────────────────────────────────
+     BRILHO DE BORDA — porte do BorderGlow (React Bits) para JS puro.
+     Mesmas contas do componente: quão perto da borda o cursor está
+     (0–100) e o ângulo dele a partir do centro; o CSS (.bglow) faz o
+     resto. Cores da marca: brilho champanhe e borda em dourado,
+     champanhe e bronze. Só com mouse (no toque não há "perto da borda").
+     ─────────────────────────────────────────────── */
+  function initBordaBrilho() {
+    if (!FINE) return;
+    var BRILHO = { h: 40, s: 55, l: 74 };        // champanhe da logo, em HSL
+    var INTENSIDADE = 1;
+    var CORES = ['#C9A96A', '#E0C99A', '#8C6F3E'];  // --gold, --gold-soft, bronze
+    var POS = ['80% 55%', '69% 34%', '8% 6%', '41% 38%', '86% 85%', '82% 18%', '51% 4%'];
+    var MAPA = [0, 1, 2, 0, 1, 2, 1];
+    var NOMES = ['one', 'two', 'three', 'four', 'five', 'six', 'seven'];
+
+    function vars(el, fundo) {
+      var base = BRILHO.h + 'deg ' + BRILHO.s + '% ' + BRILHO.l + '%';
+      [[ '', 100 ], [ '-60', 60 ], [ '-50', 50 ], [ '-40', 40 ], [ '-30', 30 ], [ '-20', 20 ], [ '-10', 10 ]]
+        .forEach(function (o) {
+          el.style.setProperty('--glow-color' + o[0], 'hsl(' + base + ' / ' + Math.min(o[1] * INTENSIDADE, 100) + '%)');
+        });
+      NOMES.forEach(function (n, i) {
+        el.style.setProperty('--gradient-' + n, 'radial-gradient(at ' + POS[i] + ', ' + CORES[MAPA[i]] + ' 0px, transparent 50%)');
+      });
+      el.style.setProperty('--gradient-base', 'linear-gradient(' + CORES[0] + ' 0 100%)');
+      el.style.setProperty('--card-bg', fundo);
+    }
+
+    function proximidade(r, x, y) {
+      var cx = r.width / 2, cy = r.height / 2, dx = x - cx, dy = y - cy;
+      var kx = dx !== 0 ? cx / Math.abs(dx) : Infinity;
+      var ky = dy !== 0 ? cy / Math.abs(dy) : Infinity;
+      return Math.min(Math.max(1 / Math.min(kx, ky), 0), 1);
+    }
+    function angulo(r, x, y) {
+      var dx = x - r.width / 2, dy = y - r.height / 2;
+      if (dx === 0 && dy === 0) return 0;
+      var g = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+      return g < 0 ? g + 360 : g;
+    }
+
+    // fundo de cada card: a borda colorida cobre o miolo com esta cor
+    [['.step', '#14141A'], ['.card', '#14141A'], ['.depo__card', '#1C1C23']].forEach(function (par) {
+      $$(par[0]).forEach(function (el) {
+        el.classList.add('bglow');
+        vars(el, par[1]);
+        var luz = document.createElement('span');
+        luz.className = 'bglow__luz';
+        luz.setAttribute('aria-hidden', 'true');
+        el.appendChild(luz);
+        el.addEventListener('pointermove', function (e) {
+          var r = el.getBoundingClientRect();
+          var x = e.clientX - r.left, y = e.clientY - r.top;
+          el.style.setProperty('--edge-proximity', (proximidade(r, x, y) * 100).toFixed(3));
+          el.style.setProperty('--cursor-angle', angulo(r, x, y).toFixed(3) + 'deg');
+        });
+      });
+    });
+  }
+
+  /* ───────────────────────────────────────────────
      13. DÚVIDAS (acordeão)
      ─────────────────────────────────────────────── */
   function initFaq() {
@@ -1239,6 +1300,7 @@
     initSobre();
     initBeforeAfter();
     initTilt();
+    initBordaBrilho();
     initFaq();
     initRodape();
     initAnchors();
