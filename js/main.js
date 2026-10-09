@@ -372,6 +372,7 @@
     var detalhe = $('.hero__detalhe'), credito = $('.hero__credito');
 
     if (REDUCED) {
+      var heroEl = $('.hero'); if (heroEl) heroEl.classList.add('neon-on');
       gsap.set([heroLines, heroRs], { clearProps: 'all' });
       gsap.set(frame, { clipPath: 'inset(0% 0% 0% 0%)' });
       gsap.set('#waFloat', { scale: 1, opacity: 1 });
@@ -409,7 +410,9 @@
           if (heroCover.gl) window.HeroScene.setIntro(heroCover.intro);
         }
       }, '-=0.9')
-      .addLabel('midia', '-=1.15');
+      .addLabel('midia', '-=1.15')
+      // tubo de neon do hero (>=768px) acende e a luz revela texto e mídia
+      .add(function () { var h = $('.hero'); if (h) h.classList.add('neon-on'); }, 'midia-=0.35');
 
     if (composicao) {
       // >=768px: a principal abre de baixo para cima; o detalhe entra 0,3s depois

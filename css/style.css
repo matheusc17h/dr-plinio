@@ -1160,12 +1160,14 @@ body.is-locked .nav__logo--light{opacity:1}
   }
 }
 
-/* ângulo do ponto de luz da moldura do hero: registrado para poder animar
-   (sem suporte a @property o ponto fica parado, sem quebrar nada) */
-@property --moldura-ang{syntax:'<angle>';inherits:false;initial-value:200deg}
-@keyframes moldura-gira{from{--moldura-ang:200deg}to{--moldura-ang:560deg}}
+/* tubo de neon do hero: pisca até firmar (como uma lâmpada de verdade) e fica aceso */
+@keyframes neon-liga{
+  0%{opacity:0}6%{opacity:.9}9%{opacity:.1}16%{opacity:1}19%{opacity:.25}
+  30%{opacity:1}33%{opacity:.55}42%,100%{opacity:1}
+}
+@keyframes neon-luz{0%,30%{opacity:0}42%{opacity:.7}100%{opacity:1}}
 @media (prefers-reduced-motion:reduce){
-  .hero__moldura::before,.hero__moldura-brilho::before{animation:none}
+  .hero.neon-on .hero__neon-tubo,.hero.neon-on .hero__neon-luz{animation:none;opacity:1}
 }
 
 /* ── hero a partir de 768px: composição editorial ──────
@@ -1174,7 +1176,7 @@ body.is-locked .nav__logo--light{opacity:1}
    retângulo reto 4:5 à direita, com uma foto de detalhe sobreposta
    no canto inferior esquerdo e um crédito de foto embaixo.
    Bloco no fim de propósito: vence 1600/1280/1080 e a paisagem baixa. */
-.hero__detalhe,.hero__credito,.hero__moldura{display:none}
+.hero__detalhe,.hero__credito,.hero__neon{display:none}
 @media (min-width:768px){
   .hero__inner{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(2rem,5vw,6rem)}
   .hero__stage{order:0;justify-content:flex-end}
@@ -1208,39 +1210,28 @@ body.is-locked .nav__logo--light{opacity:1}
   /* textos pequenos com espaçamento contido */
   .hero__copy .eyebrow,.hero__scroll{letter-spacing:.15em}
 
-  /* moldura luminosa: fio dourado de 1px emoldurando o hero, um ponto de luz champanhe
-     percorrendo a borda (::before nítido + cópia desfocada = brilho) e cantoneiras */
-  .hero__moldura{
-    display:block;position:absolute;z-index:1;pointer-events:none;border-radius:6px;
-    inset:calc(var(--nav-h) + .4rem) clamp(14px,1.6vw,26px) clamp(14px,1.6vw,26px);
+  /* tubo de neon: um fio champanhe incandescente no topo, com halo em camadas
+     (só box-shadow, nada de filtro) e o cone de luz que ele projeta para baixo */
+  .hero__neon{display:block;position:absolute;inset:0;z-index:1;pointer-events:none}
+  .hero__neon-tubo{
+    position:absolute;left:50%;top:calc(var(--nav-h) + 1.4rem);transform:translateX(-50%);
+    width:min(64%,920px);height:3px;border-radius:3px;background:#F6EAD0;opacity:0;
+    box-shadow:0 0 3px #F6EAD0,0 0 10px rgba(224,201,154,.95),0 0 26px rgba(201,169,106,.75),
+      0 0 60px rgba(201,169,106,.45),0 0 120px rgba(201,169,106,.22);
   }
-  .hero__moldura::before,.hero__moldura-brilho::before{
-    content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
-    background:conic-gradient(from var(--moldura-ang),
-      rgba(201,169,106,.18) 0deg,rgba(201,169,106,.18) 245deg,
-      rgba(224,201,154,.95) 300deg,rgba(201,169,106,.18) 345deg,rgba(201,169,106,.18) 360deg);
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;
-    mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
-    animation:moldura-gira 10s linear infinite;
+  /* terminais do tubo: pontas metálicas escuras, como num neon real */
+  .hero__neon-tubo::before,.hero__neon-tubo::after{
+    content:"";position:absolute;top:-3px;width:10px;height:9px;border-radius:2px;background:var(--graphite);
   }
-  /* o brilho: o mesmo anel, mais grosso e desfocado (o filtro vem depois da máscara) */
-  .hero__moldura-brilho{position:absolute;inset:0;border-radius:inherit;filter:blur(7px);opacity:.75}
-  .hero__moldura-brilho::before{padding:2px}
-  /* cantoneiras: 4 "L" dourados de 18px nos cantos */
-  .hero__moldura::after{
-    content:"";position:absolute;inset:-1px;border-radius:inherit;
-    --c:rgba(224,201,154,.9);--t:18px;
-    background:
-      linear-gradient(var(--c),var(--c)) top left/var(--t) 1px no-repeat,
-      linear-gradient(var(--c),var(--c)) top left/1px var(--t) no-repeat,
-      linear-gradient(var(--c),var(--c)) top right/var(--t) 1px no-repeat,
-      linear-gradient(var(--c),var(--c)) top right/1px var(--t) no-repeat,
-      linear-gradient(var(--c),var(--c)) bottom left/var(--t) 1px no-repeat,
-      linear-gradient(var(--c),var(--c)) bottom left/1px var(--t) no-repeat,
-      linear-gradient(var(--c),var(--c)) bottom right/var(--t) 1px no-repeat,
-      linear-gradient(var(--c),var(--c)) bottom right/1px var(--t) no-repeat;
+  .hero__neon-tubo::before{left:-9px}
+  .hero__neon-tubo::after{right:-9px}
+  .hero__neon-luz{
+    position:absolute;left:50%;top:calc(var(--nav-h) + 1.4rem);transform:translateX(-50%);
+    width:min(120%,1700px);height:92%;opacity:0;
+    background:radial-gradient(ellipse 46% 62% at 50% 0%,rgba(224,201,154,.17) 0%,rgba(201,169,106,.07) 42%,transparent 72%);
   }
+  .hero.neon-on .hero__neon-tubo{animation:neon-liga 1.6s linear forwards}
+  .hero.neon-on .hero__neon-luz{animation:neon-luz 1.6s ease-out forwards}
 
   /* fundo sólido com grão bem sutil no lugar do campo de luz (tirar a classe reverte) */
   .hero--grao .hero__canvas{display:none}
