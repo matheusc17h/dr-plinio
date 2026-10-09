@@ -545,58 +545,80 @@
     var num = $('.stats [data-count]', sec);
     var SPLIT = !!window.SplitText;
 
-    var letras = SPLIT && h.hasAttribute('data-letters') ? initLetras(h, true) : null;
-    var tituloLinhas = $$('.l > span', h);
-    if (!letras) gsap.set(tituloLinhas, { yPercent: 118 });
-
-    // parágrafos em linhas com máscara; sem SplitText, cada um sobe inteiro
+    // título e parágrafos em linhas com máscara: todos sobem de baixo para cima
     var splits = [];
-    var linhas = paras.map(function (p) {
-      if (!SPLIT) return [p];
-      var sp = new SplitText(p, { type: 'lines', mask: 'lines' });
+    function linhasDe(el) {
+      if (!SPLIT) return [el];
+      var sp = new SplitText(el, { type: 'lines', mask: 'lines' });
       splits.push(sp);
       return sp.lines;
-    });
-    linhas.forEach(function (ls) { gsap.set(ls, SPLIT ? { yPercent: 105 } : { y: 30, opacity: 0 }); });
+    }
+    var titulo = linhasDe($('.l > span', h));
+    var blocos = paras.map(linhasDe);
+    var sobe = SPLIT ? { yPercent: 105 } : { y: 30, opacity: 0 };
+    var chega = SPLIT ? { yPercent: 0 } : { y: 0, opacity: 1 };
 
+    gsap.set(dr, { x: -90, autoAlpha: 0 });
     gsap.set(eyebrow, { yPercent: 105 });
+    gsap.set(titulo, sobe);
+    blocos.forEach(function (ls) { gsap.set(ls, sobe); });
     gsap.set([stats, btn], { y: 34, opacity: 0 });
 
-    // acrescenta o texto à timeline, na ordem, a partir de `at`
-    function texto(tl, at) {
-      tl.to(eyebrow, { yPercent: 0, duration: 0.9, ease: 'power4.out' }, at);
-      if (letras) tl.add(letras.play(), at + 0.25);
-      else tl.to(tituloLinhas, { yPercent: 0, duration: 1.15, ease: 'power4.out', stagger: 0.08 }, at + 0.25);
-      // 1º parágrafo quando o título já acendeu quase todo; o 2º depois do 1º
-      var t = at + 1.45;
-      linhas.forEach(function (ls) {
-        tl.to(ls, SPLIT
-          ? { yPercent: 0, duration: 0.9, ease: 'power3.out', stagger: 0.09 }
-          : { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out' }, t);
-        t += 0.9 + (ls.length - 1) * 0.09 - 0.35;
+    // o 300 conta junto com a rolagem (e volta se a pessoa subir)
+    var fim = num ? parseFloat(num.getAttribute('data-count')) : 0, cont = { v: fim };
+
+    // ordem: foto → rótulo → título (linha a linha) → 1º parágrafo → 2º → destaques → botão
+    function fotoEm(tl, at) {
+      tl.to(dr, { x: 0, autoAlpha: 1, duration: 1.2, ease: 'power3.out' }, at);
+    }
+    function textoEm(tl, at) {
+      var t = at;
+      tl.to(eyebrow, { yPercent: 0, duration: 0.6, ease: 'power3.out' }, t);
+      t += 0.35;
+      tl.to(titulo, Object.assign({ duration: 0.8, ease: 'power3.out', stagger: 0.14 }, chega), t);
+      t += 0.8 + (titulo.length - 1) * 0.14 - 0.2;
+      blocos.forEach(function (ls) {
+        tl.to(ls, Object.assign({ duration: 0.7, ease: 'power3.out', stagger: 0.1 }, chega), t);
+        t += 0.7 + (ls.length - 1) * 0.1 - 0.15;
       });
-      // devolve o texto inteiro depois (resize, leitores de tela)
-      tl.call(function () { splits.forEach(function (sp) { sp.revert(); }); }, null, t + 0.4);
-      tl.to(stats, { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out' }, t);
-      if (num && num._conta) tl.call(num._conta, null, t + 0.15);
-      tl.to(btn, { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', clearProps: 'transform,opacity' }, t + 0.45);
+      tl.to(stats, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out' }, t);
+      if (num) {
+        tl.fromTo(cont, { v: 0 }, {
+          v: fim, duration: 0.9, ease: 'power2.out',
+          onUpdate: function () { num.textContent = Math.round(cont.v); }
+        }, t + 0.1);
+      }
+      tl.to(btn, { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }, t + 0.45);
     }
 
-    var lado = window.matchMedia('(min-width: 1081px)').matches;
-    gsap.set(dr, { x: -90, autoAlpha: 0 });
-    var fotos = gsap.timeline({ paused: true })
-      .to(dr, { x: 0, autoAlpha: 1, duration: 1.2, ease: 'power3.out', clearProps: 'transform,opacity,visibility' }, 0);
-
-    if (lado) {
-      texto(fotos, 0.6);
-      ScrollTrigger.create({ trigger: media, start: 'top 72%', once: true, onEnter: function () { fotos.play(); } });
+    // segue a rolagem (scrub): descer revela, subir desfaz
+    var scrub = smoother ? 1 : 0.8, tls = [];
+    if (window.matchMedia('(min-width: 1081px)').matches) {
+      // lado a lado: uma timeline só enquanto a seção sobe pela tela
+      var tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: 'top 82%', end: 'top 12%', scrub: scrub } });
+      fotoEm(tl, 0); textoEm(tl, 0.5);
+      tls.push(tl);
     } else {
-      var tl = gsap.timeline({ paused: true });
-      texto(tl, 0);
-      ScrollTrigger.create({ trigger: media, start: 'top 80%', once: true, onEnter: function () { fotos.play(); } });
-      ScrollTrigger.create({ trigger: copy, start: 'top 85%', once: true, onEnter: function () { tl.play(); } });
+      // empilhado: a foto e o texto revelam cada um ao passar pela tela
+      var tf = gsap.timeline({ scrollTrigger: { trigger: media, start: 'top 90%', end: 'top 40%', scrub: scrub } });
+      fotoEm(tf, 0);
+      var tt = gsap.timeline({ scrollTrigger: { trigger: copy, start: 'top 88%', end: 'bottom 82%', scrub: scrub } });
+      textoEm(tt, 0);
+      tls.push(tf, tt);
     }
+
+    // mudou a largura: as linhas quebradas ficariam erradas; mostra tudo pronto
+    var largura = window.innerWidth;
+    window.addEventListener('resize', function () {
+      if (Math.abs(window.innerWidth - largura) < 40 || !tls.length) return;
+      tls.forEach(function (t) { if (t.scrollTrigger) t.scrollTrigger.kill(); t.kill(); });
+      tls = [];
+      splits.forEach(function (sp) { sp.revert(); });
+      gsap.set([dr, eyebrow, stats, btn], { clearProps: 'all' });
+      if (num) num.textContent = fim;
+    });
   }
+
 
   /* Random letter reveal: o título é quebrado em letras (SplitText),
      todas começam invisíveis e acendem em ordem aleatória
