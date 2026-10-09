@@ -39,7 +39,10 @@
 *,*::before,*::after{box-sizing:border-box}
 /* clip na raiz: o que ficar fora de main (nav, menu, rodapé) também não
    consegue criar rolagem lateral no celular */
-html{-webkit-text-size-adjust:100%;overflow-x:clip}
+html{-webkit-text-size-adjust:100%;overflow-x:clip;
+  /* sem o retângulo azul que o celular pinta ao tocar em botões e links
+     (perguntas, menu, cards); o foco do teclado continua no :focus-visible dourado */
+  -webkit-tap-highlight-color:transparent}
 body{
   margin:0; background:var(--paper); color:var(--ink);
   font-family:var(--sans); font-weight:300; font-size:clamp(.95rem,.92rem + .2vw,1.05rem);
