@@ -1160,6 +1160,18 @@ body.is-locked .nav__logo--light{opacity:1}
   }
 }
 
+/* ── celular: leitura e ritmo ─────────────────────────
+   Bloco no fim para vencer os ajustes de 720/480 sem mexer neles. */
+@media (max-width:720px){
+  /* Sobre: foto quadrada, o texto chega antes (a 3:4 ocupava quase uma tela) */
+  .par{aspect-ratio:1/1}
+  /* A técnica: etapas mais compactas, a seção não vira uma rolagem longa */
+  .step{padding:1.6rem 0 1.8rem}
+  .step h3{margin:.9rem 0 .6rem}
+  /* rótulos sobre as fotos legíveis para quem lê com mais dificuldade */
+  .ba__tag,.gal__tag{font-size:.68rem;letter-spacing:.14em}
+}
+
 /* ── impressão ───────────────────────────────────── */
 @media print{
   .loader,.cursor,.nav,.menu,.wa-float,.hero__canvas,

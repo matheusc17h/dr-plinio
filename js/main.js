@@ -604,13 +604,15 @@
     // segue a rolagem (scrub): descer revela, subir desfaz
     var scrub = smoother ? 1 : 0.8, tls = [];
     if (window.matchMedia('(min-width: 1081px)').matches) {
-      // lado a lado: uma timeline só enquanto a seção sobe pela tela
-      var tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: 'top 82%', end: 'top 12%', scrub: scrub } });
+      // lado a lado: uma timeline só; começa quando a seção chega à metade da tela
+      // (a foto aparece já em destaque) e termina com a seção no topo
+      var tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: 'top 55%', end: 'top 0%', scrub: scrub } });
       fotoEm(tl, 0); textoEm(tl, 0.5);
       tls.push(tl);
     } else {
       // empilhado: a foto e o texto revelam cada um ao passar pela tela
-      var tf = gsap.timeline({ scrollTrigger: { trigger: media, start: 'top 90%', end: 'top 40%', scrub: scrub } });
+      // a foto só começa quando chega à metade da tela: a entrada fica em destaque
+      var tf = gsap.timeline({ scrollTrigger: { trigger: media, start: 'top 50%', end: 'top 10%', scrub: scrub } });
       fotoEm(tf, 0);
       var tt = gsap.timeline({ scrollTrigger: { trigger: copy, start: 'top 88%', end: 'bottom 82%', scrub: scrub } });
       textoEm(tt, 0);
