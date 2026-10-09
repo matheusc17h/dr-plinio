@@ -128,14 +128,12 @@
 
   <!-- ══ ABERTURA ══ -->
   <div class="loader" id="loader" aria-hidden="true">
+    <!-- a logo de verdade: revela de baixo para cima; o fio dourado enche com o carregamento real -->
     <div class="loader__mark">
-      <svg viewBox="0 0 120 120" class="mono" aria-hidden="true">
-        <circle class="mono__ring" cx="60" cy="60" r="44" fill="none" stroke="currentColor" stroke-width="1" />
-        <path class="mono__p" d="M42 86V36h12c8 0 13 5 13 12.5S62 61 54 61H42" fill="none" stroke="currentColor"
-          stroke-width="1.6" stroke-linecap="round" />
-        <path class="mono__m" d="M58 86V46l11 20 11-20v40" fill="none" stroke="currentColor" stroke-width="1.6"
-          stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
+      <picture>
+        <source srcset="assets/img/logo-light.webp" type="image/webp"><img class="loader__logo"
+          src="assets/img/logo-light.png" width="382" height="227" alt="" fetchpriority="high">
+      </picture>
     </div>
     <div class="loader__bar"><i></i></div>
     <div class="loader__curtain loader__curtain--l"></div>

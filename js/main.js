@@ -354,7 +354,7 @@
 
   /* ───────────────────────────────────────────────
      6. ABERTURA + ENTRADA DO HERO
-        Uma única sequência: monograma → cortina →
+        Uma única sequência: logo (espera a primeira tela carregar) → cortina →
         vídeo → título linha a linha.
      ─────────────────────────────────────────────── */
   function initIntro() {
@@ -381,20 +381,30 @@
     }
     if (composicao) gsap.set([detalhe, credito], { y: 26, autoAlpha: 0 });
 
-    var ring = $('.mono__ring'), pP = $('.mono__p'), pM = $('.mono__m');
-    [pP, pM].forEach(function (p) {
-      if (!p) return;
-      var len = p.getTotalLength();
-      gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
-    });
+    // espera o que a primeira tela precisa (fontes, logo, foto do hero), no máximo 3s
+    function carregou(img) {
+      return new Promise(function (r) {
+        if (!img || (img.complete && img.naturalWidth)) return r();
+        img.addEventListener('load', r, { once: true }); img.addEventListener('error', r, { once: true });
+      });
+    }
+    var logo = $('.loader__logo');
+    var pronto = false, esperando = false, tl;
+    Promise.race([
+      Promise.all([document.fonts ? document.fonts.ready : null, carregou(logo), carregou($('#heroPoster'))]),
+      new Promise(function (r) { setTimeout(r, 3000); })
+    ]).then(function () { pronto = true; if (esperando) tl.resume(); });
 
-    var tl = gsap.timeline({ delay: 0.15 });
+    gsap.set(logo, { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.04 });
+    tl = gsap.timeline({ delay: 0.15 });
 
-    // a marca se desenha
-    tl.from(ring, { scale: 0.4, opacity: 0, duration: 0.9, ease: 'power3.out', transformOrigin: '50% 50%' })
-      .to([pP, pM], { strokeDashoffset: 0, duration: 0.9, ease: 'power2.inOut', stagger: 0.12 }, '-=0.6')
-      .to('.loader__bar i', { scaleX: 1, duration: 0.9, ease: 'power2.inOut' }, '-=0.8')
-      .to('.loader__mark', { opacity: 0, scale: 0.94, duration: 0.5, ease: 'power2.in' }, '+=0.1')
+    // a logo aparece de baixo para cima; o fio enche até ~70% enquanto isso
+    tl.to(logo, { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: 1.1, ease: 'power3.out' })
+      .to('.loader__bar i', { scaleX: 0.7, duration: 1.1, ease: 'power2.out' }, '<0.15')
+      // segura aqui até a primeira tela ter carregado
+      .addPause('+=0.05', function () { esperando = true; if (pronto) tl.resume(); })
+      .to('.loader__bar i', { scaleX: 1, duration: 0.45, ease: 'power2.inOut' })
+      .to('.loader__mark', { y: -14, opacity: 0, duration: 0.55, ease: 'power2.in' }, '+=0.1')
       .to('.loader__bar', { opacity: 0, duration: 0.3 }, '<')
 
       // a cortina abre

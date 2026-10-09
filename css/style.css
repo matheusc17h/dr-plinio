@@ -150,15 +150,16 @@ section[id]{scroll-margin-top:var(--nav-h)}
 /* overflow:hidden: as cortinas saem 101% para os lados ao abrir; sem o
    corte, no celular elas alargam a página e ela abre deslocada */
 .loader{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;pointer-events:none;overflow:hidden}
-.loader__curtain{position:absolute;top:0;bottom:0;width:50.5%;background:var(--paper)}
+.loader__curtain{position:absolute;top:0;bottom:0;width:50.5%;background:var(--ink)}
 .loader__curtain--l{left:0}
 .loader__curtain--r{right:0}
-.loader__mark{position:relative;z-index:2;width:clamp(72px,9vw,108px);color:var(--graphite)}
-.mono{width:100%;height:auto;overflow:visible}
-.mono__ring{stroke:var(--gold)}
+/* preloader escuro (abre direto no hero escuro): logo clara no centro e,
+   logo abaixo dela, o fio dourado do carregamento */
+.loader__mark{position:relative;z-index:2;width:clamp(170px,17vw,230px)}
+.loader__logo{display:block;width:100%;height:auto}
 .loader__bar{
-  position:absolute;z-index:2;bottom:12vh;left:50%;transform:translateX(-50%);
-  width:min(180px,40vw);height:1px;background:rgba(20,20,26,.14);overflow:hidden;
+  position:absolute;z-index:2;top:calc(50% + clamp(78px,8vw,104px));left:50%;transform:translateX(-50%);
+  width:min(150px,36vw);height:1px;background:rgba(245,244,241,.14);overflow:hidden;
 }
 .loader__bar i{display:block;height:100%;width:100%;background:var(--gold);transform:scaleX(0);transform-origin:left}
 .loader.is-done{display:none}
