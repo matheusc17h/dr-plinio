@@ -9,6 +9,8 @@
   var CFG = window.CLINICA || {};
   var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var MOBILE_Q = window.matchMedia('(max-width: 720px)');
+  // a partir daqui o hero usa a composição editorial (vídeo 4:5 + detalhe)
+  var COMPOSICAO_Q = window.matchMedia('(min-width: 768px)');
   var FINE = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   gsap.registerPlugin(ScrollTrigger, Draggable);
@@ -204,9 +206,15 @@
       });
     });
 
-    vai(0, true).catch(function (e) {
-      console.warn('[hero] ' + e.message + ' — fica o poster.');
-    });
+    function comeca() {
+      vai(0, true).catch(function (e) {
+        console.warn('[hero] ' + e.message + ' — fica o poster.');
+      });
+    }
+    // a partir de 768px o poster é o LCP: o vídeo só baixa depois do load
+    if (COMPOSICAO_Q.matches && document.readyState !== 'complete') {
+      window.addEventListener('load', comeca, { once: true });
+    } else comeca();
 
     // Não gasta CPU com o hero fora da tela.
     var naTela = true;
@@ -360,6 +368,8 @@
     gsap.set(heroRs, { yPercent: 105, opacity: 0 });
     gsap.set(frame, { clipPath: 'inset(100% 0% 0% 0%)' });
     gsap.set('#waFloat', { scale: 0 });
+    var composicao = COMPOSICAO_Q.matches;
+    var detalhe = $('.hero__detalhe'), credito = $('.hero__credito');
 
     if (REDUCED) {
       gsap.set([heroLines, heroRs], { clearProps: 'all' });
@@ -368,6 +378,7 @@
       if (loader) loader.classList.add('is-done');
       return;
     }
+    if (composicao) gsap.set([detalhe, credito], { y: 26, autoAlpha: 0 });
 
     var ring = $('.mono__ring'), pP = $('.mono__p'), pM = $('.mono__m');
     [pP, pM].forEach(function (p) {
@@ -398,15 +409,27 @@
           if (heroCover.gl) window.HeroScene.setIntro(heroCover.intro);
         }
       }, '-=0.9')
+      .addLabel('midia', '-=1.15');
 
-      // o vídeo sobe
-      .to(frame, {
+    if (composicao) {
+      // >=768px: a principal abre de baixo para cima; o detalhe entra 0,3s depois
+      tl.to(frame, {
+        clipPath: 'inset(0% 0% 0% 0%)', duration: 1.2, ease: 'power3.out',
+        onComplete: function () { heroCover.revelado = true; syncHeroCover(); }
+      }, 'midia')
+        .to(detalhe, { y: 0, autoAlpha: 1, duration: 0.9, ease: 'power3.out' }, 'midia+=0.3')
+        .to(credito, { y: 0, autoAlpha: 1, duration: 0.9, ease: 'power3.out' }, 'midia+=0.5');
+    } else {
+      // celular: o vídeo em tela cheia sobe (como sempre foi)
+      tl.to(frame, {
         clipPath: 'inset(0% 0% 0% 0%)', duration: 1.25, ease: 'power4.inOut',
         onComplete: function () { heroCover.revelado = true; syncHeroCover(); }
-      }, '-=1.15')
-      .from(frame, { scale: 1.12, duration: 1.6, ease: 'power3.out' }, '<')
+      }, 'midia')
+        .from(frame, { scale: 1.12, duration: 1.6, ease: 'power3.out' }, '<');
+    }
 
-      // o título, linha a linha
+    // o título, linha a linha
+    tl
       .to(heroLines, { yPercent: 0, duration: 1.15, ease: 'power4.out', stagger: 0.09 }, '-=1.0')
       .to(heroRs, { yPercent: 0, opacity: 1, duration: 0.9, ease: 'power3.out', stagger: 0.1 }, '-=0.75')
       .to('#waFloat', { scale: 1, duration: 0.7, ease: 'back.out(1.8)' }, '-=0.5');
@@ -713,8 +736,18 @@
     gsap.timeline({
       scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.6 }
     })
-      .to('.hero__copy', { yPercent: -18, opacity: 0.25, ease: 'none' }, 0)
-      .to('#heroFrameWrap', { yPercent: 9, scale: 0.94, ease: 'none' }, 0);
+      .to('.hero__copy', { yPercent: -18, opacity: 0.25, ease: 'none' }, 0);
+    if (COMPOSICAO_Q.matches) {
+      // >=768px: parallax sutil; o detalhe sobe ~36px a mais que a principal
+      gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.6 } })
+        .to('#heroFrameWrap', { y: 40, ease: 'none' }, 0)
+        .to('.hero__detalhe', { y: -36, ease: 'none' }, 0);
+    } else {
+      gsap.to('#heroFrameWrap', {
+        yPercent: 9, scale: 0.94, ease: 'none',
+        scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.6 }
+      });
+    }
 
     // o campo de luz chega depois (só no computador, ver ligaGL): o
     // progresso fica guardado e é repassado quando ele estiver pronto

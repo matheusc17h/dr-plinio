@@ -202,7 +202,9 @@
       <main>
 
         <!-- ══ 1. HERO ══ -->
-        <section class="hero" id="hero">
+        <!-- hero--grao: a partir de 768px troca o campo de luz (Three.js) por fundo sólido
+             com grão sutil. Para voltar ao campo de luz, é só tirar a classe. -->
+        <section class="hero hero--grao" id="hero">
           <canvas class="hero__canvas" id="gl" aria-hidden="true"></canvas>
 
           <div class="hero__inner">
@@ -228,11 +230,14 @@
             <div class="hero__stage">
               <div class="hero__frameWrap" id="heroFrameWrap">
                 <figure class="frame" id="heroFrame">
-                  <!-- TROCAR A IMAGEM AQUI: é a foto que aparece enquanto o vídeo carrega (e no lugar
-                       dele em conexão lenta). O arco é 9:16 (em pé), a mesma proporção dos vídeos:
-                       ideal 1080×1920 (mínimo 1200px de altura), com o rosto do Dr. no terço de cima.
-                       Gerar também a versão .webp com o mesmo nome. Os vídeos ficam em js/config.js. -->
+                  <!-- Foto que aparece enquanto o vídeo carrega (e no lugar dele em conexão
+                       lenta ou com movimento reduzido). Os vídeos ficam em js/config.js.
+                       A partir de 768px: poster-clinica (quadro do próprio vídeo, retângulo 4:5).
+                       Celular: sorriso-34 (vídeo em tela cheia atrás do texto).
+                       Gerar sempre a versão .webp com o mesmo nome. -->
                   <picture>
+                    <source media="(min-width: 768px)" srcset="assets/img/poster-clinica.webp" type="image/webp">
+                    <source media="(min-width: 768px)" srcset="assets/img/poster-clinica.jpg">
                     <source srcset="assets/img/sorriso-34.webp" type="image/webp"><img class="frame__poster"
                       id="heroPoster" src="assets/img/sorriso-34.jpg" width="853" height="1280" fetchpriority="high"
                       alt="" aria-hidden="true">
@@ -243,6 +248,16 @@
                   <div class="frame__steps" id="heroSteps" aria-hidden="true"></div>
                   <figcaption class="frame__cap"><em>CRO-SP</em> 177.444</figcaption>
                 </figure>
+                <!-- só a partir de 768px. TROCAR A FOTO: close de sorriso com lentes/facetas,
+                     4:5 (ex.: 800×1000), em assets/img/detalhe-sorriso.jpg + .webp -->
+                <div class="hero__detalhe">
+                  <picture>
+                    <source srcset="assets/img/detalhe-sorriso.webp" type="image/webp"><img
+                      src="assets/img/detalhe-sorriso.jpg" width="640" height="800" decoding="async"
+                      alt="Detalhe de um sorriso com lentes">
+                  </picture>
+                </div>
+                <p class="hero__credito">Dr. Plínio Mota em atendimento · Osasco · CRO-SP 177.444</p>
               </div>
             </div>
           </div>
@@ -860,6 +875,8 @@
     // No celular/tablet nem baixa; o hero usa o fundo em CSS (ver boot em main.js).
     (function () {
       var mm = window.matchMedia;
+      // fundo sólido com grão no lugar do campo de luz (ver .hero--grao): nem baixa
+      if (document.querySelector('.hero.hero--grao')) return;
       if (!mm('(min-width: 1081px) and (hover: hover) and (pointer: fine)').matches) return;
       if (mm('(prefers-reduced-motion: reduce)').matches) return;
       ['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', 'js/scene.js'].forEach(function (src) {

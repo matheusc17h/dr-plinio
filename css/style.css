@@ -1023,6 +1023,54 @@ body.is-locked .nav__logo--light{opacity:1}
   }
 }
 
+/* ── hero a partir de 768px: composição editorial ──────
+   O celular (<768px) segue exatamente como antes: vídeo em tela
+   cheia atrás do texto. Daqui para cima o mesmo #heroFrame vira um
+   retângulo reto 4:5 à direita, com uma foto de detalhe sobreposta
+   no canto inferior esquerdo e um crédito de foto embaixo.
+   Bloco no fim de propósito: vence 1600/1280/1080 e a paisagem baixa. */
+.hero__detalhe,.hero__credito{display:none}
+@media (min-width:768px){
+  .hero__inner{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(2rem,5vw,6rem)}
+  .hero__stage{order:0;justify-content:flex-end}
+  .hero__lead{max-width:44ch}
+  /* a altura da tela também limita: 4:5 + o crédito cabem na primeira dobra */
+  .hero__frameWrap{width:min(100%,400px,48svh)}
+  .frame{aspect-ratio:4/5;border-radius:2px;box-shadow:none}
+  /* sem arco, sem barras de stories, sem selo e sem véu/grão sobre o vídeo */
+  .frame::after,.frame__grain,.frame__steps,.frame__cap{display:none}
+  .frame__poster{filter:none}
+
+  /* detalhe: ~40% da principal, sai pela esquerda e por baixo */
+  .hero__detalhe{
+    display:block;position:absolute;z-index:2;
+    width:40%;aspect-ratio:4/5;left:-16%;bottom:-11%;
+  }
+  .hero__detalhe img{display:block;width:100%;height:100%;object-fit:cover;border-radius:2px}
+  /* moldura solta: fio dourado de 1px deslocado 12px, sem sombra */
+  .hero__detalhe::before{
+    content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    border:1px solid rgba(201,169,106,.38);transform:translate(12px,12px);
+  }
+  /* crédito de revista: fora da mídia, à direita do detalhe para não colidir;
+     o respiro à direita deixa livre o canto do botão flutuante do WhatsApp */
+  .hero__credito{
+    display:block;position:absolute;top:calc(100% + .9rem);left:28%;right:0;margin:0;padding-right:2.4rem;
+    font-size:.72rem;line-height:1.5;letter-spacing:.03em;text-transform:none;
+    color:rgba(245,244,241,.5);
+  }
+
+  /* textos pequenos com espaçamento contido */
+  .hero__copy .eyebrow,.hero__scroll{letter-spacing:.15em}
+
+  /* fundo sólido com grão bem sutil no lugar do campo de luz (tirar a classe reverte) */
+  .hero--grao .hero__canvas{display:none}
+  .hero--grao::before{
+    content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.07;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='160' height='160' filter='url(%23g)'/></svg>");
+  }
+}
+
 /* ── impressão ───────────────────────────────────── */
 @media print{
   .loader,.cursor,.nav,.menu,.wa-float,.hero__canvas,
