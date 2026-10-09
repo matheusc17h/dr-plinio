@@ -537,6 +537,51 @@
   }
 
   /* ───────────────────────────────────────────────
+     A TÉCNICA — segue a rolagem (scrub), como a Sobre: rótulo →
+     título linha a linha → etapa 01 → 02 → 03 → foto do antes|depois
+     abrindo de baixo para cima. Descer revela, subir desfaz.
+     Lado a lado (>=1081px): uma timeline enquanto a seção sobe pela tela.
+     Empilhado: texto+etapas numa timeline e a foto em outra, cada uma
+     ao passar pela tela.
+     ─────────────────────────────────────────────── */
+  function initTecnica() {
+    var sec = $('.tecnica');
+    if (!sec || REDUCED) return;
+    var eyebrow = $('.eyebrow > span', sec), linhas = $$('.h2 .l > span', sec);
+    var steps = $$('.step', sec), foto = $('.tecnica__shot', sec), head = $('.tecnica__head', sec);
+    var scrub = smoother ? 1 : 0.8;
+
+    gsap.set(eyebrow, { yPercent: 105 });
+    gsap.set(linhas, { yPercent: 118 });
+    gsap.set(steps, { y: 50, opacity: 0 });
+    if (foto) gsap.set(foto, { clipPath: 'inset(100% 0% 0% 0%)' });
+
+    function textoEm(tl, at) {
+      tl.to(eyebrow, { yPercent: 0, duration: 0.5, ease: 'power3.out' }, at)
+        .to(linhas, { yPercent: 0, duration: 0.8, ease: 'power4.out', stagger: 0.12 }, at + 0.3)
+        // uma etapa por vez: a próxima só começa quando a anterior já assentou
+        .to(steps, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', stagger: 0.75 }, at + 1);
+      return at + 1 + 0.8 + (steps.length - 1) * 0.75;
+    }
+    function fotoEm(tl, at) {
+      if (foto) tl.to(foto, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'power3.inOut' }, at);
+    }
+
+    if (window.matchMedia('(min-width: 1081px)').matches) {
+      var tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: 'top 70%', end: 'top 0%', scrub: scrub } });
+      var fim = textoEm(tl, 0);
+      fotoEm(tl, fim - 0.4);
+    } else {
+      var tt = gsap.timeline({ scrollTrigger: { trigger: head, start: 'top 85%', endTrigger: steps[steps.length - 1] || head, end: 'bottom 80%', scrub: scrub } });
+      textoEm(tt, 0);
+      if (foto) {
+        var tf = gsap.timeline({ scrollTrigger: { trigger: foto, start: 'top 85%', end: 'top 35%', scrub: scrub } });
+        fotoEm(tf, 0);
+      }
+    }
+  }
+
+  /* ───────────────────────────────────────────────
      SOBRE — uma coisa de cada vez, sem atropelar:
      foto do doutor → rótulo → título (letras) →
      1º parágrafo → 2º parágrafo (linhas subindo pela máscara) →
@@ -656,7 +701,7 @@
 
     // títulos em máscara de linha (fora do hero)
     $$('.h2').forEach(function (h) {
-      if (h.closest('.sobre')) return;            // a seção Sobre tem a própria ordem (initSobre)
+      if (h.closest('.sobre, .tecnica')) return;  // Sobre e A técnica têm a própria ordem (initSobre, initTecnica)
       if (h.hasAttribute('data-letters') && window.SplitText) return initLetras(h);
       var lines = $$('.l > span', h);
       gsap.set(lines, { yPercent: 118 });
@@ -672,7 +717,7 @@
     // Rótulo sobe pela máscara como as linhas do título; foto e mapa abrem
     // de baixo para cima como a cortina da abertura; o resto sobe com fade.
     $$('.rv').forEach(function (el) {
-      if (el.classList.contains('h2') || el.closest('.sobre')) return;
+      if (el.classList.contains('h2') || el.closest('.sobre, .tecnica')) return;
       var inner = el.children.length === 1 && el.firstElementChild.tagName === 'SPAN'
         ? el.firstElementChild : el;
       var de, para;
@@ -693,20 +738,6 @@
       });
     });
 
-    // etapas: Diagnóstico → Clareamento → Acabamento, uma de cada vez.
-    // Toca uma vez ao chegar na seção, no próprio tempo (não segue o
-    // scroll, então não "desfaz" ao subir); os números ficam fixos.
-    var steps = $$('.step');
-    if (steps.length) {
-      gsap.set(steps, { y: 50, opacity: 0 });
-      ScrollTrigger.create({
-        trigger: '.steps', start: 'top 80%', once: true,
-        onEnter: function () {
-          // stagger maior que meia duração: a próxima entra quando a anterior já assentou
-          gsap.to(steps, { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', stagger: 0.55 });
-        }
-      });
-    }
 
     // galeria
     ScrollTrigger.create({
@@ -1335,6 +1366,7 @@
     initParallax();
     initCounters();
     initSobre();
+    initTecnica();
     initBeforeAfter();
     initTilt();
     initBordaBrilho();
