@@ -37,7 +37,7 @@
     }
 
     $$('.js-wa').forEach(function (el) {
-      var msg = el.getAttribute('data-wa-msg') || 'Olá! Vim pelo site.';
+      var msg = el.getAttribute('data-wa-msg') || 'Olá! Vim pelo site do Dr. Plínio e gostaria de mais informações.';
       var href = 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
       el.setAttribute('href', href);
       el.setAttribute('target', '_blank');
