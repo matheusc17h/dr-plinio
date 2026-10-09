@@ -363,7 +363,9 @@ body.is-locked .nav__logo--light{opacity:1}
   display:flex;align-items:center;
 }
 .manifesto::after{
-  content:"";position:absolute;inset:auto 0 0;height:clamp(6rem,20vh,11rem);pointer-events:none;
+  /* z-index 1: fica por cima do grão (::before), senão o grão clareia o off-white
+     do pé e marca uma linha na emenda com a Sobre */
+  content:"";position:absolute;inset:auto 0 0;height:clamp(6rem,20vh,11rem);pointer-events:none;z-index:1;
   background:linear-gradient(to bottom,
     rgba(245,244,241,0) 0%, rgba(245,244,241,.06) 22%, rgba(245,244,241,.22) 45%,
     rgba(245,244,241,.55) 70%, rgba(245,244,241,.86) 88%, var(--paper) 100%);
@@ -1157,23 +1159,13 @@ body.is-locked .nav__logo--light{opacity:1}
   }
 }
 
-/* tubo de neon do hero: pisca até firmar (como uma lâmpada de verdade) e fica aceso */
-@keyframes neon-liga{
-  0%{opacity:0}6%{opacity:.9}9%{opacity:.1}16%{opacity:1}19%{opacity:.25}
-  30%{opacity:1}33%{opacity:.55}42%,100%{opacity:1}
-}
-@keyframes neon-luz{0%,30%{opacity:0}42%{opacity:.7}100%{opacity:1}}
-@media (prefers-reduced-motion:reduce){
-  .hero.neon-on .hero__neon-tubo,.hero.neon-on .hero__neon-luz{animation:none;opacity:1}
-}
-
 /* ── hero a partir de 768px: composição editorial ──────
    O celular (<768px) segue exatamente como antes: vídeo em tela
    cheia atrás do texto. Daqui para cima o mesmo #heroFrame vira um
    retângulo reto 4:5 à direita, com uma foto de detalhe sobreposta
    no canto inferior esquerdo e um crédito de foto embaixo.
    Bloco no fim de propósito: vence 1600/1280/1080 e a paisagem baixa. */
-.hero__detalhe,.hero__credito,.hero__neon{display:none}
+.hero__detalhe,.hero__credito,.hero__mosaico{display:none}
 @media (min-width:768px){
   .hero__inner{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(2rem,5vw,6rem)}
   .hero__stage{order:0;justify-content:flex-end}
@@ -1207,28 +1199,12 @@ body.is-locked .nav__logo--light{opacity:1}
   /* textos pequenos com espaçamento contido */
   .hero__copy .eyebrow,.hero__scroll{letter-spacing:.15em}
 
-  /* tubo de neon: um fio champanhe incandescente no topo, com halo em camadas
-     (só box-shadow, nada de filtro) e o cone de luz que ele projeta para baixo */
-  .hero__neon{display:block;position:absolute;inset:0;z-index:1;pointer-events:none}
-  .hero__neon-tubo{
-    position:absolute;left:50%;top:calc(var(--nav-h) + 1.4rem);transform:translateX(-50%);
-    width:min(64%,920px);height:3px;border-radius:3px;background:#F6EAD0;opacity:0;
-    box-shadow:0 0 3px #F6EAD0,0 0 10px rgba(224,201,154,.95),0 0 26px rgba(201,169,106,.75),
-      0 0 60px rgba(201,169,106,.45),0 0 120px rgba(201,169,106,.22);
+  /* ondas no mosaico (js/mosaico.js): entra junto com a abertura e fica atrás do grão */
+  .hero__mosaico{
+    display:block;position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;
+    opacity:0;transition:opacity 1.6s var(--ease);
   }
-  /* terminais do tubo: pontas metálicas escuras, como num neon real */
-  .hero__neon-tubo::before,.hero__neon-tubo::after{
-    content:"";position:absolute;top:-3px;width:10px;height:9px;border-radius:2px;background:var(--graphite);
-  }
-  .hero__neon-tubo::before{left:-9px}
-  .hero__neon-tubo::after{right:-9px}
-  .hero__neon-luz{
-    position:absolute;left:50%;top:calc(var(--nav-h) + 1.4rem);transform:translateX(-50%);
-    width:min(120%,1700px);height:92%;opacity:0;
-    background:radial-gradient(ellipse 46% 62% at 50% 0%,rgba(224,201,154,.17) 0%,rgba(201,169,106,.07) 42%,transparent 72%);
-  }
-  .hero.neon-on .hero__neon-tubo{animation:neon-liga 1.6s linear forwards}
-  .hero.neon-on .hero__neon-luz{animation:neon-luz 1.6s ease-out forwards}
+  .hero.fundo-on .hero__mosaico{opacity:1}
 
   /* fundo sólido com grão bem sutil no lugar do campo de luz (tirar a classe reverte) */
   .hero--grao .hero__canvas{display:none}

@@ -209,9 +209,9 @@
              com grão sutil. Para voltar ao campo de luz, é só tirar a classe. -->
         <section class="hero hero--grao" id="hero">
           <canvas class="hero__canvas" id="gl" aria-hidden="true"></canvas>
-          <!-- tubo de neon (a partir de 768px): acende piscando na abertura e projeta um cone
-               de luz quente que revela o texto e o vídeo. Para tirar, apague este bloco. -->
-          <div class="hero__neon" aria-hidden="true"><span class="hero__neon-luz"></span><span class="hero__neon-tubo"></span></div>
+          <!-- ondas num mosaico de ladrilhos (js/mosaico.js, a partir de 768px). Para tirar,
+               apague este canvas e o script js/mosaico.js no fim da página. -->
+          <canvas class="hero__mosaico" aria-hidden="true"></canvas>
 
           <div class="hero__inner">
             <div class="hero__copy">
@@ -925,6 +925,7 @@
   <script defer src="js/config.js"></script>
   <script defer src="js/main.js"></script>
   <script defer src="js/galeria.js"></script>
+  <script defer src="js/mosaico.js"></script>
 </body>
 
 </html>
