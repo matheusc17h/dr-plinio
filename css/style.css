@@ -1244,6 +1244,10 @@ body.is-locked .nav__logo--light{opacity:1}
 
   /* fundo sólido com grão bem sutil no lugar do campo de luz (tirar a classe reverte) */
   .hero--grao .hero__canvas{display:none}
+  /* o mesmo grão continua no Propósito logo abaixo: sem ele o hero fica um tom
+     mais claro e aparece uma "emenda" entre as duas seções escuras (seletor
+     direto: no desktop o pin embrulha o Propósito numa div e ~ não alcançaria) */
+  .manifesto::before,
   .hero--grao::before{
     content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.07;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='160' height='160' filter='url(%23g)'/></svg>");
