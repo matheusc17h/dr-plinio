@@ -830,6 +830,8 @@ body.is-locked .nav__logo--light{opacity:1}
    Sem JS a lista aparece como grade de fotos. */
 .galeria{background:var(--ink);color:var(--paper);padding:var(--sec-y) var(--pad) clamp(2.5rem,6vh,4rem);overflow:hidden}
 .galeria__head{max-width:var(--maxw);margin-inline:auto}
+/* Galeria e A técnica são duas seções escuras seguidas: um fio separa o ritmo */
+.galeria + .tecnica{box-shadow:inset 0 1px 0 rgba(245,244,241,.08)}
 .galeria .h2{margin-bottom:1rem}
 .galeria__dica{margin:0;font-size:.74rem;letter-spacing:.06em;color:rgba(245,244,241,.5)}
 .galeria__lista{
@@ -1158,13 +1160,21 @@ body.is-locked .nav__logo--light{opacity:1}
   }
 }
 
+/* ângulo do ponto de luz da moldura do hero: registrado para poder animar
+   (sem suporte a @property o ponto fica parado, sem quebrar nada) */
+@property --moldura-ang{syntax:'<angle>';inherits:false;initial-value:200deg}
+@keyframes moldura-gira{from{--moldura-ang:200deg}to{--moldura-ang:560deg}}
+@media (prefers-reduced-motion:reduce){
+  .hero__moldura::before,.hero__moldura-brilho::before{animation:none}
+}
+
 /* ── hero a partir de 768px: composição editorial ──────
    O celular (<768px) segue exatamente como antes: vídeo em tela
    cheia atrás do texto. Daqui para cima o mesmo #heroFrame vira um
    retângulo reto 4:5 à direita, com uma foto de detalhe sobreposta
    no canto inferior esquerdo e um crédito de foto embaixo.
    Bloco no fim de propósito: vence 1600/1280/1080 e a paisagem baixa. */
-.hero__detalhe,.hero__credito,.hero__swirl{display:none}
+.hero__detalhe,.hero__credito,.hero__moldura{display:none}
 @media (min-width:768px){
   .hero__inner{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(2rem,5vw,6rem)}
   .hero__stage{order:0;justify-content:flex-end}
@@ -1198,8 +1208,39 @@ body.is-locked .nav__logo--light{opacity:1}
   /* textos pequenos com espaçamento contido */
   .hero__copy .eyebrow,.hero__scroll{letter-spacing:.15em}
 
-  /* metal líquido em espiral (js/swirl.js) atrás do grão; tirar o canvas do HTML volta ao fundo sólido */
-  .hero__swirl{display:block;position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+  /* moldura luminosa: fio dourado de 1px emoldurando o hero, um ponto de luz champanhe
+     percorrendo a borda (::before nítido + cópia desfocada = brilho) e cantoneiras */
+  .hero__moldura{
+    display:block;position:absolute;z-index:1;pointer-events:none;border-radius:6px;
+    inset:calc(var(--nav-h) + .4rem) clamp(14px,1.6vw,26px) clamp(14px,1.6vw,26px);
+  }
+  .hero__moldura::before,.hero__moldura-brilho::before{
+    content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+    background:conic-gradient(from var(--moldura-ang),
+      rgba(201,169,106,.18) 0deg,rgba(201,169,106,.18) 245deg,
+      rgba(224,201,154,.95) 300deg,rgba(201,169,106,.18) 345deg,rgba(201,169,106,.18) 360deg);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+    mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+    animation:moldura-gira 10s linear infinite;
+  }
+  /* o brilho: o mesmo anel, mais grosso e desfocado (o filtro vem depois da máscara) */
+  .hero__moldura-brilho{position:absolute;inset:0;border-radius:inherit;filter:blur(7px);opacity:.75}
+  .hero__moldura-brilho::before{padding:2px}
+  /* cantoneiras: 4 "L" dourados de 18px nos cantos */
+  .hero__moldura::after{
+    content:"";position:absolute;inset:-1px;border-radius:inherit;
+    --c:rgba(224,201,154,.9);--t:18px;
+    background:
+      linear-gradient(var(--c),var(--c)) top left/var(--t) 1px no-repeat,
+      linear-gradient(var(--c),var(--c)) top left/1px var(--t) no-repeat,
+      linear-gradient(var(--c),var(--c)) top right/var(--t) 1px no-repeat,
+      linear-gradient(var(--c),var(--c)) top right/1px var(--t) no-repeat,
+      linear-gradient(var(--c),var(--c)) bottom left/var(--t) 1px no-repeat,
+      linear-gradient(var(--c),var(--c)) bottom left/1px var(--t) no-repeat,
+      linear-gradient(var(--c),var(--c)) bottom right/var(--t) 1px no-repeat,
+      linear-gradient(var(--c),var(--c)) bottom right/1px var(--t) no-repeat;
+  }
 
   /* fundo sólido com grão bem sutil no lugar do campo de luz (tirar a classe reverte) */
   .hero--grao .hero__canvas{display:none}

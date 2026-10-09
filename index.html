@@ -209,8 +209,9 @@
              com grão sutil. Para voltar ao campo de luz, é só tirar a classe. -->
         <section class="hero hero--grao" id="hero">
           <canvas class="hero__canvas" id="gl" aria-hidden="true"></canvas>
-          <!-- metal líquido em espiral (js/swirl.js), só a partir de 768px -->
-          <canvas class="hero__swirl" aria-hidden="true"></canvas>
+          <!-- moldura luminosa (só CSS, a partir de 768px): fio dourado com um ponto de luz
+               percorrendo a borda e cantoneiras nítidas. Para tirar, apague este bloco. -->
+          <div class="hero__moldura" aria-hidden="true"><span class="hero__moldura-brilho"></span></div>
 
           <div class="hero__inner">
             <div class="hero__copy">
@@ -923,7 +924,6 @@
   </script>
   <script defer src="js/config.js"></script>
   <script defer src="js/main.js"></script>
-  <script defer src="js/swirl.js"></script>
   <script defer src="js/galeria.js"></script>
 </body>
 
