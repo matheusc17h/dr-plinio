@@ -1132,7 +1132,7 @@
     }
 
     // fundo de cada card: a borda colorida cobre o miolo com esta cor
-    [['.step', '#14141A'], ['.card', '#14141A'], ['.depo__card', '#1C1C23']].forEach(function (par) {
+    [['.step', '#14141A'], ['.card', '#14141A'], ['.depo__card', '#1C1C23'], ['.faq__it', '#1C1C23']].forEach(function (par) {
       $$(par[0]).forEach(function (el) {
         el.classList.add('bglow');
         vars(el, par[1]);
