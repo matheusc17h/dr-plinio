@@ -163,9 +163,10 @@
     </a>
     <nav class="nav__links" aria-label="Navegação principal">
       <a href="#sobre">Sobre</a>
-      <a href="#tecnica">A técnica</a>
       <a href="#resultados">Resultados</a>
+      <a href="#tecnica">A técnica</a>
       <a href="#diferenciais">Diferenciais</a>
+      <a href="#depoimentos">Depoimentos</a>
       <a href="#duvidas">Dúvidas</a>
       <a href="#local">Onde estamos</a>
     </nav>
@@ -179,10 +180,10 @@
     <div class="menu__scroll">
     <nav class="menu__links">
       <a href="#sobre"><em>01</em> Sobre</a>
-      <a href="#tecnica"><em>02</em> A técnica</a>
-      <a href="#resultados"><em>03</em> Resultados</a>
-      <a href="#depoimentos"><em>04</em> Depoimentos</a>
-      <a href="#diferenciais"><em>05</em> Diferenciais</a>
+      <a href="#resultados"><em>02</em> Resultados</a>
+      <a href="#tecnica"><em>03</em> A técnica</a>
+      <a href="#diferenciais"><em>04</em> Diferenciais</a>
+      <a href="#depoimentos"><em>05</em> Depoimentos</a>
       <a href="#duvidas"><em>06</em> Dúvidas</a>
       <a href="#local"><em>07</em> Onde estamos</a>
     </nav>
@@ -265,32 +266,17 @@
           <div class="hero__scroll r"><span>role a página</span></div>
         </section>
 
-        <!-- ══ MANIFESTO — ponte do hero escuro para a Sobre clara ══
-             Para trocar a frase, edite o texto do <p class="manifesto__frase">.
-             As palavras dentro de <em> terminam em dourado e itálico.
-             As palavras acendem uma a uma com o scroll (initManifesto). -->
-        <section class="manifesto" id="manifesto" aria-label="Propósito">
-          <div class="manifesto__inner">
-            <p class="eyebrow rv manifesto__rotulo"><span>00 · Propósito</span></p>
-            <p class="manifesto__frase">Cada sorriso é planejado nos mínimos <em>detalhes</em>, para que o resultado seja <em>seu</em>, e não de um procedimento.</p>
-          </div>
-        </section>
-
-        <!-- ══ 2. SOBRE ══ -->
+        <!-- ══ 2. SOBRE ══
+             Abre com a frase do propósito (as palavras acendem com o scroll, initFrase).
+             Para trocar a frase, edite o texto abaixo; palavras em <em> ficam douradas e itálicas. -->
         <section class="sobre" id="sobre">
+          <p class="sobre__frase">Cada sorriso é planejado nos mínimos <em>detalhes</em>, para que o resultado seja <em>seu</em>, e não de um procedimento.</p>
           <div class="sobre__media">
             <div class="par">
               <picture>
                 <source srcset="assets/img/dr-plinio.webp" type="image/webp"><img src="assets/img/dr-plinio.jpg"
                   width="1109" height="1280" loading="lazy" decoding="async"
                   alt="Dr. Plínio Mota realizando um procedimento" data-speed="0.86">
-              </picture>
-            </div>
-            <div class="sobre__float">
-              <picture>
-                <source srcset="assets/img/sorriso-perfil.webp" type="image/webp"><img
-                  src="assets/img/sorriso-perfil.jpg" width="853" height="1280" loading="lazy" decoding="async"
-                  alt="Sorriso em perfil após tratamento estético" data-speed="1.12">
               </picture>
             </div>
           </div>
@@ -332,52 +318,16 @@
           </div>
         </section>
 
-        <!-- ══ 3. A TÉCNICA ══ -->
-        <section class="tecnica" id="tecnica">
-          <div class="tecnica__head">
-            <p class="eyebrow rv"><span>02 · A técnica</span></p>
-            <h2 class="h2 rv">
-              <span class="l"><span>Três etapas. Nenhuma</span></span>
-              <span class="l"><span><em>pressa.</em></span></span>
-            </h2>
-          </div>
-
-          <div class="steps">
-            <article class="step"><span class="step__n">01</span>
-              <h3>Diagnóstico individual</h3>
-              <p>Avaliamos seu sorriso, a saúde dos seus dentes e o que você quer mudar. É aqui que se decide o que faz sentido para o seu caso, e o que não faz.</p>
-            </article>
-            <article class="step"><span class="step__n">02</span>
-              <h3>Definição do procedimento</h3>
-              <p>Escolhemos juntos entre clareamento, facetas de resina ou lentes de porcelana, e definimos cor, translucidez, textura e formato antes de começar.</p>
-            </article>
-            <article class="step"><span class="step__n">03</span>
-              <h3>Entrega do novo sorriso</h3>
-              <p>O que foi planejado sai do papel: um sorriso desenhado para você, com a saúde dos seus dentes preservada e orientações claras para ele durar.</p>
-            </article>
-          </div>
-
-          <figure class="tecnica__shot rv">
-            <picture>
-              <!-- montagem só com recorte das fotos reais da paciente (sem edição dos dentes):
-                   rostos em cima, sorrisos embaixo, antes à esquerda, depois à direita -->
-              <source srcset="assets/img/tecnica-antes-depois.webp" type="image/webp"><img
-                src="assets/img/tecnica-antes-depois.jpg" width="1080" height="1350" loading="lazy" decoding="async"
-                alt="Antes e depois de uma paciente: rosto e sorriso antes do tratamento à esquerda, depois à direita">
-            </picture>
-            <figcaption>Antes · Depois. Caso real atendido na clínica</figcaption>
-          </figure>
-        </section>
-
-        <!-- ══ 4. RESULTADOS ══ -->
+        <!-- ══ 3. RESULTADOS ══ -->
         <section class="resultados" id="resultados">
           <div class="resultados__head">
-            <p class="eyebrow rv"><span>03 · Resultados</span></p>
+            <p class="eyebrow rv"><span>02 · Resultados</span></p>
             <h2 class="h2 rv">
               <span class="l"><span>Arraste e veja a</span></span>
               <span class="l"><span><em>diferença.</em></span></span>
             </h2>
           </div>
+
 
           <div class="ba" role="group" aria-label="Comparação antes e depois: arraste para revelar">
             <picture>
@@ -565,45 +515,47 @@
           </div>
         </section>
 
-        <!-- ══ 5. DEPOIMENTOS — seção fixa na tela; os cards entram e saem com o scroll ══ -->
-        <section class="depo" id="depoimentos">
-          <div class="depo__stage" id="depoStage">
-            <div class="depo__head">
-              <p class="eyebrow rv"><span>04 · Depoimentos</span></p>
-              <h2 class="h2 rv">
-                <span class="l"><span>Quem viveu,</span></span>
-                <span class="l"><span><em>conta.</em></span></span>
-              </h2>
-            </div>
-
-            <!-- nomes e idades dos próprios pacientes, informados pelo responsável pelo site
-                 como reais e autorizados. Só trocar por dados reais, nunca inventar. -->
-            <blockquote class="depo__card" style="--x:-24%;--y:-6%;--r:-3deg">
-              <p>“Desde o planejamento até a entrega foi tudo bem acompanhado, me senti renovada com meu novo sorriso.”</p>
-              <cite>Júlia Santos, 22 anos</cite>
-            </blockquote>
-            <blockquote class="depo__card" style="--x:24%;--y:4%;--r:2.5deg">
-              <p>“Eu tinha vergonha de sair na rua e sorrir, o Dr. conseguiu mudar isso e hoje consigo sorrir na foto sem nem pensar duas vezes.”</p>
-              <cite>Eduardo Oliveira, 35 anos</cite>
-            </blockquote>
-            <blockquote class="depo__card" style="--x:-20%;--y:10%;--r:2deg">
-              <p>“Fiz o planejamento querendo colocar lentes, mas o Dr. me convenceu a fazer clareamento sem sensibilidade e estou amando o resultado, dente branco de maneira natural 😍😍”</p>
-              <cite>Larissa Martins, 27 anos · Clareamento dental</cite>
-            </blockquote>
-            <blockquote class="depo__card" style="--x:22%;--y:-4%;--r:-2.5deg">
-              <p>“Busquei a clínica querendo lente que ninguém percebesse e saí encantada. As pessoas não sabem que eu fiz as lentes e acham que é meu sorriso natural, simplesmente perfeito!”</p>
-              <cite>Bruna Gonçalves, 31 anos · Lentes de porcelana</cite>
-            </blockquote>
-
-            <div class="depo__prog" aria-hidden="true"><span id="depoNum">01</span><i><b
-                  id="depoBar"></b></i><span>04</span></div>
+        <!-- ══ 4. A TÉCNICA ══ -->
+        <section class="tecnica" id="tecnica">
+          <div class="tecnica__head">
+            <p class="eyebrow rv"><span>03 · A técnica</span></p>
+            <h2 class="h2 rv">
+              <span class="l"><span>Três etapas. Nenhuma</span></span>
+              <span class="l"><span><em>pressa.</em></span></span>
+            </h2>
           </div>
+
+          <div class="steps">
+            <article class="step"><span class="step__n">01</span>
+              <h3>Diagnóstico individual</h3>
+              <p>Avaliamos seu sorriso, a saúde dos seus dentes e o que você quer mudar. É aqui que se decide o que faz sentido para o seu caso, e o que não faz.</p>
+            </article>
+            <article class="step"><span class="step__n">02</span>
+              <h3>Definição do procedimento</h3>
+              <p>Escolhemos juntos entre clareamento, facetas de resina ou lentes de porcelana, e definimos cor, translucidez, textura e formato antes de começar.</p>
+            </article>
+            <article class="step"><span class="step__n">03</span>
+              <h3>Entrega do novo sorriso</h3>
+              <p>O que foi planejado sai do papel: um sorriso desenhado para você, com a saúde dos seus dentes preservada e orientações claras para ele durar.</p>
+            </article>
+          </div>
+
+          <figure class="tecnica__shot rv">
+            <picture>
+              <!-- montagem só com recorte das fotos reais da paciente (sem edição dos dentes):
+                   rostos em cima, sorrisos embaixo, antes à esquerda, depois à direita -->
+              <source srcset="assets/img/tecnica-antes-depois.webp" type="image/webp"><img
+                src="assets/img/tecnica-antes-depois.jpg" width="1080" height="1350" loading="lazy" decoding="async"
+                alt="Antes e depois de uma paciente: rosto e sorriso antes do tratamento à esquerda, depois à direita">
+            </picture>
+            <figcaption>Antes · Depois. Caso real atendido na clínica</figcaption>
+          </figure>
         </section>
 
-        <!-- ══ 6. DIFERENCIAIS ══ -->
+        <!-- ══ 5. DIFERENCIAIS ══ -->
         <section class="cards" id="diferenciais">
           <div class="cards__head">
-            <p class="eyebrow rv"><span>05 · Diferenciais</span></p>
+            <p class="eyebrow rv"><span>04 · Diferenciais</span></p>
             <h2 class="h2 rv">
               <span class="l"><span>Por que o resultado</span></span>
               <span class="l"><span>se sustenta <em>no tempo.</em></span></span>
@@ -679,6 +631,41 @@
             <button class="cards__arrow" id="cardsNext" type="button" aria-label="Próximo diferencial">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
             </button>
+          </div>
+        </section>
+
+        <!-- ══ 6. DEPOIMENTOS — seção fixa na tela; os cards entram e saem com o scroll ══ -->
+        <section class="depo" id="depoimentos">
+          <div class="depo__stage" id="depoStage">
+            <div class="depo__head">
+              <p class="eyebrow rv"><span>05 · Depoimentos</span></p>
+              <h2 class="h2 rv">
+                <span class="l"><span>Quem viveu,</span></span>
+                <span class="l"><span><em>conta.</em></span></span>
+              </h2>
+            </div>
+
+            <!-- nomes e idades dos próprios pacientes, informados pelo responsável pelo site
+                 como reais e autorizados. Só trocar por dados reais, nunca inventar. -->
+            <blockquote class="depo__card" style="--x:-24%;--y:-6%;--r:-3deg">
+              <p>“Desde o planejamento até a entrega foi tudo bem acompanhado, me senti renovada com meu novo sorriso.”</p>
+              <cite>Júlia Santos, 22 anos</cite>
+            </blockquote>
+            <blockquote class="depo__card" style="--x:24%;--y:4%;--r:2.5deg">
+              <p>“Eu tinha vergonha de sair na rua e sorrir, o Dr. conseguiu mudar isso e hoje consigo sorrir na foto sem nem pensar duas vezes.”</p>
+              <cite>Eduardo Oliveira, 35 anos</cite>
+            </blockquote>
+            <blockquote class="depo__card" style="--x:-20%;--y:10%;--r:2deg">
+              <p>“Fiz o planejamento querendo colocar lentes, mas o Dr. me convenceu a fazer clareamento sem sensibilidade e estou amando o resultado, dente branco de maneira natural 😍😍”</p>
+              <cite>Larissa Martins, 27 anos · Clareamento dental</cite>
+            </blockquote>
+            <blockquote class="depo__card" style="--x:22%;--y:-4%;--r:-2.5deg">
+              <p>“Busquei a clínica querendo lente que ninguém percebesse e saí encantada. As pessoas não sabem que eu fiz as lentes e acham que é meu sorriso natural, simplesmente perfeito!”</p>
+              <cite>Bruna Gonçalves, 31 anos · Lentes de porcelana</cite>
+            </blockquote>
+
+            <div class="depo__prog" aria-hidden="true"><span id="depoNum">01</span><i><b
+                  id="depoBar"></b></i><span>04</span></div>
           </div>
         </section>
 

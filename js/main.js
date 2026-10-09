@@ -490,34 +490,21 @@
   }
 
   /* ───────────────────────────────────────────────
-     MANIFESTO — as palavras da frase acendem em sequência com o
-     scroll (scrub). Só opacity por palavra: barato até no iPhone.
-     Lado a lado (>=1081px, mouse): a seção fica presa só o tempo da
-     frase completar (+70% da tela). Celular/tablet: sem pin (evita
-     o pulo do iOS), o scrub acompanha a frase passando na tela.
-     autoSplit refaz o split no resize/troca de fonte e recria a
-     animação no mesmo progresso; aria:'auto' deixa a frase original
-     no aria-label e esconde os pedaços do leitor de tela.
+     FRASE DO PROPÓSITO (abertura da Sobre) — as palavras acendem
+     em sequência com o scroll (scrub). Só opacity por palavra:
+     barato até no iPhone. autoSplit refaz o split no resize/troca
+     de fonte; aria:'auto' deixa a frase inteira no aria-label.
      Movimento reduzido ou sem SplitText: frase já revelada (CSS).
      ─────────────────────────────────────────────── */
-  function initManifesto() {
-    var frase = $('.manifesto__frase');
+  function initFrase() {
+    var frase = $('.sobre__frase');
     if (!frase || REDUCED || !window.SplitText) return;
-    var sec = frase.closest('.manifesto');
-    var prende = window.matchMedia('(min-width: 1081px)').matches && ScrollTrigger.isTouch !== 1;
-
     SplitText.create(frase, {
       type: 'words', aria: 'auto', autoSplit: true,
       onSplit: function (self) {
         return gsap.fromTo(self.words, { opacity: 0.18 }, {
           opacity: 1, duration: 0.3, ease: 'none', stagger: 0.12,
-          scrollTrigger: prende
-            ? {
-                trigger: sec, start: 'top top', end: '+=70%', scrub: smoother ? true : 0.6,
-                pin: true, anticipatePin: smoother ? 0 : 1, invalidateOnRefresh: true,
-                refreshPriority: 1     // primeiro pin da página: mede antes dos de baixo
-              }
-            : { trigger: frase, start: 'top 82%', end: 'bottom 42%', scrub: 0.6 }
+          scrollTrigger: { trigger: frase, start: 'top 82%', end: 'bottom 42%', scrub: 0.6 }
         });
       }
     });
@@ -525,18 +512,18 @@
 
   /* ───────────────────────────────────────────────
      SOBRE — uma coisa de cada vez, sem atropelar:
-     foto do doutor → foto do sorriso → rótulo → título (letras) →
+     foto do doutor → rótulo → título (letras) →
      1º parágrafo → 2º parágrafo (linhas subindo pela máscara) →
      destaques (o 300 conta aqui) → botão.
-     Lado a lado (>=1081px): as duas fotos vêm da esquerda e o texto
-     segue na mesma timeline. Empilhado: doutor da esquerda, sorriso
-     da direita; o texto tem a própria timeline quando chega na tela.
+     Lado a lado (>=1081px): a foto vem da esquerda e o texto segue
+     na mesma timeline. Empilhado: a foto vem da esquerda e o texto
+     tem a própria timeline quando chega na tela.
      ─────────────────────────────────────────────── */
   function initSobre() {
     var sec = $('.sobre');
     if (!sec || REDUCED) return;
     var media = $('.sobre__media', sec), copy = $('.sobre__copy', sec);
-    var dr = $('.par', sec), flt = $('.sobre__float', sec);
+    var dr = $('.par', sec);
     var eyebrow = $('.eyebrow > span', sec), h = $('.h2', sec);
     var paras = $$('.prose p', sec), stats = $('.stats', sec), btn = $('.btn', copy);
     var num = $('.stats [data-count]', sec);
@@ -581,14 +568,12 @@
 
     var lado = window.matchMedia('(min-width: 1081px)').matches;
     gsap.set(dr, { x: -90, autoAlpha: 0 });
-    gsap.set(flt, { x: lado ? -70 : 70, autoAlpha: 0 });
     var fotos = gsap.timeline({ paused: true })
-      .to(dr, { x: 0, autoAlpha: 1, duration: 1.2, ease: 'power3.out', clearProps: 'transform,opacity,visibility' }, 0)
-      .to(flt, { x: 0, autoAlpha: 1, duration: 1.1, ease: 'power3.out', clearProps: 'transform,opacity,visibility' }, 0.55);
+      .to(dr, { x: 0, autoAlpha: 1, duration: 1.2, ease: 'power3.out', clearProps: 'transform,opacity,visibility' }, 0);
 
     if (lado) {
-      texto(fotos, 1.05);
-      ScrollTrigger.create({ trigger: sec, start: 'top 68%', once: true, onEnter: function () { fotos.play(); } });
+      texto(fotos, 0.6);
+      ScrollTrigger.create({ trigger: media, start: 'top 72%', once: true, onEnter: function () { fotos.play(); } });
     } else {
       var tl = gsap.timeline({ paused: true });
       texto(tl, 0);
@@ -1232,7 +1217,7 @@
     initMagnetic();
     initNav();
     initIntro();
-    initManifesto();
+    initFrase();
     initDepoimentos();
     initCards();
     initReveals();
