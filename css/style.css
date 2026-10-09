@@ -367,7 +367,7 @@ body.is-locked .nav__logo--light{opacity:1}
   text-wrap:balance;
 }
 .sobre__frase em{font-style:italic;font-weight:300;color:var(--gold)}
-.par{overflow:hidden;border-radius:250px 250px 10px 10px;aspect-ratio:3/4}
+.par{overflow:hidden;border-radius:10px;aspect-ratio:3/4}
 .par img{width:100%;height:118%;object-fit:cover;object-position:60% 40%;will-change:transform}
 
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;margin:2.6rem 0;border-top:1px solid var(--line-dk);padding-top:1.8rem}
@@ -751,7 +751,7 @@ body.is-locked .nav__logo--light{opacity:1}
   .hero__stage{justify-content:flex-start}
   .hero__frameWrap{width:min(100%,382px,39svh)}
 
-  /* sobre: a foto em arco segue a altura da tela */
+  /* sobre: a foto segue a altura da tela */
   .sobre__media{width:min(100%,48svh);justify-self:end}
   /* título mais longo do site (uma frase inteira): um degrau menor que os
      outros h2 para a seção continuar cabendo na altura da tela */
