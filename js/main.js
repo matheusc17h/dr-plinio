@@ -809,8 +809,10 @@
         .to('#heroFrameWrap', { y: 40, ease: 'none' }, 0)
         .to('.hero__detalhe', { y: -36, ease: 'none' }, 0);
     } else {
+      // celular: o vídeo em tela cheia só desce devagar; sem encolher (encolher abria
+      // faixas nas laterais e o hero parecia um cartão se soltando do Propósito)
       gsap.to('#heroFrameWrap', {
-        yPercent: 9, scale: 0.94, ease: 'none',
+        yPercent: 9, ease: 'none',
         scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.6 }
       });
     }

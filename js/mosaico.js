@@ -56,8 +56,9 @@
       var lado = CELULA - VAO;
       for (var j = 0; j < rows; j++) {
         var y = j * CELULA;
-        // mais apagado logo abaixo da nav e no pé
-        var vert = smooth(0, H * 0.22, y) * (1 - smooth(H * 0.82, H, y) * 0.6);
+        // apagado logo abaixo da nav e some de vez no pé: o hero termina no mesmo
+        // grafite liso em que o Propósito começa, sem emenda entre as seções
+        var vert = smooth(0, H * 0.22, y) * (1 - smooth(H * 0.6, H * 0.96, y));
         for (var i = 0; i < cols; i++) {
           var x = i * CELULA;
           var k = j * cols + i;
