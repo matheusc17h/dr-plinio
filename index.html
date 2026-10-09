@@ -526,9 +526,9 @@
           </div>
         </section>
 
-        <!-- ══ 4. GALERIA — carrossel circular (js/galeria.js, porte do CircularCarousel do React Bits) ══
+        <!-- ══ 4. GALERIA — fileira que dobra numa lente (js/flexgaleria.js, porte do FlexCarousel do React Bits) ══
              Para trocar ou incluir fotos: um <li> por foto, 4:5 (480×600), em assets/img/galeria/.
-             data-titulo e data-sub aparecem na legenda embaixo do anel. Sem JS, a lista vira uma grade. -->
+             data-titulo e data-sub aparecem na legenda embaixo da fileira. Sem JS/WebGL2, a lista vira uma grade. -->
         <section class="galeria" id="galeria">
           <div class="galeria__head">
             <p class="eyebrow rv"><span>03 · Galeria</span></p>
@@ -536,9 +536,9 @@
               <span class="l"><span>Sorrisos que saíram</span></span>
               <span class="l"><span><em>daqui.</em></span></span>
             </h2>
-            <p class="galeria__dica rv"><span>Arraste para girar e toque numa foto para vê-la de frente</span></p>
+            <p class="galeria__dica rv"><span>Arraste para os lados e toque numa foto para abri-la</span></p>
           </div>
-          <div class="cc">
+          <div class="fc">
             <ul class="galeria__lista">
               <li data-titulo="Caso real" data-sub="Vista frontal"><img src="assets/img/galeria/g01.webp" width="480" height="600"
                   loading="lazy" decoding="async" alt="Sorriso finalizado com afastador"></li>
@@ -922,7 +922,7 @@
   </script>
   <script defer src="js/config.js"></script>
   <script defer src="js/main.js"></script>
-  <script defer src="js/galeria.js"></script>
+  <script type="module" src="js/flexgaleria.js"></script>
   <script defer src="js/mosaico.js"></script>
 </body>
 
