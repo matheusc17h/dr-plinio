@@ -828,55 +828,6 @@ body.is-locked .nav__logo--light{opacity:1}
     0 0 15px 0 var(--glow-color-30), 0 0 25px 2px var(--glow-color-20), 0 0 50px 2px var(--glow-color-10);
 }
 
-/* ═══ GALERIA — fileira que dobra numa lente (js/flexgaleria.js, WebGL2) ═══
-   Fundo escuro, legenda clara com subtítulo dourado.
-   Sem JS ou sem WebGL2 a lista aparece como grade de fotos. */
-.galeria{background:var(--ink);color:var(--paper);padding:var(--sec-y) var(--pad) clamp(2.5rem,6vh,4rem);overflow:hidden}
-.galeria__head{max-width:var(--maxw);margin-inline:auto}
-/* Galeria e A técnica são duas seções escuras seguidas: um fio separa o ritmo */
-.galeria + .tecnica{box-shadow:inset 0 1px 0 rgba(245,244,241,.08)}
-.galeria .h2{margin-bottom:1rem}
-.galeria__dica{margin:0;font-size:.74rem;letter-spacing:.06em;color:rgba(245,244,241,.5)}
-.galeria__lista{
-  list-style:none;margin:2rem auto 0;padding:0;max-width:var(--maxw);
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.8rem;
-}
-.galeria__lista img{display:block;width:100%;height:auto;border-radius:10px}
-.galeria__lista[hidden]{display:none}
-.fc{position:relative;max-width:var(--maxw);margin:0 auto}
-.fc.is-on{
-  height:clamp(440px,68svh,640px);margin-top:clamp(.5rem,2vh,1.5rem);
-  overflow:hidden;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;
-  -webkit-tap-highlight-color:transparent;overscroll-behavior:contain;outline:none;
-}
-@media (max-width:720px){ .fc.is-on{height:clamp(360px,58svh,460px)} }
-.fc[data-hover='open']{cursor:zoom-in}
-.fc[data-hover='close']{cursor:zoom-out}
-.fc[data-dragging]{cursor:grabbing}
-.fc:focus-visible{box-shadow:inset 0 0 0 1px var(--gold)}
-.fc__caption{
-  position:absolute;left:0;right:0;top:calc(50% + var(--fc-half) * var(--fc-lift,1) + 22px);
-  display:flex;flex-direction:column;align-items:center;gap:6px;padding:0 16px;
-  pointer-events:none;text-align:center;animation:fc-revela .9s ease both;
-}
-.fc__title-wrap{display:flex;justify-content:center;max-width:100%}
-.fc__title{display:flex;flex-direction:column;align-items:center;font-size:.95rem;font-weight:400;line-height:1.35;animation:fc-titulo .52s var(--ease)}
-.fc__subtitle{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
-.fc__count{display:inline-flex;align-items:center;gap:3px;font-size:.75rem;line-height:1;font-variant-numeric:tabular-nums;color:rgba(245,244,241,.5);transition:opacity .4s ease}
-.fc__count[data-hidden]{opacity:0}
-.fc__digits{display:inline-flex}
-.fc__digit{display:inline-block;height:1em;overflow:hidden}
-.fc__reel{display:flex;flex-direction:column;transition:transform .6s var(--ease)}
-.fc__reel > span{height:1em}
-.fc__slash{opacity:.6}
-.fc__live{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-@keyframes fc-titulo{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fc-revela{from{opacity:0}to{opacity:1}}
-@media (prefers-reduced-motion:reduce){
-  .fc__caption,.fc__title{animation:none}
-  .fc__reel{transition:none}
-}
-
 /* ═══════════════════════════════════════════════════════════
    RESPONSIVO
    Tiers:  1600 ↑ · 1280 · 1080 (a nav vira menu) · 860 ·
