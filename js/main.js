@@ -1058,14 +1058,17 @@
     });
 
     // desloca a fileira para o centro do card ativo cair no centro da tela
-    // a fileira começa alinhada à esquerda com o título e fica parada:
-    // trocar de card só muda o destaque. Ela só desliza quando o card
-    // escolhido não cabe inteiro na tela (no celular, por exemplo)
+    // a fileira fica parada: trocar de card só muda o destaque. Se todos
+    // cabem, ela fica centralizada (mesma sobra dos dois lados); se não
+    // (celular), começa na margem do título e só desliza quando o card
+    // escolhido não cabe inteiro na tela
     var titulo = $('.cards__head .h2', sec);
     function posicao() {
-      var c = cards[atual];
+      var c = cards[atual], ultimo = cards[cards.length - 1];
       var margem = titulo.getBoundingClientRect().left - vp.getBoundingClientRect().left;
       var folga = c.offsetWidth * 0.04;   // o ativo cresce 7% a partir do centro
+      var largura = ultimo.offsetLeft + ultimo.offsetWidth;
+      if (largura + 2 * (margem + folga) <= vp.clientWidth) return (vp.clientWidth - largura) / 2;
       var limite = vp.clientWidth - margem - folga;
       return Math.min(margem + folga, limite - (c.offsetLeft + c.offsetWidth));
     }
