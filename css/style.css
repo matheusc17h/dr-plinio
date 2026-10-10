@@ -728,7 +728,8 @@ body.is-locked .nav__logo--light{opacity:1}
 .foot__grid{display:flex;justify-content:space-evenly;gap:2rem;padding:2.6rem 0}
 .foot__grid h4{margin:0 0 .9rem;font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;font-weight:600;color:var(--gold)}
 .foot__grid p{margin:0;font-size:.9rem;color:rgba(245,244,241,.6);line-height:1.8}
-.foot__grid a{border-bottom:1px solid rgba(201,169,106,.4);cursor:pointer;transition:color .35s}
+/* sem sublinhado: o link se distingue por ser um tom mais claro que o texto e fica dourado no hover */
+.foot__grid a{color:rgba(245,244,241,.85);cursor:pointer;transition:color .35s}
 .foot__grid a:hover{color:var(--gold)}
 /* padding-right: a última linha nunca fica sob o botão flutuante do WhatsApp */
 .foot__bar{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;padding-top:1.6rem;padding-right:84px;border-top:1px solid rgba(245,244,241,.12);font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,244,241,.36)}
