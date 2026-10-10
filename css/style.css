@@ -579,35 +579,28 @@ body.is-locked .nav__logo--light{opacity:1}
 }
 
 /* ═══ 5. CARDS ═══ */
-/* padding menor que as outras seções: título, pilha e setas cabem numa tela */
-.cards{background:var(--paper-2);padding:clamp(2.6rem,6vh,5rem) 0;overflow:hidden}
+.cards{background:var(--paper-2);padding:var(--sec-y) 0;overflow:hidden}
 .cards__head{padding-inline:var(--pad)}
-.cards .h2{margin-bottom:1.6rem}
-/* carrossel em profundidade (porte do DepthCarousel do React Bits, em JS puro):
-   os cards ficam empilhados em 3D, o ativo na frente e os seguintes indo para
-   trás e para a direita, girando, escurecendo e desfocando. O JS (initCards)
-   escreve transform/opacity/filter de cada card a cada quadro e a altura do palco. */
-.cards__viewport{
-  position:relative;height:clamp(380px,62svh,620px);
-  perspective:1400px;perspective-origin:50% 50%;
-  touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;outline:none;
-}
-.cards__viewport:active{cursor:grabbing}
-.cards__viewport:focus-visible{outline:1px solid var(--gold);outline-offset:6px}
-.cards__track{position:absolute;inset:0;transform-style:preserve-3d}
-/* card em duas partes: a foto em cima, limpa e o texto embaixo, num painel
-   grafite. O JS iguala a altura dos três; quem absorve a sobra nos cards de
-   texto curto é a foto (flex-grow), que parte de 4/3 como mínimo. */
+.cards .h2{margin-bottom:3rem}
+/* carrossel: o card ativo fica no centro, levantado e um pouco maior;
+   o espaço vertical do viewport é a folga para ele subir sem cortar */
+.cards__viewport{padding-block:clamp(1.4rem,3vw,2.2rem);touch-action:pan-y;user-select:none}
+.cards__track{position:relative;display:flex;gap:clamp(1rem,2vw,1.8rem);width:max-content;will-change:transform}
+/* card em duas partes: a foto em cima, limpa (sem escurecer, para o
+   resultado aparecer com a cor real) e o texto embaixo, num painel grafite.
+   A fileira é flex com stretch, então os 5 ficam com a altura do maior;
+   quem absorve a sobra nos cards de texto curto é a foto (flex-grow), que
+   parte de 4/3 como mínimo. Assim o texto fica sempre justo, sem vão. */
 .card{
-  width:clamp(240px,26vw,340px);
+  position:relative;width:clamp(240px,26vw,340px);
   display:flex;flex-direction:column;
-  border-radius:10px;overflow:hidden;background:var(--ink);
-  cursor:pointer;box-shadow:0 30px 60px -22px rgba(20,20,26,.55);
+  border-radius:10px;overflow:hidden;background:var(--ink);flex:0 0 auto;
+  cursor:pointer;box-shadow:0 0 0 rgba(20,20,26,0);
 }
-.cards__track > .card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);will-change:transform,opacity,filter}
-.card.is-active{cursor:auto}
-/* véu grafite que escurece os cards de trás (opacity escrita pelo JS) */
-.card__tint{position:absolute;inset:0;z-index:2;background:var(--ink);opacity:0;mix-blend-mode:multiply;pointer-events:none}
+/* .is-ready entra depois da animação de entrada, que também usa transform */
+.cards.is-ready .card{transition:transform .7s var(--ease),box-shadow .7s var(--ease),opacity .7s var(--ease)}
+.cards.is-ready .card:not(.is-active){opacity:.55}
+.card.is-active{transform:translateY(-14px) scale(1.07);box-shadow:0 30px 60px -22px rgba(20,20,26,.55);z-index:1;cursor:auto}
 /* fora de foco a foto fica levemente apagada; o card ativo mostra a cor real */
 .card img{
   display:block;width:100%;height:auto;aspect-ratio:4/3;flex:1 0 auto;object-fit:cover;
@@ -924,7 +917,7 @@ body.is-locked .nav__logo--light{opacity:1}
   .gal__tag{left:1.2rem;bottom:1.2rem;padding:.42rem 1rem;font-size:.62rem;letter-spacing:.24em}
 
   /* diferenciais */
-  .cards .h2{margin-bottom:1.2rem}
+  .cards .h2{margin-bottom:2rem}
   /* textos longos: card mais largo para não ficar estreito e alto */
   .card{width:clamp(260px,min(26vw,48svh),340px)}
 
@@ -1023,7 +1016,7 @@ body.is-locked .nav__logo--light{opacity:1}
   .foot__top{flex-direction:column;align-items:flex-start}
 
   .sobre__media{margin-bottom:4rem}
-  .cards .h2{margin-bottom:1.4rem}
+  .cards .h2{margin-bottom:2.2rem}
   .resultados .h2{margin-bottom:2rem}
   .local address{margin-bottom:1.8rem}
   .tecnica__shot figcaption{letter-spacing:.22em}
@@ -1268,10 +1261,8 @@ body.is-locked .nav__logo--light{opacity:1}
   .hero,.sobre,.tecnica,.resultados,.cards,.local,.foot{padding-block:1.5rem}
   .hero__lead,.step p,.card__body p:not(.card__sub),.foot__grid p{color:#333!important}
   .frame::after,.hero::after{display:none}
-  .cards__viewport{height:auto;perspective:none}
-  .cards__track{position:static;display:flex;flex-wrap:wrap;gap:1rem}
-  .cards__track > .card{position:relative;top:auto;left:auto}
-  .card{transform:none!important;opacity:1!important;filter:none!important}
+  .cards__track{flex-wrap:wrap;width:auto;transform:none!important}
+  .card{transform:none!important;opacity:1!important}
   .faq__ico{display:none}
   .faq__a{grid-template-rows:1fr!important}
   .faq__a > div{visibility:visible!important}
