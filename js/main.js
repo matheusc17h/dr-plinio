@@ -330,11 +330,13 @@
     // visibility liga no começo da abertura e desliga no fim do fechamento.
     // y:0 zera o translateY(-100%) do CSS (estado sem JS); senão o GSAP soma os dois
     gsap.set(menu, { y: 0, yPercent: -100 });
+    // Os links NÃO animam: aparecem prontos assim que o painel desce. Animar
+    // yPercent/opacity dos links dentro do painel fixo (que também está em
+    // transform) falhava no iPhone: o WebKit não redesenhava a camada e os
+    // links não apareciam/animavam. Painel curto e direto = menu mais ágil.
     var tl = gsap.timeline({ paused: true })
       .set(menu, { visibility: 'visible' })
-      .to(menu, { yPercent: 0, duration: 0.8, ease: 'power4.inOut' })
-      .from($$('.menu__links a', menu), { yPercent: 110, opacity: 0, stagger: 0.06, duration: 0.6, ease: 'power3.out' }, '-=0.4')
-      .from($('.menu__foot', menu), { opacity: 0, y: 20, duration: 0.5 }, '-=0.35');
+      .to(menu, { yPercent: 0, duration: 0.45, ease: 'power3.out' });
 
     function toggle(state) {
       open = (state === undefined) ? !open : state;
@@ -1211,14 +1213,26 @@
       $('.faq__a', it).setAttribute('aria-hidden', open ? 'false' : 'true');
     }
 
-    // Os triggers abaixo da lista precisam ser remedidos, mas só depois
-    // que a altura terminou de animar (.55s no CSS): medir no clique
-    // pegaria a altura antiga, e refresh é caro para rodar à toa.
+    // Abrir uma resposta muda a altura da seção. NÃO usar ScrollTrigger.refresh()
+    // global aqui: ele solta e prende de novo as seções fixas (Propósito,
+    // Depoimentos) e refaz as animações com invalidateOnRefresh — a página
+    // "pulava" de baixo para cima a cada pergunta aberta (no celular o
+    // navegador ainda puxava a rolagem enquanto os pins estavam soltos).
+    // Basta remedir só os gatilhos da própria seção e os que vêm depois dela,
+    // quando a altura termina de animar (.55s no CSS). A altura da rolagem
+    // suave (desktop) o próprio ScrollSmoother ajusta sozinho.
+    var sec = list.closest('section') || list;
     var refreshTm = null;
     function refreshDepois() {
       if (!window.ScrollTrigger) return;
       clearTimeout(refreshTm);
-      refreshTm = setTimeout(function () { ScrollTrigger.refresh(); }, 600);
+      refreshTm = setTimeout(function () {
+        ScrollTrigger.getAll().forEach(function (st) {
+          var el = st.trigger;
+          if (!el || !el.nodeType) return;
+          if (sec.contains(el) || (sec.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) st.refresh();
+        });
+      }, 600);
     }
 
     items.forEach(function (it) {
