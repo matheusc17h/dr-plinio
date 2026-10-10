@@ -29,6 +29,10 @@
   --pad-base: clamp(1.25rem, 5vw, 5.5rem);
   --pad: max(var(--pad-base), env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
   --maxw: 1440px;
+  /* container da primeira tela (nav + hero) a partir de 1024px: logo alinhado
+     com o título e o "Agendar" com a borda direita da foto */
+  --hero-maxw: 1320px;
+  --hero-gutter: clamp(24px, 5vw, 80px);
   /* ritmo vertical: uma só escala para todas as seções */
   --sec-y: clamp(4.5rem, 11vh, 9rem);
   /* altura ocupada pela nav fixa — usada nas âncoras */
@@ -575,15 +579,16 @@ body.is-locked .nav__logo--light{opacity:1}
 }
 
 /* ═══ 5. CARDS ═══ */
-.cards{background:var(--paper-2);padding:var(--sec-y) 0;overflow:hidden}
+/* padding menor que as outras seções: título, pilha e setas cabem numa tela */
+.cards{background:var(--paper-2);padding:clamp(2.6rem,6vh,5rem) 0;overflow:hidden}
 .cards__head{padding-inline:var(--pad)}
-.cards .h2{margin-bottom:3rem}
+.cards .h2{margin-bottom:1.6rem}
 /* carrossel em profundidade (porte do DepthCarousel do React Bits, em JS puro):
    os cards ficam empilhados em 3D, o ativo na frente e os seguintes indo para
    trás e para a direita, girando, escurecendo e desfocando. O JS (initCards)
    escreve transform/opacity/filter de cada card a cada quadro e a altura do palco. */
 .cards__viewport{
-  position:relative;height:clamp(480px,62svh,620px);
+  position:relative;height:clamp(380px,62svh,620px);
   perspective:1400px;perspective-origin:50% 50%;
   touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;outline:none;
 }
@@ -919,7 +924,7 @@ body.is-locked .nav__logo--light{opacity:1}
   .gal__tag{left:1.2rem;bottom:1.2rem;padding:.42rem 1rem;font-size:.62rem;letter-spacing:.24em}
 
   /* diferenciais */
-  .cards .h2{margin-bottom:2rem}
+  .cards .h2{margin-bottom:1.2rem}
   /* textos longos: card mais largo para não ficar estreito e alto */
   .card{width:clamp(260px,min(26vw,48svh),340px)}
 
@@ -1018,7 +1023,7 @@ body.is-locked .nav__logo--light{opacity:1}
   .foot__top{flex-direction:column;align-items:flex-start}
 
   .sobre__media{margin-bottom:4rem}
-  .cards .h2{margin-bottom:2.2rem}
+  .cards .h2{margin-bottom:1.4rem}
   .resultados .h2{margin-bottom:2rem}
   .local address{margin-bottom:1.8rem}
   .tecnica__shot figcaption{letter-spacing:.22em}
@@ -1172,6 +1177,9 @@ body.is-locked .nav__logo--light{opacity:1}
     font-size:.72rem;line-height:1.5;letter-spacing:.03em;text-transform:none;
     color:rgba(245,244,241,.5);
   }
+  /* duas linhas fixas: o "·" nunca começa linha; a segunda não quebra */
+  .hero__credito > span{display:block}
+  .hero__credito > span + span{white-space:nowrap}
 
   /* textos pequenos com espaçamento contido */
   .hero__copy .eyebrow,.hero__scroll{letter-spacing:.15em}
@@ -1193,6 +1201,32 @@ body.is-locked .nav__logo--light{opacity:1}
     content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.07;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='160' height='160' filter='url(%23g)'/></svg>");
   }
+}
+
+/* ── telas grandes (1024px ↑): nav e hero no mesmo container ──────
+   O fundo do hero (grafite, grão, mosaico) continua de ponta a ponta;
+   só o conteúdo fica limitado a --hero-maxw, centralizado. A nav é
+   fixa e de largura total, então o mesmo container entra como padding
+   lateral: logo na linha do título e "Agendar" na borda da foto. */
+@media (min-width:1024px){
+  .hero{padding-inline:0}
+  /* a coluna da foto tem a largura exata da foto (a mesma conta do
+     .hero__frameWrap); a sobra vai toda para o texto, que mantém o
+     título em 3 linhas no container mais estreito */
+  .hero__inner{
+    max-width:var(--hero-maxw);padding-inline:var(--hero-gutter);
+    grid-template-columns:minmax(0,1fr) min(400px,48svh);
+  }
+  .nav{
+    gap:1.2rem;
+    padding-inline:max(var(--hero-gutter),calc((100% - var(--hero-maxw)) / 2 + var(--hero-gutter)),
+      env(safe-area-inset-left, 0px),env(safe-area-inset-right, 0px));
+  }
+  /* 7 links + marca + botão em 1160px úteis: espaçamento um pouco
+     mais contido para sobrar respiro entre a marca e o "Sobre" */
+  .nav__links{gap:1.3rem}
+  .nav__links a{letter-spacing:.14em}
+  .nav__word b,.nav__word i{white-space:nowrap}
 }
 
 /* ── celular: leitura e ritmo ─────────────────────────

@@ -1120,15 +1120,36 @@
     }
 
     // altura: os três cards ficam com a altura do maior (a foto absorve a
-    // sobra) e o palco cresce para caber o card da frente na escala atual
+    // sobra). A escala da pilha respeita a largura e também a altura da
+    // tela: com a seção no topo (abaixo do menu), título, pilha e setas
+    // precisam caber juntos, sem rolar
+    var sec = vp.closest('.cards'), nav = $('.cards__nav', sec);
+    var FOLGA = 40;   // espaço em volta do card da frente (sombra e giro)
+    var fotos = cards.map(function (c) { return $('img', c); });
+    var corpos = cards.map(function (c) { return $('.card__body', c); });
     function medir() {
-      cards.forEach(function (c) { c.style.minHeight = ''; });
-      var alto = Math.max.apply(null, cards.map(function (c) { return c.offsetHeight; }));
-      cards.forEach(function (c) { c.style.minHeight = alto + 'px'; });
       var largura = cards[0].offsetWidth;
       var precisa = largura + CFG.spread * Math.min(n - 1, CFG.visivel) + 80;
-      escala = gsap.utils.clamp(0.6, 1, vp.clientWidth / precisa);
-      vp.style.height = Math.ceil(alto * escala + 60) + 'px';
+      var menu = parseFloat(getComputedStyle(sec).scrollMarginTop) || 0;
+      // desconta o y da animação de entrada, que desloca o palco enquanto roda
+      var acima = vp.getBoundingClientRect().top - sec.getBoundingClientRect().top - (gsap.getProperty(vp, 'y') || 0);
+      var abaixo = nav ? nav.offsetHeight + parseFloat(getComputedStyle(nav).marginTop) : 0;
+      var cabe = window.innerHeight - menu - acima - abaixo - 24 - FOLGA;
+
+      // em tela baixa quem encolhe primeiro é a foto (até 130px), assim o
+      // texto continua legível; só depois a pilha inteira diminui
+      var textos = corpos.map(function (b) { return b.offsetHeight; });
+      var texto = Math.max.apply(null, textos);
+      var fotoNat = largura * 3 / 4;
+      var foto = Math.max(Math.min(fotoNat, 130), Math.min(fotoNat, cabe - texto));
+      var alto = foto + texto;
+      cards.forEach(function (c, i) {
+        fotos[i].style.aspectRatio = 'auto';
+        fotos[i].style.flex = 'none';
+        fotos[i].style.height = (alto - textos[i]) + 'px';
+      });
+      escala = Math.max(0.45, Math.min(1, vp.clientWidth / precisa, cabe / alto));
+      vp.style.height = Math.ceil(alto * escala + FOLGA) + 'px';
       layout(pos);
     }
 
@@ -1203,7 +1224,7 @@
     ir(0, true);
     medir();
     if (window.ResizeObserver) new ResizeObserver(medir).observe(vp);
-    else window.addEventListener('resize', medir);
+    window.addEventListener('resize', medir);   // altura da tela também conta
     window.addEventListener('load', medir);
   }
 
