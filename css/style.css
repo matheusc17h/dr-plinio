@@ -723,7 +723,9 @@ body.is-locked .nav__logo--light{opacity:1}
 .foot__logo{height:clamp(66px,8vw,96px);width:auto;object-fit:contain}
 .foot__claim{margin:0;font-family:var(--serif);font-size:clamp(1.4rem,2.6vw,2.2rem);font-weight:200;line-height:1.24}
 .foot__claim em{font-style:italic;color:var(--gold)}
-.foot__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;padding:2.6rem 0}
+/* desktop: cada coluna do tamanho do conteúdo e o mesmo espaço antes, entre e
+   depois delas (space-evenly) — com 3 colunas iguais a última sobrava à direita */
+.foot__grid{display:flex;justify-content:space-evenly;gap:2rem;padding:2.6rem 0}
 .foot__grid h4{margin:0 0 .9rem;font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;font-weight:600;color:var(--gold)}
 .foot__grid p{margin:0;font-size:.9rem;color:rgba(245,244,241,.6);line-height:1.8}
 .foot__grid a{border-bottom:1px solid rgba(201,169,106,.4);cursor:pointer;transition:color .35s}
@@ -937,7 +939,7 @@ body.is-locked .nav__logo--light{opacity:1}
   .hero__lead{max-width:56ch}          /* uma coluna só: a linha pode crescer */
   .sobre,.local{grid-template-columns:1fr}
   .sobre__media{margin-bottom:3.5rem}
-  .foot__grid{grid-template-columns:repeat(2,1fr);gap:2.2rem 2.5rem}
+  .foot__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2.2rem 2.5rem}
 }
 
 /* ── tablet estreito: as três etapas empilham ────── */
