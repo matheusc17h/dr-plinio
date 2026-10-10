@@ -769,18 +769,11 @@
       }
     });
 
-    // cards entrando; no fim o CSS assume (.is-ready) e o card ativo sobe
-    ScrollTrigger.create({
-      trigger: '.cards__viewport', start: 'top 82%', once: true,
-      onEnter: function () {
-        gsap.fromTo('.card', { y: 70, opacity: 0 }, {
-          y: 0, opacity: 1, duration: 1.05, ease: 'power3.out', stagger: 0.09,
-          onComplete: function () {
-            $('.cards').classList.add('is-ready');
-            gsap.set('.card', { clearProps: 'transform,opacity' });
-          }
-        });
-      }
+    // diferenciais entrando: sobe o palco inteiro (cada card já tem o
+    // transform da pilha em profundidade, escrito por initCards)
+    gsap.from('.cards__viewport', {
+      y: 70, opacity: 0, duration: 1.05, ease: 'power3.out',
+      scrollTrigger: { trigger: '.cards__viewport', start: 'top 82%', once: true }
     });
   }
 
@@ -1031,91 +1024,187 @@
   }
 
   /* ───────────────────────────────────────────────
-     11. CARDS — carrossel no estilo Instagram: setas e
-     bolinhas trocam o card em destaque, que fica centralizado,
-     levantado e um pouco maior. Também troca com arraste
-     (dedo ou mouse), teclado e clique num card vizinho.
+     11. CARDS — carrossel em profundidade (porte do DepthCarousel
+     do React Bits para JS puro). Os cards ficam numa "trilha" em
+     Z: o ativo na frente, os seguintes recuam, deslocam para a
+     direita, giram no eixo Y, escurecem e desfocam. A posição é
+     um número contínuo (pos), então arraste e roda do trackpad
+     movem a pilha de forma fluida e soltam no card mais próximo.
+     Setas, bolinhas, teclado e clique num card de trás também trocam.
      ─────────────────────────────────────────────── */
   function initCards() {
     var vp = $('#cardsViewport'), track = $('#cardsTrack');
     if (!vp || !track) return;
 
-    var sec = vp.closest('.cards');
     var cards = $$('.card', track);
+    var n = cards.length;
     var prev = $('#cardsPrev'), next = $('#cardsNext'), dotsBox = $('#cardsDots');
-    var atual = 0;
 
-    // sem animação de entrada (movimento reduzido) o CSS já assume
-    if (REDUCED) sec.classList.add('is-ready');
+    // mesmos parâmetros do exemplo do componente
+    var CFG = {
+      depth: 220, spread: 90, tilt: 22, visivel: 4,
+      falloff: 0.2, blur: 6, duracao: 0.7, ease: 'power3.out'
+    };
+
+    var pos = 0, atual = 0, escala = 1, tween = null;
+    var tints = cards.map(function (c) {
+      var t = document.createElement('span');
+      t.className = 'card__tint';
+      t.setAttribute('aria-hidden', 'true');
+      c.appendChild(t);
+      return t;
+    });
 
     var dots = cards.map(function (card, i) {
       var b = document.createElement('button');
       b.type = 'button';
-      b.setAttribute('aria-label', 'Diferencial ' + (i + 1) + ' de ' + cards.length);
+      b.setAttribute('aria-label', 'Diferencial ' + (i + 1) + ' de ' + n);
       b.addEventListener('click', function () { ir(i); });
       dotsBox.appendChild(b);
       return b;
     });
 
-    // desloca a fileira para o centro do card ativo cair no centro da tela
-    function posicao() {
-      var c = cards[atual];
-      return vp.clientWidth / 2 - (c.offsetLeft + c.offsetWidth / 2);
+    vp.tabIndex = 0;
+    vp.setAttribute('role', 'group');
+    vp.setAttribute('aria-roledescription', 'carrossel');
+    vp.setAttribute('aria-label', 'Diferenciais');
+
+    // desenha a pilha para uma posição (pode ser fracionária)
+    function layout(p) {
+      // a pilha abre para a direita; o palco recua meio leque para ficar centrado
+      var centro = -CFG.spread * Math.min(n - 1, CFG.visivel) / 2 * escala;
+      for (var i = 0; i < n; i++) {
+        var el = cards[i];
+        var d = i - p;
+        var tras = Math.max(0, d);
+        var mostra = Math.abs(d) <= CFG.visivel + 0.5;
+        var tz = -CFG.depth * d;
+        var tx = CFG.spread * d;
+        var ry = CFG.tilt * gsap.utils.clamp(0, 1, d);
+        // quem passa para frente do ativo some enquanto avança
+        var op = d < 0 ? Math.max(0, 1 + d) : 1;
+        if (!mostra) op = 0;
+        var brilho = Math.max(0.15, 1 - tras * CFG.falloff);
+        var desfoque = CFG.blur > 0 ? Math.min(CFG.blur, (tras / Math.max(1, CFG.visivel)) * CFG.blur) : 0;
+
+        el.style.transform = 'translate(-50%, -50%) translateX(' + centro.toFixed(2) + 'px) scale(' + escala +
+          ') translateX(' + tx.toFixed(2) + 'px) translateZ(' + tz.toFixed(2) + 'px) rotateY(' + ry.toFixed(3) + 'deg)';
+        el.style.opacity = op.toFixed(3);
+        el.style.filter = desfoque > 0.01 || brilho < 0.999
+          ? 'brightness(' + brilho.toFixed(3) + ') blur(' + desfoque.toFixed(2) + 'px)' : 'none';
+        el.style.zIndex = String(Math.round(2000 - d * 20));
+        el.style.pointerEvents = mostra && op > 0.05 ? 'auto' : 'none';
+        tints[i].style.opacity = gsap.utils.clamp(0, 0.86, tras * CFG.falloff * 1.25).toFixed(3);
+      }
+    }
+
+    function animaPara(alvo, animar) {
+      if (tween) tween.kill();
+      var proxy = { p: pos };
+      tween = gsap.to(proxy, {
+        p: alvo, duration: animar && !REDUCED ? CFG.duracao : 0, ease: CFG.ease,
+        onUpdate: function () { pos = proxy.p; layout(pos); }
+      });
     }
 
     function ir(i, instantaneo) {
-      atual = gsap.utils.clamp(0, cards.length - 1, i);
+      atual = gsap.utils.clamp(0, n - 1, i);
       cards.forEach(function (c, k) {
         c.classList.toggle('is-active', k === atual);
         c.setAttribute('aria-hidden', k === atual ? 'false' : 'true');
       });
       dots.forEach(function (d, k) { d.setAttribute('aria-current', k === atual ? 'true' : 'false'); });
       prev.disabled = atual === 0;
-      next.disabled = atual === cards.length - 1;
-      gsap.to(track, { x: posicao(), duration: instantaneo || REDUCED ? 0 : 0.8, ease: 'power3.out', overwrite: true });
+      next.disabled = atual === n - 1;
+      animaPara(atual, !instantaneo);
+    }
+
+    // altura: os três cards ficam com a altura do maior (a foto absorve a
+    // sobra) e o palco cresce para caber o card da frente na escala atual
+    function medir() {
+      cards.forEach(function (c) { c.style.minHeight = ''; });
+      var alto = Math.max.apply(null, cards.map(function (c) { return c.offsetHeight; }));
+      cards.forEach(function (c) { c.style.minHeight = alto + 'px'; });
+      var largura = cards[0].offsetWidth;
+      var precisa = largura + CFG.spread * Math.min(n - 1, CFG.visivel) + 80;
+      escala = gsap.utils.clamp(0.6, 1, vp.clientWidth / precisa);
+      vp.style.height = Math.ceil(alto * escala + 60) + 'px';
+      layout(pos);
     }
 
     prev.addEventListener('click', function () { ir(atual - 1); });
     next.addEventListener('click', function () { ir(atual + 1); });
-    cards.forEach(function (c, k) {
-      c.addEventListener('click', function () { if (k !== atual) ir(k); });
-    });
 
-    sec.addEventListener('keydown', function (e) {
+    vp.addEventListener('keydown', function (e) {
       if (e.key === 'ArrowLeft') { e.preventDefault(); ir(atual - 1); }
       if (e.key === 'ArrowRight') { e.preventDefault(); ir(atual + 1); }
     });
 
-    // arraste: passou de 50px para um lado, troca de card
-    var x0 = null, arrastou = false;
-    vp.addEventListener('pointerdown', function (e) { x0 = e.clientX; arrastou = false; });
-    vp.addEventListener('pointerup', function (e) {
-      if (x0 === null) return;
-      var d = e.clientX - x0;
-      x0 = null;
-      if (Math.abs(d) < 50) return;
-      arrastou = true;
-      ir(atual + (d < 0 ? 1 : -1));
+    // arraste contínuo: a pilha segue o dedo/mouse e, ao soltar, a
+    // velocidade projeta para qual card ela assenta
+    var drag = null, arrastou = false;
+    function passoPx() { return Math.max(cards[0].offsetWidth * 0.55 * escala, 40); }
+    vp.addEventListener('pointerdown', function (e) {
+      if (n < 2) return;
+      if (tween) tween.kill();
+      arrastou = false;
+      drag = { x: e.clientX, ini: pos, ultX: e.clientX, ultT: performance.now(), v: 0, moveu: false, id: e.pointerId };
     });
-    vp.addEventListener('pointercancel', function () { x0 = null; });
-    // o clique que fecha um arraste não deve selecionar o card embaixo do dedo
-    vp.addEventListener('click', function (e) {
-      if (arrastou) { e.stopPropagation(); arrastou = false; }
-    }, true);
+    vp.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      var dx = e.clientX - drag.x;
+      if (!drag.moveu && Math.abs(dx) > 4) {
+        drag.moveu = true;
+        try { vp.setPointerCapture(drag.id); } catch (err) {}
+      }
+      if (!drag.moveu) return;
+      var agora = performance.now();
+      drag.v = (e.clientX - drag.ultX) / Math.max(agora - drag.ultT, 1);
+      drag.ultX = e.clientX; drag.ultT = agora;
+      // sem loop: nas pontas a pilha resiste um pouco em vez de travar seco
+      var p = drag.ini - dx / passoPx();
+      if (p < 0) p *= 0.35;
+      if (p > n - 1) p = n - 1 + (p - (n - 1)) * 0.35;
+      pos = p;
+      layout(pos);
+    });
+    function soltar() {
+      if (!drag) return;
+      var d = drag;
+      drag = null;
+      if (!d.moveu) { animaPara(atual, true); return; }
+      arrastou = true;
+      ir(Math.round(pos - (d.v * 180) / passoPx()));
+    }
+    vp.addEventListener('pointerup', soltar);
+    vp.addEventListener('pointercancel', soltar);
 
-    // roda do trackpad na horizontal
-    var travado = false;
+    // clique num card de trás traz ele para frente (mas não o clique que fecha um arraste)
+    cards.forEach(function (c, k) {
+      c.addEventListener('click', function () {
+        if (arrastou) { arrastou = false; return; }
+        if (k !== atual) ir(k);
+      });
+    });
+
+    // roda do trackpad na horizontal: move a pilha e assenta ao parar
+    var rodaTimer = null;
     vp.addEventListener('wheel', function (e) {
-      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) < 20) return;
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || n < 2) return;
       e.preventDefault();
-      if (travado) return;
-      travado = true;
-      ir(atual + (e.deltaX > 0 ? 1 : -1));
-      setTimeout(function () { travado = false; }, 600);
+      if (tween) tween.kill();
+      var delta = e.deltaMode === 1 ? e.deltaX * 24 : e.deltaX;
+      pos = gsap.utils.clamp(-0.3, n - 0.7, pos + gsap.utils.clamp(-0.6, 0.6, delta / (cards[0].offsetWidth * 0.9)));
+      layout(pos);
+      clearTimeout(rodaTimer);
+      rodaTimer = setTimeout(function () { ir(Math.round(pos)); }, 130);
     }, { passive: false });
 
     ir(0, true);
-    window.addEventListener('resize', function () { ir(atual, true); });
+    medir();
+    if (window.ResizeObserver) new ResizeObserver(medir).observe(vp);
+    else window.addEventListener('resize', medir);
+    window.addEventListener('load', medir);
   }
 
   /* ───────────────────────────────────────────────
