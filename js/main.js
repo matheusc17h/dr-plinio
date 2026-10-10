@@ -1226,6 +1226,49 @@
   }
 
   /* ───────────────────────────────────────────────
+     FOTO QUE INCLINA — porte do TiltedCard (React Bits) com GSAP.
+     A foto gira para o lado do cursor e cresce um pouco; a legenda
+     segue o cursor e balança com a velocidade vertical dele.
+     As molas do motion viram quickTo com ease suave. Só com mouse.
+     ─────────────────────────────────────────────── */
+  function initTiltedCard() {
+    if (!FINE || REDUCED) return;
+    $$('[data-tcard]').forEach(function (fig) {
+      var inner = $('.tcard__inner', fig), cap = $('.tcard__cap', fig);
+      var amp = parseFloat(fig.getAttribute('data-amp')) || 14;
+      var zoom = parseFloat(fig.getAttribute('data-scale')) || 1.1;
+      var mola = { duration: 0.9, ease: 'power3.out' };
+      var rx = gsap.quickTo(inner, 'rotationX', mola);
+      var ry = gsap.quickTo(inner, 'rotationY', mola);
+      var sc = gsap.quickTo(inner, 'scale', mola);
+      var cx = cap && gsap.quickTo(cap, 'x', { duration: 0.25, ease: 'power3.out' });
+      var cy = cap && gsap.quickTo(cap, 'y', { duration: 0.25, ease: 'power3.out' });
+      var cr = cap && gsap.quickTo(cap, 'rotation', { duration: 0.35, ease: 'power3.out' });
+      var ultY = 0;
+
+      fig.addEventListener('mouseenter', function () {
+        sc(zoom);
+        if (cap) gsap.to(cap, { opacity: 1, duration: 0.3, overwrite: 'auto' });
+      });
+      fig.addEventListener('mousemove', function (e) {
+        var r = fig.getBoundingClientRect();
+        var ox = e.clientX - r.left - r.width / 2, oy = e.clientY - r.top - r.height / 2;
+        rx((oy / (r.height / 2)) * -amp);
+        ry((ox / (r.width / 2)) * amp);
+        if (cap) {
+          cx(e.clientX - r.left); cy(e.clientY - r.top);
+          cr(-(oy - ultY) * 0.6);
+        }
+        ultY = oy;
+      });
+      fig.addEventListener('mouseleave', function () {
+        rx(0); ry(0); sc(1);
+        if (cap) { cr(0); gsap.to(cap, { opacity: 0, duration: 0.3, overwrite: 'auto' }); }
+      });
+    });
+  }
+
+  /* ───────────────────────────────────────────────
      BRILHO DE BORDA — porte do BorderGlow (React Bits) para JS puro.
      Mesmas contas do componente: quão perto da borda o cursor está
      (0–100) e o ângulo dele a partir do centro; o CSS (.bglow) faz o
@@ -1474,6 +1517,7 @@
     initTecnica();
     initBeforeAfter();
     initTilt();
+    initTiltedCard();
     initBordaBrilho();
     initFaq();
     initRodape();

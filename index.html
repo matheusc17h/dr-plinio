@@ -274,13 +274,17 @@
         <!-- ══ 2. SOBRE ══ -->
         <section class="sobre" id="sobre">
           <div class="sobre__media">
-            <div class="par">
-              <picture>
-                <source srcset="assets/img/dr-plinio-800.webp 800w, assets/img/dr-plinio.webp 1109w" sizes="(max-width: 720px) 100vw, 480px" type="image/webp"><img src="assets/img/dr-plinio.jpg"
-                  width="1109" height="1280" loading="lazy" decoding="async"
-                  alt="Dr. Plínio Mota realizando um procedimento" data-speed="0.86">
-              </picture>
-            </div>
+            <!-- foto que inclina com o mouse e mostra a legenda seguindo o cursor (initTiltedCard) -->
+            <figure class="par tcard" data-tcard data-amp="12" data-scale="1.05">
+              <div class="tcard__inner">
+                <picture>
+                  <source srcset="assets/img/dr-plinio-800.webp 800w, assets/img/dr-plinio.webp 1109w" sizes="(max-width: 720px) 100vw, 480px" type="image/webp"><img src="assets/img/dr-plinio.jpg"
+                    width="1109" height="1280" loading="lazy" decoding="async"
+                    alt="Dr. Plínio Mota realizando um procedimento" data-speed="0.86">
+                </picture>
+              </div>
+              <figcaption class="tcard__cap" aria-hidden="true">Dr. Plínio Mota</figcaption>
+            </figure>
           </div>
 
           <div class="sobre__copy">
@@ -849,7 +853,6 @@
   </script>
   <script defer src="js/config.js"></script>
   <script defer src="js/main.js"></script>
-  <script defer src="js/mosaico.js"></script>
-</body>
+  <script defer src="js/mosaico.js"></script></body>
 
 </html>
